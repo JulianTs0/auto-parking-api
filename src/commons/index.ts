@@ -22,3 +22,7 @@ export * from './entity/Subscription';
 export * from './entity/User';
 export * from './entity/Vehicle';
 export * from './entity/VehicleType';
+
+// Errors
+export * from './error/ErrorType';
+export * from './error/ServiceError';
