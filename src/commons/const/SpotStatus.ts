@@ -1,6 +1,6 @@
-export enum SpotStatus {
-  UNREGISTERED = 'Unregistered',
-  AVAILABLE = 'Available',
-  OCCUPIED = 'Occupied',
-  MAINTENANCE = 'Maintenance',
+export class SpotStatus {
+    public static readonly UNREGISTERED = 'Unregistered';
+    public static readonly AVAILABLE = 'Available';
+    public static readonly OCCUPIED = 'Occupied';
+    public static readonly MAINTENANCE = 'Maintenance';
 }
