@@ -7,18 +7,17 @@ export class Subscription {
         public startDate: Date,
         public endDate: Date,
         public status: SubscriptionStatus,
-        public membershipPlan?: MembershipPlan,
+        public membershipPlan?: MembershipPlan | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Subscription {
+    static fromObject(object: { [key: string]: any }): Subscription | null {
+        if (!object) return null;
         return new Subscription(
             object.id,
             object.startDate,
             object.endDate,
             object.status,
-            object.membershipPlan
-                ? MembershipPlan.fromObject(object.membershipPlan)
-                : undefined,
+            MembershipPlan.fromObject(object.membershipPlan),
         );
     }
 

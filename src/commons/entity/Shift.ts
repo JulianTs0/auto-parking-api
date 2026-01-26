@@ -8,17 +8,18 @@ export class Shift {
         public endTime: Date,
         public initialCash: number,
         public status: ShiftStatus,
-        public user?: User,
+        public user?: User | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Shift {
+    static fromObject(object: { [key: string]: any }): Shift | null {
+        if (!object) return null;
         return new Shift(
             object.id,
             object.startTime,
             object.endTime,
             object.initialCash,
             object.status,
-            object.user ? User.fromObject(object.user) : undefined,
+            User.fromObject(object.user),
         );
     }
 

@@ -7,22 +7,19 @@ export class PricingRule {
         public name: string,
         public unitPrice: number,
         public unitTime: number,
-        public parkingSpotType?: ParkingSpotType,
-        public vehicleType?: VehicleType,
+        public parkingSpotType?: ParkingSpotType | null,
+        public vehicleType?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): PricingRule {
+    static fromObject(object: { [key: string]: any }): PricingRule | null {
+        if (!object) return null;
         return new PricingRule(
             object.id,
             object.name,
             object.unitPrice,
             object.unitTime,
-            object.parkingSpotType
-                ? ParkingSpotType.fromObject(object.parkingSpotType)
-                : undefined,
-            object.vehicleType
-                ? VehicleType.fromObject(object.vehicleType)
-                : undefined,
+            ParkingSpotType.fromObject(object.parkingSpotType),
+            VehicleType.fromObject(object.vehicleType),
         );
     }
 

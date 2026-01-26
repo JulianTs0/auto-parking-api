@@ -5,17 +5,16 @@ export class MembershipPlan {
         public id: string,
         public name: string,
         public price: number,
-        public vehicleType?: VehicleType,
+        public vehicleType?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): MembershipPlan {
+    static fromObject(object: { [key: string]: any }): MembershipPlan | null {
+        if (!object) return null;
         return new MembershipPlan(
             object.id,
             object.name,
             object.price,
-            object.vehicleType
-                ? VehicleType.fromObject(object.vehicleType)
-                : undefined,
+            VehicleType.fromObject(object.vehicleType),
         );
     }
 }

@@ -13,21 +13,22 @@ export class ParkingLot {
         public pricingRules?: PricingRule[],
     ) {}
 
-    static fromObject(object: { [key: string]: any }): ParkingLot {
+    static fromObject(object: { [key: string]: any }): ParkingLot | null {
+        if (!object) return null;
         return new ParkingLot(
             object.id,
             object.name,
             object.address,
             object.gracePeriodMinutes,
             object.spots
-                ? object.spots.map((s: any) => ParkingSpot.fromObject(s))
-                : undefined,
+                ?.map((s: any) => ParkingSpot.fromObject(s))
+                .filter((s): s is ParkingSpot => s !== null),
             object.shifts
-                ? object.shifts.map((s: any) => Shift.fromObject(s))
-                : undefined,
+                ?.map((s: any) => Shift.fromObject(s))
+                .filter((s): s is Shift => s !== null),
             object.pricingRules
-                ? object.pricingRules.map((p: any) => PricingRule.fromObject(p))
-                : undefined,
+                ?.map((p: any) => PricingRule.fromObject(p))
+                .filter((p): p is PricingRule => p !== null),
         );
     }
 

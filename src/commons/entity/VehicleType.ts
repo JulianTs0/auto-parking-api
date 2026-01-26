@@ -5,7 +5,8 @@ export class VehicleType {
         public description: string,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): VehicleType {
+    static fromObject(object: { [key: string]: any }): VehicleType | null {
+        if (!object) return null;
         return new VehicleType(object.id, object.name, object.description);
     }
 }

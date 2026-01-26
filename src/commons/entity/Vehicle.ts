@@ -6,16 +6,17 @@ export class Vehicle {
         public brand: string,
         public model: string,
         public registrationDate: Date,
-        public type?: VehicleType,
+        public type?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Vehicle {
+    static fromObject(object: { [key: string]: any }): Vehicle | null {
+        if (!object) return null;
         return new Vehicle(
             object.licensePlate,
             object.brand,
             object.model,
             object.registrationDate,
-            object.type ? VehicleType.fromObject(object.type) : undefined,
+            VehicleType.fromObject(object.type),
         );
     }
 }

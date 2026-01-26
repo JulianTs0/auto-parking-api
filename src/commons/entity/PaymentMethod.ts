@@ -6,7 +6,8 @@ export class PaymentMethod {
         public accountNumber: string,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): PaymentMethod {
+    static fromObject(object: { [key: string]: any }): PaymentMethod | null {
+        if (!object) return null;
         return new PaymentMethod(
             object.id,
             object.alias,

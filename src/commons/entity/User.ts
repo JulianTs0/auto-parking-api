@@ -20,7 +20,8 @@ export class User {
         public parkingLots?: ParkingLot[],
     ) {}
 
-    static fromObject(object: { [key: string]: any }): User {
+    static fromObject(object: { [key: string]: any }): User | null {
+        if (!object) return null;
         return new User(
             object.id,
             object.firstName,
@@ -30,21 +31,17 @@ export class User {
             object.roles,
             object.passwordHash,
             object.subscriptions
-                ? object.subscriptions.map((s: any) =>
-                      Subscription.fromObject(s),
-                  )
-                : undefined,
+                ?.map((s: any) => Subscription.fromObject(s))
+                .filter((s): s is Subscription => s !== null),
             object.vehicles
-                ? object.vehicles.map((v: any) => Vehicle.fromObject(v))
-                : undefined,
+                ?.map((v: any) => Vehicle.fromObject(v))
+                .filter((v): v is Vehicle => v !== null),
             object.paymentMethods
-                ? object.paymentMethods.map((p: any) =>
-                      PaymentMethod.fromObject(p),
-                  )
-                : undefined,
+                ?.map((p: any) => PaymentMethod.fromObject(p))
+                .filter((p): p is PaymentMethod => p !== null),
             object.parkingLots
-                ? object.parkingLots.map((p: any) => ParkingLot.fromObject(p))
-                : undefined,
+                ?.map((p: any) => ParkingLot.fromObject(p))
+                .filter((p): p is ParkingLot => p !== null),
         );
     }
 }

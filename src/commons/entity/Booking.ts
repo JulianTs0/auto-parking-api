@@ -12,29 +12,28 @@ export class Booking {
         public endTime: Date,
         public totalPrice: number,
         public status: LogStatus,
-        public vehicle?: Vehicle,
-        public spot?: ParkingSpot,
-        public subscription?: Subscription,
+        public vehicle?: Vehicle | null,
+        public spot?: ParkingSpot | null,
+        public subscription?: Subscription | null,
         public statusLogs?: StatusLog[],
-        public payment?: Payment,
+        public payment?: Payment | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Booking {
+    static fromObject(object: { [key: string]: any }): Booking | null {
+        if (!object) return null;
         return new Booking(
             object.id,
             object.startTime,
             object.endTime,
             object.totalPrice,
             object.status,
-            object.vehicle ? Vehicle.fromObject(object.vehicle) : undefined,
-            object.spot ? ParkingSpot.fromObject(object.spot) : undefined,
-            object.subscription
-                ? Subscription.fromObject(object.subscription)
-                : undefined,
+            Vehicle.fromObject(object.vehicle),
+            ParkingSpot.fromObject(object.spot),
+            Subscription.fromObject(object.subscription),
             object.statusLogs
-                ? object.statusLogs.map((s: any) => StatusLog.fromObject(s))
-                : undefined,
-            object.payment ? Payment.fromObject(object.payment) : undefined,
+                ?.map((s: any) => StatusLog.fromObject(s))
+                .filter((s): s is StatusLog => s !== null),
+            Payment.fromObject(object.payment),
         );
     }
 

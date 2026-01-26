@@ -10,11 +10,12 @@ export class Payment {
         public amountReceived: number,
         public changeGiven: number,
         public transactionReference: string,
-        public shift?: Shift,
-        public paymentMethod?: PaymentMethod,
+        public shift?: Shift | null,
+        public paymentMethod?: PaymentMethod | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Payment {
+    static fromObject(object: { [key: string]: any }): Payment | null {
+        if (!object) return null;
         return new Payment(
             object.id,
             object.type,
@@ -22,10 +23,8 @@ export class Payment {
             object.amountReceived,
             object.changeGiven,
             object.transactionReference,
-            object.shift ? Shift.fromObject(object.shift) : undefined,
-            object.paymentMethod
-                ? PaymentMethod.fromObject(object.paymentMethod)
-                : undefined,
+            Shift.fromObject(object.shift),
+            PaymentMethod.fromObject(object.paymentMethod),
         );
     }
 }
