@@ -1,19 +1,4 @@
 services:
-    api:
-        build: .
-        container_name: autoparking-api
-        restart: always
-        ports:
-            - '9000:3000'
-        environment:
-            - DB_HOST=postgres_db
-            - DB_PORT=5432
-            - DB_USERNAME=develop
-            - DB_PASSWORD=develop
-            - DB_DATABASE=autoparking
-        depends_on:
-            - postgres_db
-
     postgres-db:
         image: postgres:15-alpine
         container_name: autoparking-db
