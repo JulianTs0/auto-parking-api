@@ -1,13 +1,13 @@
+import { HttpException } from '@nestjs/common';
 import { ErrorType } from './ErrorType';
+import { ErrorResponse } from './ErrorResponse';
 
-export class ServiceError extends Error {
-    public status: number;
-
+export class ServiceError extends HttpException {
     constructor(error: ErrorType) {
-        super(error.message);
-        this.name = 'ServiceError';
-        this.status = error.status;
+        super(error.message, error.status);
+    }
 
-        Object.setPrototypeOf(this, ServiceError.prototype);
+    public toResponse(): ErrorResponse {
+        return new ErrorResponse(this.getStatus(), this.message);
     }
 }
