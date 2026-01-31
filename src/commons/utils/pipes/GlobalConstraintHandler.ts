@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { Errors, ServiceError } from 'src/commons';
+import { Errors } from '../../error/ErrorType';
+import { ServiceError } from '../../error/ServiceError';
 
 export class GlobalConstraintHandler extends ValidationPipe {
     constructor() {

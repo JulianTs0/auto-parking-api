@@ -31,3 +31,4 @@ export * from './error/ErrorResponse';
 export * from './error/ErrorType';
 export * from './error/GlobalExceptionHandler';
 export * from './error/ServiceError';
+export * from './utils/pipes/GlobalConstraintHandler';
