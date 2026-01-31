@@ -2,20 +2,20 @@ import { Role, UserStatus } from 'src/commons';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class User {
+export class UserModel {
     @PrimaryColumn('uuid')
     public id: string;
 
-    @Column({ name: 'full_name', nullable: false })
+    @Column({ name: 'full_name', nullable: false, length: 100 })
     public fullName: string;
 
-    @Column({ name: 'email', unique: true })
+    @Column({ name: 'email', unique: true, length: 100 })
     public email: string;
 
-    @Column({ name: 'phone_number' })
+    @Column({ name: 'phone_number', length: 50 })
     public phoneNumber: string;
 
-    @Column({ name: 'password_hash', nullable: false })
+    @Column({ name: 'password_hash', nullable: false, length: 255 })
     public passwordHash: string;
 
     @Column({
