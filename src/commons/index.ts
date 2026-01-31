@@ -1,3 +1,6 @@
+// Config
+export * from './config/IdGenerator';
+
 // Constants
 export * from './const/LogStatus';
 export * from './const/PaymentType';
@@ -24,5 +27,7 @@ export * from './entity/Vehicle';
 export * from './entity/VehicleType';
 
 // Errors
+export * from './error/ErrorResponse';
 export * from './error/ErrorType';
+export * from './error/GlobalExceptionHandler';
 export * from './error/ServiceError';
