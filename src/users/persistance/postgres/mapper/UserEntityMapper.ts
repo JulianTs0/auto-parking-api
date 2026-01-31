@@ -5,7 +5,7 @@ export class UserEntityMapper {
     public static toDomain(userModel: UserModel | null): User | null {
         if (userModel == null) return null;
 
-        let entity: User = new User(
+        const entity: User = new User(
             userModel.id,
             userModel.fullName,
             userModel.email,
@@ -25,7 +25,7 @@ export class UserEntityMapper {
     public static toModel(user: User | null): UserModel | null {
         if (user == null) return null;
 
-        let model: UserModel = new UserModel();
+        const model: UserModel = new UserModel();
 
         model.id = user.id;
         model.fullName = user.fullName;
