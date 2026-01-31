@@ -12,7 +12,7 @@ export class GlobalConstraintHandler extends ValidationPipe {
                 const allConstraints = errors
                     .map((error) => error.constraints)
                     .filter((constraint) => constraint !== undefined)
-                    .map((constraint) => Object.keys(constraint!))
+                    .map((constraint) => Object.keys(constraint))
                     .flat();
 
                 const hasMissingFields =

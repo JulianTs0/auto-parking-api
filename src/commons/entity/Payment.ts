@@ -14,7 +14,9 @@ export class Payment {
         public paymentMethod?: PaymentMethod | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Payment | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): Payment | null {
         if (!object) return null;
         return new Payment(
             object.id,

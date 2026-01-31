@@ -9,7 +9,9 @@ export class Vehicle {
         public type?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Vehicle | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): Vehicle | null {
         if (!object) return null;
         return new Vehicle(
             object.licensePlate,

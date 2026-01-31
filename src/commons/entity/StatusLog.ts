@@ -9,7 +9,9 @@ export class StatusLog {
         public reason: string,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): StatusLog | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): StatusLog | null {
         if (!object) return null;
         return new StatusLog(
             object.id,

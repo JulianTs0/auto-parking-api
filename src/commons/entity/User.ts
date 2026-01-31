@@ -45,13 +45,17 @@ export class User {
                 ?.map((s: any) => Subscription.fromObject(s))
                 .filter((s): s is Subscription => s !== null),
 
-            object.vehicles?.map((v: any) => Vehicle.fromObject(v)).filter((v): v is Vehicle => v !== null),
+            object.vehicles
+                ?.map((v: any) => Vehicle.fromObject(v))
+                .filter((v): v is Vehicle => v !== null),
 
             object.paymentMethods
                 ?.map((p: any) => PaymentMethod.fromObject(p))
                 .filter((p): p is PaymentMethod => p !== null),
 
-            object.parkingLots?.map((p: any) => ParkingLot.fromObject(p)).filter((p): p is ParkingLot => p !== null),
+            object.parkingLots
+                ?.map((p: any) => ParkingLot.fromObject(p))
+                .filter((p): p is ParkingLot => p !== null),
         );
     }
 }

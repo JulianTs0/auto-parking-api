@@ -10,7 +10,9 @@ export class Subscription {
         public membershipPlan?: MembershipPlan | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Subscription | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): Subscription | null {
         if (!object) return null;
         return new Subscription(
             object.id,

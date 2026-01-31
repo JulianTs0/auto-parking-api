@@ -9,4 +9,4 @@ import { ConfigModule } from '@nestjs/config';
         }),
     ],
 })
-export class EnvConfigModule { }
+export class EnvConfigModule {}

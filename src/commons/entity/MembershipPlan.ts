@@ -8,7 +8,9 @@ export class MembershipPlan {
         public vehicleType?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): MembershipPlan | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): MembershipPlan | null {
         if (!object) return null;
         return new MembershipPlan(
             object.id,

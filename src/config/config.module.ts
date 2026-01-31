@@ -6,4 +6,4 @@ import { DatabaseModule } from './database/database.module';
     imports: [EnvConfigModule, DatabaseModule],
     exports: [EnvConfigModule, DatabaseModule],
 })
-export class AppConfigModule { }
+export class AppConfigModule {}

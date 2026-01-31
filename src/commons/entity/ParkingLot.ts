@@ -13,7 +13,9 @@ export class ParkingLot {
         public pricingRules?: PricingRule[],
     ) {}
 
-    static fromObject(object: { [key: string]: any }): ParkingLot | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): ParkingLot | null {
         if (!object) return null;
         return new ParkingLot(
             object.id,

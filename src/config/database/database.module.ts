@@ -10,7 +10,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 host: configService.get<string>('DB_HOST'),
-                port: parseInt(configService.getOrThrow<string>('DB_PORT')),
+                port: parseInt(
+                    configService.getOrThrow<string>('DB_PORT'),
+                ),
                 username: configService.get<string>('DB_USERNAME'),
                 password: configService.get<string>('DB_PASSWORD'),
                 database: configService.get<string>('DB_DATABASE'),
@@ -21,4 +23,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ],
     exports: [TypeOrmModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

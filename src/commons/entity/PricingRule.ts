@@ -11,7 +11,9 @@ export class PricingRule {
         public vehicleType?: VehicleType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): PricingRule | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): PricingRule | null {
         if (!object) return null;
         return new PricingRule(
             object.id,

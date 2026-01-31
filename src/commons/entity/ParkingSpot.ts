@@ -8,7 +8,9 @@ export class ParkingSpot {
         public type?: ParkingSpotType | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): ParkingSpot | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): ParkingSpot | null {
         if (!object) return null;
         return new ParkingSpot(
             object.id,

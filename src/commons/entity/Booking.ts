@@ -19,7 +19,9 @@ export class Booking {
         public payment?: Payment | null,
     ) {}
 
-    static fromObject(object: { [key: string]: any }): Booking | null {
+    static fromObject(object: {
+        [key: string]: any;
+    }): Booking | null {
         if (!object) return null;
         return new Booking(
             object.id,
