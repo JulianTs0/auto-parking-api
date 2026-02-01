@@ -1,5 +1,10 @@
 import { Role, UserStatus } from 'src/commons';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryColumn,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UserModel {
@@ -36,4 +41,18 @@ export class UserModel {
         nullable: false,
     })
     public roles: Role[];
+
+    @CreateDateColumn({
+        name: 'created_at',
+        type: 'timestamptz',
+        default: () => 'CURRENT_TIMESTAMP',
+    })
+    createdAt: Date;
+
+    @Column({
+        name: 'updated_at',
+        type: 'timestamptz',
+        default: () => 'CURRENT_TIMESTAMP',
+    })
+    updatedAt: Date;
 }

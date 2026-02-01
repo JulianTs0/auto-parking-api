@@ -13,6 +13,8 @@ export class UserEntityMapper {
             userModel.passwordHash,
             userModel.status,
             new Set(userModel.roles),
+            userModel.createdAt,
+            userModel.updatedAt,
             [],
             [],
             [],
@@ -34,6 +36,8 @@ export class UserEntityMapper {
         model.passwordHash = user.passwordHash;
         model.status = user.status;
         model.roles = [...user.roles];
+        model.createdAt;
+        model.updatedAt;
 
         return model;
     }
