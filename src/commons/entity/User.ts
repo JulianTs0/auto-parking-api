@@ -21,6 +21,10 @@ export class User {
 
         public roles: Set<Role>,
 
+        public createdAt: Date,
+
+        public updateAt: Date,
+
         public subscriptions?: Subscription[],
 
         public vehicles?: Vehicle[],
@@ -28,7 +32,7 @@ export class User {
         public paymentMethods?: PaymentMethod[],
 
         public parkingLots?: ParkingLot[],
-    ) {}
+    ) { }
 
     static fromObject(object: { [key: string]: any }): User | null {
         if (!object) return null;
@@ -40,6 +44,8 @@ export class User {
             object.passwordHash,
             object.status,
             object.roles,
+            object.createdAt,
+            object.updateAt,
 
             object.subscriptions
                 ?.map((s: any) => Subscription.fromObject(s))
