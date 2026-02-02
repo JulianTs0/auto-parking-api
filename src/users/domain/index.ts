@@ -7,7 +7,7 @@ export * from './dto/auth/request/RegisterReq';
 export * from './dto/auth/response/AuthRes';
 export * from './dto/auth/response/LoginRes';
 export * from './dto/auth/mapper/AuthMapper';
-export * from './dto/auth/mapper/implementation/AuthMapper';
+export * from './dto/auth/mapper/implementation/AuthUserMapper';
 export * from './dto/auth/mapper/implementation/LoginMapper';
 // DTOs - Users
 export * from './dto/users/request/DeleteReq';
@@ -16,6 +16,6 @@ export * from './dto/users/request/GetByIdReq';
 export * from './dto/users/response/EditRes';
 export * from './dto/users/response/GetByIdRes';
 export * from './dto/users/mapper/UserMapper';
-export * from './dto/users/mapper/implementation/DeleteMapper';
+// export * from './dto/users/mapper/implementation/DeleteMapper';
 export * from './dto/users/mapper/implementation/EditMapper';
 export * from './dto/users/mapper/implementation/GetByIdMapper';
