@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
-import { PasswordEncoderI } from './config/providers/PasswordEncoderI';
-import { BcryptEncoder } from './config/providers/BCryptEncoder';
-import { TokenHandlerI } from './config/providers/TokenHandlerI';
-import { JWTHandler } from './config/providers/JWTHandler';
+import {
+    BcryptEncoder,
+    JWTHandler,
+    PasswordEncoderI,
+    TokenHandlerI,
+} from './config';
+import { AppConfigModule } from 'src/config/config.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModel } from './persistance';
 
 @Module({
-    imports: [],
+    imports: [TypeOrmModule.forFeature([UserModel]), AppConfigModule],
     controllers: [],
     providers: [
         {
@@ -18,4 +23,4 @@ import { JWTHandler } from './config/providers/JWTHandler';
         },
     ],
 })
-export class UsersModule { }
+export class UsersModule {}
