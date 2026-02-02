@@ -1,11 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordEncoderI } from '../providers/PasswordEncoderI';
 import { TokenHandlerI } from '../providers/TokenHandlerI';
+import { User } from 'src/commons';
 
 @Injectable()
 export class AuthHelper {
     constructor(
         private readonly passwordEncoder: PasswordEncoderI,
         private readonly tokenHandler: TokenHandlerI,
-    ) { }
+    ) {}
+
+    public async hashPassword(password: string): Promise<string> {
+        return this.passwordEncoder.hash(password);
+    }
+
+    public async validatePassword(
+        user: User,
+        password: string,
+    ): Promise<boolean> {
+        const inputHash = await this.passwordEncoder.hash(password);
+        return user.passwordHash === inputHash;
+    }
+
+    public async parseToken(
+        tokenContainer: string,
+        url: boolean = false,
+    ): Promise<string | null> {
+        if (tokenContainer === '') {
+            return null;
+        }
+
+        let token: string;
+
+        if (!url) {
+            if (!tokenContainer.startsWith('Bearer ')) {
+                return null;
+            }
+            token = tokenContainer.substring(7);
+        } else {
+            token = tokenContainer;
+        }
+
+        if (await this.tokenHandler.verifyToken(token)) {
+            return token;
+        } else {
+            return null;
+        }
+    }
+
+    public async getSubject(token: string): Promise<string> {
+        return await this.tokenHandler.getSubject(token);
+    }
 }
