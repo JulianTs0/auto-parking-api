@@ -9,23 +9,23 @@ import { RegexValidators } from 'src/users/domain/index';
 export class EditReq {
     @IsNotEmpty()
     @IsString()
-    id: string;
+    readonly id: string;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.NAME)
-    fullName?: string;
+    readonly fullName?: string;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.EMAIL)
-    email?: string;
+    readonly email?: string;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.PHONE)
-    phoneNumber?: string;
+    readonly phoneNumber?: string;
 }

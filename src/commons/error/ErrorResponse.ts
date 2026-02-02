@@ -2,8 +2,8 @@ import { ErrorType } from './ErrorType';
 
 export class ErrorResponse {
     constructor(
-        public status: number,
-        public message: string,
+        public readonly status: number,
+        public readonly message: string,
     ) {}
 
     static errorType(errorType: ErrorType): ErrorResponse {

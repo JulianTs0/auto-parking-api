@@ -10,21 +10,21 @@ export class RegisterReq {
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.NAME)
-    fullName: string;
+    readonly fullName: string;
 
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.EMAIL)
-    email: string;
+    readonly email: string;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.PHONE)
-    phoneNumber?: string;
+    readonly phoneNumber?: string;
 
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.PASSWORD)
-    password: string;
+    readonly password: string;
 }
