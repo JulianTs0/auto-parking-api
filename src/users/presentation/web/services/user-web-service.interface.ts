@@ -1,3 +1,1 @@
-export abstract class UserWebServiceI {
-    abstract registerEmployee(): void;
-}
+export abstract class UserWebServiceI {}
