@@ -1,18 +1,20 @@
 export class VehicleType {
-    public constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-    ) {}
+    public id: string;
+    public name: string;
+    public description: string;
+
+    constructor(init?: Partial<VehicleType>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: {
         [key: string]: any;
     }): VehicleType | null {
         if (!object) return null;
-        return new VehicleType(
-            object.id,
-            object.name,
-            object.description,
-        );
+        const vehicleType = new VehicleType();
+        vehicleType.id = object.id;
+        vehicleType.name = object.name;
+        vehicleType.description = object.description;
+        return vehicleType;
     }
 }

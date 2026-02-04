@@ -1,7 +1,7 @@
 export class Token {
-    readonly accessToken: string;
+    public accessToken: string;
 
-    constructor(accessToken: string) {
-        this.accessToken = accessToken;
+    constructor(init?: Partial<Token>) {
+        Object.assign(this, init);
     }
 }

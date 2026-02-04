@@ -2,21 +2,23 @@ import { SpotStatus } from '../const/SpotStatus';
 import { ParkingSpotType } from './ParkingSpotType';
 
 export class ParkingSpot {
-    public constructor(
-        public id: string,
-        public status: SpotStatus,
-        public type?: ParkingSpotType | null,
-    ) {}
+    public id: string;
+    public status: SpotStatus;
+    public type: ParkingSpotType | null;
+
+    constructor(init?: Partial<ParkingSpot>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: {
         [key: string]: any;
     }): ParkingSpot | null {
         if (!object) return null;
-        return new ParkingSpot(
-            object.id,
-            object.status,
-            ParkingSpotType.fromObject(object.type),
-        );
+        const parkingSpot = new ParkingSpot();
+        parkingSpot.id = object.id;
+        parkingSpot.status = object.status;
+        parkingSpot.type = ParkingSpotType.fromObject(object.type);
+        return parkingSpot;
     }
 
     public register(): void {}

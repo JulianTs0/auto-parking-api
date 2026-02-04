@@ -1,9 +1,9 @@
 import { Token } from 'src/commons/dto/Token';
 
 export class LoginRes {
-    readonly token: Token;
+    public token: Token;
 
-    constructor(token: Token) {
-        this.token = token;
+    constructor(init?: Partial<LoginRes>) {
+        Object.assign(this, init);
     }
 }

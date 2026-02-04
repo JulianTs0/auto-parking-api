@@ -21,7 +21,7 @@ export class RegisterReq {
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.PHONE)
-    readonly phoneNumber?: string;
+    readonly phoneNumber: string | null;
 
     @IsNotEmpty()
     @IsString()

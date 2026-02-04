@@ -15,17 +15,17 @@ export class EditReq {
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.NAME)
-    readonly fullName?: string;
+    readonly fullName: string | null;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.EMAIL)
-    readonly email?: string;
+    readonly email: string | null;
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
     @Matches(RegexValidators.PHONE)
-    readonly phoneNumber?: string;
+    readonly phoneNumber: string | null;
 }

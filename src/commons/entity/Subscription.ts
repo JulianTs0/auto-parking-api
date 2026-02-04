@@ -2,25 +2,29 @@ import { SubscriptionStatus } from '../const/SubscriptionStatus';
 import { MembershipPlan } from './MembershipPlan';
 
 export class Subscription {
-    public constructor(
-        public id: string,
-        public startDate: Date,
-        public endDate: Date,
-        public status: SubscriptionStatus,
-        public membershipPlan?: MembershipPlan | null,
-    ) {}
+    public id: string;
+    public startDate: Date;
+    public endDate: Date;
+    public status: SubscriptionStatus;
+    public membershipPlan: MembershipPlan | null;
+
+    constructor(init?: Partial<Subscription>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: {
         [key: string]: any;
     }): Subscription | null {
         if (!object) return null;
-        return new Subscription(
-            object.id,
-            object.startDate,
-            object.endDate,
-            object.status,
-            MembershipPlan.fromObject(object.membershipPlan),
+        const subscription = new Subscription();
+        subscription.id = object.id;
+        subscription.startDate = object.startDate;
+        subscription.endDate = object.endDate;
+        subscription.status = object.status;
+        subscription.membershipPlan = MembershipPlan.fromObject(
+            object.membershipPlan,
         );
+        return subscription;
     }
 
     public renew(): void {}

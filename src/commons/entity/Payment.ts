@@ -3,30 +3,34 @@ import { Shift } from './Shift';
 import { PaymentMethod } from './PaymentMethod';
 
 export class Payment {
-    public constructor(
-        public id: string,
-        public type: PaymentType,
-        public amountDue: number,
-        public amountReceived: number,
-        public changeGiven: number,
-        public transactionReference: string,
-        public shift?: Shift | null,
-        public paymentMethod?: PaymentMethod | null,
-    ) {}
+    public id: string;
+    public type: PaymentType;
+    public amountDue: number;
+    public amountReceived: number;
+    public changeGiven: number;
+    public transactionReference: string;
+    public shift: Shift | null;
+    public paymentMethod: PaymentMethod | null;
+
+    constructor(init?: Partial<Payment>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: {
         [key: string]: any;
     }): Payment | null {
         if (!object) return null;
-        return new Payment(
-            object.id,
-            object.type,
-            object.amountDue,
-            object.amountReceived,
-            object.changeGiven,
-            object.transactionReference,
-            Shift.fromObject(object.shift),
-            PaymentMethod.fromObject(object.paymentMethod),
+        const payment = new Payment();
+        payment.id = object.id;
+        payment.type = object.type;
+        payment.amountDue = object.amountDue;
+        payment.amountReceived = object.amountReceived;
+        payment.changeGiven = object.changeGiven;
+        payment.transactionReference = object.transactionReference;
+        payment.shift = Shift.fromObject(object.shift);
+        payment.paymentMethod = PaymentMethod.fromObject(
+            object.paymentMethod,
         );
+        return payment;
     }
 }

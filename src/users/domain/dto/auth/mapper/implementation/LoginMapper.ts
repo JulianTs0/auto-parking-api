@@ -3,9 +3,11 @@ import { LoginRes } from '../../response/LoginRes';
 
 export class LoginMapper {
     public toResponse(token: string): LoginRes {
-        const dto: Token = new Token(token);
+        const dto = new Token();
+        dto.accessToken = token;
 
-        const response: LoginRes = new LoginRes(dto);
+        const response = new LoginRes();
+        response.token = dto;
 
         return response;
     }

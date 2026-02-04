@@ -6,62 +6,62 @@ import { PaymentMethod } from './PaymentMethod';
 import { ParkingLot } from './ParkingLot';
 
 export class User {
-    public constructor(
-        public id: string,
+    public id: string;
 
-        public fullName: string,
+    public fullName: string;
 
-        public email: string,
+    public email: string;
 
-        public phoneNumber: string,
+    public passwordHash: string;
 
-        public passwordHash: string,
+    public status: UserStatus;
 
-        public status: UserStatus,
+    public roles: Set<Role>;
 
-        public roles: Set<Role>,
+    public createdAt: Date;
 
-        public createdAt: Date,
+    public updateAt: Date;
 
-        public updateAt: Date,
+    public phoneNumber: string | null;
 
-        public subscriptions?: Subscription[],
+    public subscriptions: Subscription[];
 
-        public vehicles?: Vehicle[],
+    public vehicles: Vehicle[];
 
-        public paymentMethods?: PaymentMethod[],
+    public paymentMethods: PaymentMethod[];
 
-        public parkingLots?: ParkingLot[],
-    ) { }
+    public parkingLots: ParkingLot[];
+
+    constructor(init?: Partial<User>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: { [key: string]: any }): User | null {
         if (!object) return null;
-        return new User(
-            object.id,
-            object.fullName,
-            object.email,
-            object.phoneNumber,
-            object.passwordHash,
-            object.status,
-            object.roles,
-            object.createdAt,
-            object.updateAt,
 
-            object.subscriptions
-                ?.map((s: any) => Subscription.fromObject(s))
-                .filter((s): s is Subscription => s !== null),
+        const user = new User();
+        user.id = object.id;
+        user.fullName = object.fullName;
+        user.email = object.email;
+        user.passwordHash = object.passwordHash;
+        user.status = object.status;
+        user.roles = object.roles;
+        user.createdAt = object.createdAt;
+        user.updateAt = object.updateAt;
+        user.phoneNumber = object.phoneNumber;
+        user.subscriptions = object.subscriptions
+            ?.map((s: any) => Subscription.fromObject(s))
+            .filter((s: any) => s !== null) || [];
+        user.vehicles = object.vehicles
+            ?.map((v: any) => Vehicle.fromObject(v))
+            .filter((v: any) => v !== null) || [];
+        user.paymentMethods = object.paymentMethods
+            ?.map((p: any) => PaymentMethod.fromObject(p))
+            .filter((p: any) => p !== null) || [];
+        user.parkingLots = object.parkingLots
+            ?.map((p: any) => ParkingLot.fromObject(p))
+            .filter((p: any) => p !== null) || [];
 
-            object.vehicles
-                ?.map((v: any) => Vehicle.fromObject(v))
-                .filter((v): v is Vehicle => v !== null),
-
-            object.paymentMethods
-                ?.map((p: any) => PaymentMethod.fromObject(p))
-                .filter((p): p is PaymentMethod => p !== null),
-
-            object.parkingLots
-                ?.map((p: any) => ParkingLot.fromObject(p))
-                .filter((p): p is ParkingLot => p !== null),
-        );
+        return user;
     }
 }

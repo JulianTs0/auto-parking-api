@@ -1,18 +1,20 @@
 export class ParkingSpotType {
-    public constructor(
-        public id: string,
-        public name: string,
-        public description: string,
-    ) {}
+    public id: string;
+    public name: string;
+    public description: string;
+
+    constructor(init?: Partial<ParkingSpotType>) {
+        Object.assign(this, init);
+    }
 
     static fromObject(object: {
         [key: string]: any;
     }): ParkingSpotType | null {
         if (!object) return null;
-        return new ParkingSpotType(
-            object.id,
-            object.name,
-            object.description,
-        );
+        const parkingSpotType = new ParkingSpotType();
+        parkingSpotType.id = object.id;
+        parkingSpotType.name = object.name;
+        parkingSpotType.description = object.description;
+        return parkingSpotType;
     }
 }
