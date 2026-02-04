@@ -5,21 +5,20 @@ export class UserEntityMapper {
     public static toDomain(userModel: UserModel | null): User | null {
         if (userModel == null) return null;
 
-        const entity: User = new User(
-            userModel.id,
-            userModel.fullName,
-            userModel.email,
-            userModel.phoneNumber,
-            userModel.passwordHash,
-            userModel.status,
-            new Set(userModel.roles),
-            userModel.createdAt,
-            userModel.updatedAt,
-            [],
-            [],
-            [],
-            [],
-        );
+        const entity: User = new User();
+        entity.id = userModel.id;
+        entity.fullName = userModel.fullName;
+        entity.email = userModel.email;
+        entity.passwordHash = userModel.passwordHash;
+        entity.status = userModel.status;
+        entity.roles = new Set(userModel.roles);
+        entity.createdAt = userModel.createdAt;
+        entity.updateAt = userModel.updatedAt;
+        entity.phoneNumber = userModel.phoneNumber;
+        entity.subscriptions = [];
+        entity.vehicles = [];
+        entity.paymentMethods = [];
+        entity.parkingLots = [];
 
         return entity;
     }
@@ -32,7 +31,7 @@ export class UserEntityMapper {
         model.id = user.id;
         model.fullName = user.fullName;
         model.email = user.email;
-        model.phoneNumber = user.phoneNumber;
+        model.phoneNumber = user.phoneNumber ?? null;
         model.passwordHash = user.passwordHash;
         model.status = user.status;
         model.roles = [...user.roles];

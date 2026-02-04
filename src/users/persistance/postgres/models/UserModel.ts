@@ -18,7 +18,7 @@ export class UserModel {
     public email: string;
 
     @Column({ name: 'phone_number', length: 50 })
-    public phoneNumber: string;
+    public phoneNumber: string | null;
 
     @Column({ name: 'password_hash', nullable: false, length: 255 })
     public passwordHash: string;
