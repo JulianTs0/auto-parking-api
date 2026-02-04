@@ -14,6 +14,11 @@ export const Errors = {
         status: 400,
         message: 'Invalid fields',
     },
+    EMAIL_ALREADY_EXISTS: {
+        key: 'EMAIL_ALREADY_EXISTS',
+        status: 400,
+        message: 'Email already exists',
+    },
 } as const;
 
 export type ErrorType = (typeof Errors)[keyof typeof Errors];
