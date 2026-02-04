@@ -10,10 +10,15 @@ import {
 export class UserRepository implements UserRepositoryI {
     constructor(
         private readonly repository: PostgresUserRepository,
-    ) {}
+    ) { }
 
     public async findById(id: string): Promise<User | null> {
         const model = await this.repository.findById(id);
+        return UserEntityMapper.toDomain(model);
+    }
+
+    public async findByEmail(email: string): Promise<User | null> {
+        const model = await this.repository.findByEmail(email);
         return UserEntityMapper.toDomain(model);
     }
 
