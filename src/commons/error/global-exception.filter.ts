@@ -5,9 +5,9 @@ import {
     HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ServiceError } from './ServiceError';
-import { Errors } from './ErrorType';
-import { ErrorResponse } from './ErrorResponse';
+import { ServiceError } from './service.error';
+import { Errors } from './error-type.constants';
+import { ErrorResponse } from './error-response.dto';
 
 @Catch()
 export class GlobalExceptionHandler implements ExceptionFilter {

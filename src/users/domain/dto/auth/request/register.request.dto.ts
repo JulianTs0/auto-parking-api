@@ -4,7 +4,7 @@ import {
     IsString,
     Matches,
 } from 'class-validator';
-import { RegexValidators } from 'src/users/domain/validator/RegexValidators';
+import { RegexValidators } from 'src/users/domain/validator/regex.validator';
 
 export class RegisterReq {
     @IsNotEmpty()

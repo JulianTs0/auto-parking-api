@@ -1,3 +1,3 @@
-export * from './postgres/repository/PostgresUserRepository';
-export * from './postgres/mapper/UserEntityMapper';
-export * from './postgres/models/UserModel';
+export * from './postgres/repository/postgres-user.repository';
+export * from './postgres/mapper/user-entity.mapper';
+export * from './postgres/models/user.model';

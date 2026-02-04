@@ -1,5 +1,5 @@
-import { SpotStatus } from '../const/SpotStatus';
-import { ParkingSpotType } from './ParkingSpotType';
+import { SpotStatus } from '../const/spot-status.enum';
+import { ParkingSpotType } from './parking-spot-type.entity';
 
 export class ParkingSpot {
     public id: string;

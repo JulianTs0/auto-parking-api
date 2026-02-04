@@ -1,4 +1,4 @@
-import { Token } from 'src/commons/dto/Token';
+import { Token } from 'src/commons/dto/token.dto';
 
 export class LoginRes {
     public token: Token;

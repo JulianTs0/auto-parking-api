@@ -1,4 +1,4 @@
-import { LogStatus } from '../const/LogStatus';
+import { LogStatus } from '../const/log-status.enum';
 
 export class StatusLog {
     public id: string;

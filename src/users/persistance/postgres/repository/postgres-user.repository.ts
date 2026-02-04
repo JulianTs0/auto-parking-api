@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserModel } from '../models/UserModel';
+import { UserModel } from '../models/user.model';
 import { Not, Repository } from 'typeorm';
 import { User, UserStatus } from 'src/commons';
-import { UserEntityMapper } from '../mapper/UserEntityMapper';
+import { UserEntityMapper } from '../mapper/user-entity.mapper';
 
 @Injectable()
 export class PostgresUserRepository {
     constructor(
         @InjectRepository(UserModel)
         private readonly typeRepository: Repository<UserModel>,
-    ) { }
+    ) {}
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({

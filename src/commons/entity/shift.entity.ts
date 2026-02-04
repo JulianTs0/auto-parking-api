@@ -1,5 +1,5 @@
-import { ShiftStatus } from '../const/ShiftStatus';
-import { User } from './User';
+import { ShiftStatus } from '../const/shift-status.enum';
+import { User } from './user.entity';
 
 export class Shift {
     public id: string;

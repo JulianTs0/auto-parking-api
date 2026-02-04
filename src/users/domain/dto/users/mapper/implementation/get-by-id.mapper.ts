@@ -1,10 +1,9 @@
 import { User } from 'src/commons';
-import { GetByIdRes } from '../../response/GetByIdRes';
-import { EditRes } from '../../response/EditRes';
+import { GetByIdRes } from '../../response/get-by-id.response.dto';
 
-export class EditMapper {
-    public toResponse(user: User): EditRes {
-        const response = new EditRes();
+export class GetByIdMapper {
+    public toResponse(user: User): GetByIdRes {
+        const response = new GetByIdRes();
         response.id = user.id;
         response.fullName = user.fullName;
         response.email = user.email;

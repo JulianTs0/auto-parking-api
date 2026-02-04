@@ -1,5 +1,5 @@
-import { ParkingSpotType } from './ParkingSpotType';
-import { VehicleType } from './VehicleType';
+import { ParkingSpotType } from './parking-spot-type.entity';
+import { VehicleType } from './vehicle-type.entity';
 
 export class PricingRule {
     public id: string;

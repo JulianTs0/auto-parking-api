@@ -1,4 +1,4 @@
-import { VehicleType } from './VehicleType';
+import { VehicleType } from './vehicle-type.entity';
 
 export class MembershipPlan {
     public id: string;

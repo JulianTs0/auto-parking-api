@@ -1,6 +1,6 @@
-import { PaymentType } from '../const/PaymentType';
-import { Shift } from './Shift';
-import { PaymentMethod } from './PaymentMethod';
+import { PaymentType } from '../const/payment-type.enum';
+import { Shift } from './shift.entity';
+import { PaymentMethod } from './payment-method.entity';
 
 export class Payment {
     public id: string;

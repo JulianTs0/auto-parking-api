@@ -1,9 +1,9 @@
-import { Role } from '../const/Role';
-import { UserStatus } from '../const/UserStatus';
-import { Subscription } from './Subscription';
-import { Vehicle } from './Vehicle';
-import { PaymentMethod } from './PaymentMethod';
-import { ParkingLot } from './ParkingLot';
+import { Role } from '../const/role.enum';
+import { UserStatus } from '../const/user-status.enum';
+import { Subscription } from './subscription.entity';
+import { Vehicle } from './vehicle.entity';
+import { PaymentMethod } from './payment-method.entity';
+import { ParkingLot } from './parking-lot.entity';
 
 export class User {
     public id: string;

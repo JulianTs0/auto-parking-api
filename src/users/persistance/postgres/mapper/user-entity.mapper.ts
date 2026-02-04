@@ -1,5 +1,5 @@
 import { User } from 'src/commons';
-import { UserModel } from '../models/UserModel';
+import { UserModel } from '../models/user.model';
 
 export class UserEntityMapper {
     public static toDomain(userModel: UserModel | null): User | null {

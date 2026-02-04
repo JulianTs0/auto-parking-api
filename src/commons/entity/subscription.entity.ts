@@ -1,5 +1,5 @@
-import { SubscriptionStatus } from '../const/SubscriptionStatus';
-import { MembershipPlan } from './MembershipPlan';
+import { SubscriptionStatus } from '../const/subscription-status.enum';
+import { MembershipPlan } from './membership-plan.entity';
 
 export class Subscription {
     public id: string;

@@ -1,4 +1,4 @@
-import { ErrorType } from './ErrorType';
+import { ErrorType } from './error-type.constants';
 
 export class ErrorResponse {
     constructor(

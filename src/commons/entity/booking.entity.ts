@@ -1,9 +1,9 @@
-import { LogStatus } from '../const/LogStatus';
-import { Vehicle } from './Vehicle';
-import { ParkingSpot } from './ParkingSpot';
-import { Subscription } from './Subscription';
-import { StatusLog } from './StatusLog';
-import { Payment } from './Payment';
+import { LogStatus } from '../const/log-status.enum';
+import { Vehicle } from './vehicle.entity';
+import { ParkingSpot } from './parking-spot.entity';
+import { Subscription } from './subscription.entity';
+import { StatusLog } from './status-log.entity';
+import { Payment } from './payment.entity';
 
 export class Booking {
     public id: string;

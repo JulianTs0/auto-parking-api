@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
-import { ErrorType } from './ErrorType';
-import { ErrorResponse } from './ErrorResponse';
+import { ErrorType } from './error-type.constants';
+import { ErrorResponse } from './error-response.dto';
 
 export class ServiceError extends HttpException {
     constructor(error: ErrorType) {

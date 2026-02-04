@@ -1,6 +1,6 @@
-import { ParkingSpot } from './ParkingSpot';
-import { Shift } from './Shift';
-import { PricingRule } from './PricingRule';
+import { ParkingSpot } from './parking-spot.entity';
+import { Shift } from './shift.entity';
+import { PricingRule } from './pricing-rule.entity';
 
 export class ParkingLot {
     public id: string;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PasswordEncoderI } from '../providers/PasswordEncoderI';
-import { TokenHandlerI } from '../providers/TokenHandlerI';
+import { PasswordEncoderI } from '../providers/password-encoder.interface';
+import { TokenHandlerI } from '../providers/token-handler.interface';
 import { User } from 'src/commons';
 
 @Injectable()

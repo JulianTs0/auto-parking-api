@@ -1,5 +1,5 @@
-import { Token } from 'src/commons/dto/Token';
-import { LoginRes } from '../../response/LoginRes';
+import { Token } from 'src/commons/dto/token.dto';
+import { LoginRes } from '../../response/login.response.dto';
 
 export class LoginMapper {
     public toResponse(token: string): LoginRes {

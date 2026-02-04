@@ -1,5 +1,5 @@
-import { EditMapper } from './implementation/EditMapper';
-import { GetByIdMapper } from './implementation/GetByIdMapper';
+import { EditMapper } from './implementation/edit.mapper';
+import { GetByIdMapper } from './implementation/get-by-id.mapper';
 
 export class UserMapper {
     public static getById(): GetByIdMapper {

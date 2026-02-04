@@ -1,5 +1,5 @@
 import { User } from 'src/commons';
-import { AuthRes } from '../../response/AuthRes';
+import { AuthRes } from '../../response/auth.response.dto';
 
 export class AuthUserMapper {
     public toResponse(user: User): AuthRes {

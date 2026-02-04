@@ -1,4 +1,4 @@
-import { LoginMapper } from './implementation/LoginMapper';
+import { LoginMapper } from './implementation/login.mapper';
 
 export class AuthMapper {
     public static auth(): AuthMapper {
