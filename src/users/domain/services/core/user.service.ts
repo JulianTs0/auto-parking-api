@@ -4,14 +4,14 @@ import {
     EditRes,
     GetByIdReq,
     GetByIdRes,
+    UserRepositoryI,
 } from 'src/users/domain';
 import { UserServiceI } from './user-service.interface';
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/users/data';
 
 @Injectable()
 export class UserService implements UserServiceI {
-    constructor(private readonly userRepository: UserRepository) { }
+    constructor(private readonly userRepository: UserRepositoryI) { }
 
     public async getById(request: GetByIdReq): Promise<GetByIdRes> {
         return Promise.resolve({} as GetByIdRes);

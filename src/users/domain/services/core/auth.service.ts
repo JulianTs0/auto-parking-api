@@ -1,7 +1,11 @@
-import { AuthReq, AuthRes, RegisterReq } from 'src/users/domain';
+import {
+    AuthReq,
+    AuthRes,
+    RegisterReq,
+    UserRepositoryI,
+} from 'src/users/domain';
 import { AuthServiceI } from './auth-service.interface';
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/users/data';
 import {
     Errors,
     IdGenerator,
@@ -15,9 +19,9 @@ import { AuthHelper } from 'src/users/config';
 @Injectable()
 export class AuthService implements AuthServiceI {
     constructor(
-        private readonly userRepository: UserRepository,
+        private readonly userRepository: UserRepositoryI,
         private readonly authHelper: AuthHelper,
-    ) {}
+    ) { }
 
     public async auth(request: AuthReq): Promise<AuthRes> {
         return Promise.resolve({} as AuthRes);
@@ -60,11 +64,11 @@ export class AuthService implements AuthServiceI {
         return Promise.resolve();
     }
 
-    public async resendVerifyEmail(): Promise<void> {}
+    public async resendVerifyEmail(): Promise<void> { }
 
-    public async verifyEmail(): Promise<void> {}
+    public async verifyEmail(): Promise<void> { }
 
-    public async recoverPassword(): Promise<void> {}
+    public async recoverPassword(): Promise<void> { }
 
-    public async changePassword(): Promise<void> {}
+    public async changePassword(): Promise<void> { }
 }

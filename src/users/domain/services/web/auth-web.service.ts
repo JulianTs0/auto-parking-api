@@ -1,14 +1,18 @@
-import { AuthReq, AuthRes, RegisterReq } from 'src/users/domain';
+import {
+    AuthReq,
+    AuthRes,
+    RegisterReq,
+    UserRepositoryI,
+} from 'src/users/domain';
 import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../core/auth.service';
-import { UserRepository } from 'src/users/data';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
     constructor(
         private readonly authCoreService: AuthService,
-        private readonly userRepository: UserRepository,
+        private readonly userRepository: UserRepositoryI,
     ) { }
 
     public async auth(request: AuthReq): Promise<AuthRes> {
