@@ -1,6 +1,9 @@
 // Config
 export * from './config/id-generator.util';
 
+// DTOs
+export * from './dto/token.dto';
+
 // Constants
 export * from './const/log-status.enum';
 export * from './const/payment-type.enum';
