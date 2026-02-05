@@ -6,11 +6,11 @@ import { User, UserStatus } from 'src/commons';
 import { UserEntityMapper } from '../mapper/user-entity.mapper';
 
 @Injectable()
-export class PostgresUserRepository {
+export class PostgresUserDao {
     constructor(
         @InjectRepository(UserModel)
         private readonly typeRepository: Repository<UserModel>,
-    ) {}
+    ) { }
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({
