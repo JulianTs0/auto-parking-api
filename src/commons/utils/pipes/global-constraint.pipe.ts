@@ -8,6 +8,7 @@ export class GlobalConstraintHandler extends ValidationPipe {
         super({
             whitelist: true,
             transform: true,
+            validateCustomDecorators: true,
             exceptionFactory: (errors: ValidationError[]) => {
                 const allConstraints = errors
                     .map((error) => error.constraints)
