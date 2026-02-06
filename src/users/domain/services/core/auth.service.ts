@@ -1,6 +1,9 @@
 import {
+    AuthMapper,
     AuthReq,
     AuthRes,
+    LoginReq,
+    LoginRes,
     RegisterReq,
     UserRepositoryI,
 } from 'src/users/domain';
@@ -9,8 +12,8 @@ import { Injectable } from '@nestjs/common';
 import {
     Errors,
     IdGenerator,
-    Role,
     ServiceError,
+    Token,
     User,
     UserStatus,
 } from 'src/commons';
@@ -19,23 +22,72 @@ import { AuthHelper } from 'src/users/config';
 @Injectable()
 export class AuthService implements AuthServiceI {
     constructor(
-        private readonly userRepository: UserRepositoryI,
         private readonly authHelper: AuthHelper,
-    ) { }
+        private readonly userRepository: UserRepositoryI,
+    ) {}
 
     public async auth(request: AuthReq): Promise<AuthRes> {
-        return Promise.resolve({} as AuthRes);
-    }
-
-    public async register(request: RegisterReq): Promise<void> {
-        const emailCheck = this.userRepository.findByEmail(
-            request.email,
+        const validation: boolean = await this.authHelper.verifyToken(
+            request.token,
         );
 
-        if (emailCheck != null) {
-            throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
+        if (!validation) {
+            throw new ServiceError(Errors.UNAUTHORIZED);
         }
 
+        const id: string = await this.authHelper.getSubject(
+            request.token,
+        );
+        const user: User | null =
+            await this.userRepository.findById(id);
+
+        if (user == null) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        if (user.isDeleted()) {
+            throw new ServiceError(Errors.USER_DELETED);
+        }
+
+        if (user.isInactive()) {
+            throw new ServiceError(Errors.USER_NOT_ACTIVATED);
+        }
+
+        return Promise.resolve(AuthMapper.auth().toResponse(user));
+    }
+
+    public async login(request: LoginReq): Promise<LoginRes> {
+        const user: User | null =
+            await this.userRepository.findByEmail(request.email);
+
+        if (user == null) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        if (user.isDeleted()) {
+            throw new ServiceError(Errors.USER_DELETED);
+        }
+
+        if (user.isInactive()) {
+            throw new ServiceError(Errors.USER_NOT_ACTIVATED);
+        }
+
+        if (
+            !this.authHelper.validatePassword(user, request.password)
+        ) {
+            throw new ServiceError(Errors.INVALID_PASSWORD);
+        }
+
+        user.updateAt = new Date();
+        const logged: User = await this.userRepository.update(user);
+
+        const token: Token =
+            await this.authHelper.createToken(logged);
+
+        return Promise.resolve(AuthMapper.login().toResponse(token));
+    }
+
+    public async register(request: RegisterReq): Promise<User> {
         const generatedId: string = IdGenerator.generateUUID();
         const paswordHash: string =
             await this.authHelper.hashPassword(request.password);
@@ -46,29 +98,21 @@ export class AuthService implements AuthServiceI {
         user.email = request.email;
         user.passwordHash = paswordHash;
         user.status = UserStatus.INACTIVE;
-        user.roles = new Set(Role.CLIENT);
+        user.roles = new Set();
         user.phoneNumber = request.phoneNumber ?? null;
         user.subscriptions = [];
         user.vehicles = [];
         user.paymentMethods = [];
         user.parkingLots = [];
 
-        /*
-           - Revisar el concepto de los roles, quizas hay que o crear un rol usuario, 
-             dividir el sistema de registro en 2 dependiendo del cliente, quizas con mandar
-             una vairable del especifico al core funciona
-        */
-
-        await this.userRepository.save(user);
-
-        return Promise.resolve();
+        return user;
     }
 
-    public async resendVerifyEmail(): Promise<void> { }
+    public async resendVerifyEmail(): Promise<void> {}
 
-    public async verifyEmail(): Promise<void> { }
+    public async verifyEmail(): Promise<void> {}
 
-    public async recoverPassword(): Promise<void> { }
+    public async recoverPassword(): Promise<void> {}
 
-    public async changePassword(): Promise<void> { }
+    public async changePassword(): Promise<void> {}
 }

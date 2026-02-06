@@ -1,7 +1,6 @@
-import { AuthReq, AuthRes, RegisterReq } from 'src/users/domain';
+import { RegisterReq } from 'src/users/domain';
 
 export abstract class AuthWebServiceI {
-    abstract auth(request: AuthReq): Promise<AuthRes>;
     abstract register(request: RegisterReq): Promise<void>;
     abstract resendVerifyEmail(): Promise<void>;
     abstract verifyEmail(): Promise<void>;
