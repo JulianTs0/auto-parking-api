@@ -49,19 +49,34 @@ export class User {
         user.createdAt = object.createdAt;
         user.updateAt = object.updateAt;
         user.phoneNumber = object.phoneNumber;
-        user.subscriptions = object.subscriptions
-            ?.map((s: any) => Subscription.fromObject(s))
-            .filter((s: any) => s !== null) || [];
-        user.vehicles = object.vehicles
-            ?.map((v: any) => Vehicle.fromObject(v))
-            .filter((v: any) => v !== null) || [];
-        user.paymentMethods = object.paymentMethods
-            ?.map((p: any) => PaymentMethod.fromObject(p))
-            .filter((p: any) => p !== null) || [];
-        user.parkingLots = object.parkingLots
-            ?.map((p: any) => ParkingLot.fromObject(p))
-            .filter((p: any) => p !== null) || [];
+        user.subscriptions =
+            object.subscriptions
+                ?.map((s: any) => Subscription.fromObject(s))
+                .filter((s: any) => s !== null) || [];
+        user.vehicles =
+            object.vehicles
+                ?.map((v: any) => Vehicle.fromObject(v))
+                .filter((v: any) => v !== null) || [];
+        user.paymentMethods =
+            object.paymentMethods
+                ?.map((p: any) => PaymentMethod.fromObject(p))
+                .filter((p: any) => p !== null) || [];
+        user.parkingLots =
+            object.parkingLots
+                ?.map((p: any) => ParkingLot.fromObject(p))
+                .filter((p: any) => p !== null) || [];
 
         return user;
+    }
+
+    public isDeleted(): boolean {
+        return (
+            this.status == UserStatus.DELETED ||
+            this.status == UserStatus.BANNED
+        );
+    }
+
+    public isInactive(): boolean {
+        return this.status == UserStatus.INACTIVE;
     }
 }
