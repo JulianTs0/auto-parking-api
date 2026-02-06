@@ -6,13 +6,15 @@ services:
         ports:
             - '9000:3000'
         environment:
-            - DB_HOST=postgres_db
+            - DB_HOST=postgres-db
             - DB_PORT=5432
             - DB_USERNAME=develop
             - DB_PASSWORD=develop
             - DB_DATABASE=autoparking
+            - JWT_SECRET=${JWT_SECRET}
+            - JWT_EXPIRATION=${JWT_EXPIRATION}
         depends_on:
-            - postgres_db
+            - postgres-db
 
     postgres-db:
         image: postgres:15-alpine
