@@ -1,5 +1,6 @@
 import { Role, UserStatus } from 'src/commons';
 import {
+    Check,
     Column,
     CreateDateColumn,
     Entity,
@@ -7,6 +8,8 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'users' })
+@Check(`"status" IN (${UserStatus.getValuesAsString()})`)
+@Check(`"roles" <@ ARRAY[${Role.getValuesAsString()}]::varchar[]`)
 export class UserModel {
     @PrimaryColumn('uuid')
     public id: string;
@@ -17,7 +20,12 @@ export class UserModel {
     @Column({ name: 'email', unique: true, length: 100 })
     public email: string;
 
-    @Column({ name: 'phone_number', length: 50 })
+    @Column({
+        name: 'phone_number',
+        type: 'varchar',
+        length: 50,
+        nullable: true,
+    })
     public phoneNumber: string | null;
 
     @Column({ name: 'password_hash', nullable: false, length: 255 })
@@ -25,8 +33,7 @@ export class UserModel {
 
     @Column({
         name: 'status',
-        type: 'enum',
-        enum: UserStatus,
+        type: 'varchar',
         default: UserStatus.INACTIVE,
         nullable: false,
     })
@@ -34,8 +41,7 @@ export class UserModel {
 
     @Column({
         name: 'roles',
-        type: 'enum',
-        enum: Role,
+        type: 'varchar',
         array: true,
         default: [Role.CLIENT],
         nullable: false,
