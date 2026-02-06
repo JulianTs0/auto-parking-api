@@ -2,12 +2,9 @@ import { Token } from 'src/commons/dto/token.dto';
 import { LoginRes } from '../../response/login.response.dto';
 
 export class LoginMapper {
-    public toResponse(token: string): LoginRes {
-        const dto = new Token();
-        dto.accessToken = token;
-
+    public toResponse(token: Token): LoginRes {
         const response = new LoginRes();
-        response.token = dto;
+        response.token = token;
 
         return response;
     }
