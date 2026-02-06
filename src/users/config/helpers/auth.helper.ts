@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordEncoderI } from '../providers/password-encoder.interface';
 import { TokenHandlerI } from '../providers/token-handler.interface';
-import { User } from 'src/commons';
+import { Token, User } from 'src/commons';
 
 @Injectable()
 export class AuthHelper {
@@ -46,6 +46,16 @@ export class AuthHelper {
         } else {
             return null;
         }
+    }
+
+    public async createToken(user: User): Promise<Token> {
+        const token: Token = new Token();
+        token.accessToken = await this.tokenHandler.createToken(user);
+        return token;
+    }
+
+    public async verifyToken(token: string): Promise<boolean> {
+        return await this.tokenHandler.verifyToken(token);
     }
 
     public async getSubject(token: string): Promise<string> {
