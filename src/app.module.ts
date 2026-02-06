@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AppConfigModule } from './config/config.module';
+import { UsersModule } from './users/users.module';
 import {
     GlobalExceptionHandler,
     GlobalConstraintHandler,
@@ -9,10 +8,9 @@ import {
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 
 @Module({
-    imports: [AppConfigModule],
-    controllers: [AppController],
+    imports: [AppConfigModule, UsersModule],
+    controllers: [],
     providers: [
-        AppService,
         {
             provide: APP_FILTER,
             useClass: GlobalExceptionHandler,
