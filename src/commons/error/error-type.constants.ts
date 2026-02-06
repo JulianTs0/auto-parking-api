@@ -4,6 +4,31 @@ export const Errors = {
         status: 500,
         message: 'Internal error',
     },
+    USER_NOT_ACTIVATED: {
+        key: 'USER_NOT_ACTIVATED',
+        status: 404,
+        message: 'User not activated',
+    },
+    USER_NOT_FOUND: {
+        key: 'USER_NOT_FOUND',
+        status: 404,
+        message: 'User not found',
+    },
+    USER_DELETED: {
+        key: 'USER_DELETED',
+        status: 404,
+        message: 'User has been deleted',
+    },
+    UNAUTHORIZED: {
+        key: 'UNAUTHORIZED',
+        status: 401,
+        message: 'Unauthorized',
+    },
+    INVALID_PASSWORD: {
+        key: 'INVALID_PASSWORD',
+        status: 400,
+        message: 'Invalid password',
+    },
     MISSING_REQUIRED_FIELDS: {
         key: 'MISSING_REQUIRED_FIELDS',
         status: 400,
