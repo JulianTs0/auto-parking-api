@@ -1,6 +1,15 @@
-export class LogStatus {
-    public static readonly RESERVED = 'Reserved';
-    public static readonly ACTIVE = 'Active';
-    public static readonly COMPLETED = 'Completed';
-    public static readonly CANCELLED = 'Cancelled';
+export enum LogStatus {
+    RESERVED = 'Reserved',
+    ACTIVE = 'Active',
+    COMPLETED = 'Completed',
+    CANCELLED = 'Cancelled',
+}
+
+export namespace LogStatus {
+    export function getValuesAsString(): string {
+        return Object.values(LogStatus)
+            .filter((v) => typeof v === 'string')
+            .map((v) => `'${v}'`)
+            .join(', ');
+    }
 }

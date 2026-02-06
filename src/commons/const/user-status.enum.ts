@@ -1,6 +1,15 @@
-export class UserStatus {
-    public static readonly INACTIVE = 'Inactive';
-    public static readonly ACTIVE = 'Active';
-    public static readonly BANNED = 'Banned';
-    public static readonly DELETED = 'Deleted';
+export enum UserStatus {
+    INACTIVE = 'Inactive',
+    ACTIVE = 'Active',
+    BANNED = 'Banned',
+    DELETED = 'Deleted',
+}
+
+export namespace UserStatus {
+    export function getValuesAsString(): string {
+        return Object.values(UserStatus)
+            .filter((v) => typeof v === 'string')
+            .map((v) => `'${v}'`)
+            .join(', ');
+    }
 }

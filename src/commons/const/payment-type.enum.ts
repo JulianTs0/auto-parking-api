@@ -1,4 +1,13 @@
-export class PaymentType {
-    public static readonly CASH = 'Cash';
-    public static readonly ELECTRONIC = 'Electronic';
+export enum PaymentType {
+    CASH = 'Cash',
+    ELECTRONIC = 'Electronic',
+}
+
+export namespace PaymentType {
+    export function getValuesAsString(): string {
+        return Object.values(PaymentType)
+            .filter((v) => typeof v === 'string')
+            .map((v) => `'${v}'`)
+            .join(', ');
+    }
 }

@@ -1,6 +1,15 @@
-export class Role {
-    public static readonly ADMIN = 'Admin';
-    public static readonly OWNER = 'Owner';
-    public static readonly EMPLOYEE = 'Employee';
-    public static readonly CLIENT = 'Client';
+export enum Role {
+    ADMIN = 'Admin',
+    OWNER = 'Owner',
+    EMPLOYEE = 'Employee',
+    CLIENT = 'Client',
+}
+
+export namespace Role {
+    export function getValuesAsString(): string {
+        return Object.values(Role)
+            .filter((v) => typeof v === 'string')
+            .map((v) => `'${v}'`)
+            .join(', ');
+    }
 }

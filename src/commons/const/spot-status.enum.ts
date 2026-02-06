@@ -1,6 +1,15 @@
-export class SpotStatus {
-    public static readonly UNREGISTERED = 'Unregistered';
-    public static readonly AVAILABLE = 'Available';
-    public static readonly OCCUPIED = 'Occupied';
-    public static readonly MAINTENANCE = 'Maintenance';
+export enum SpotStatus {
+    UNREGISTERED = 'Unregistered',
+    AVAILABLE = 'Available',
+    OCCUPIED = 'Occupied',
+    MAINTENANCE = 'Maintenance',
+}
+
+export namespace SpotStatus {
+    export function getValuesAsString(): string {
+        return Object.values(SpotStatus)
+            .filter((v) => typeof v === 'string')
+            .map((v) => `'${v}'`)
+            .join(', ');
+    }
 }
