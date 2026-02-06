@@ -18,6 +18,11 @@ export class UserRepository implements UserRepositoryI {
         return UserEntityMapper.toDomain(model);
     }
 
+    public async existsByEmail(email: string): Promise<boolean> {
+        const response = await this.dao.existsByEmail(email);
+        return response;
+    }
+
     public async findAll(): Promise<User[]> {
         const models = await this.dao.findAll();
         return UserEntityMapper.toDomainList(models);

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from '../models/user.model';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { User, UserStatus } from 'src/commons';
 import { UserEntityMapper } from '../mapper/user-entity.mapper';
 
@@ -10,14 +10,11 @@ export class PostgresUserDao {
     constructor(
         @InjectRepository(UserModel)
         private readonly typeRepository: Repository<UserModel>,
-    ) { }
+    ) {}
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({
-            where: {
-                id: id,
-                status: UserStatus.ACTIVE,
-            },
+            where: { id: id },
         });
         return model;
     }
@@ -26,9 +23,17 @@ export class PostgresUserDao {
         email: string,
     ): Promise<UserModel | null> {
         return await this.typeRepository.findOne({
+            where: { email: email },
+        });
+    }
+
+    public async existsByEmail(email: string): Promise<boolean> {
+        return await this.typeRepository.exists({
             where: {
                 email: email,
-                status: Not([UserStatus.DELETED, UserStatus.BANNED]),
+                status: Not(
+                    In([UserStatus.DELETED, UserStatus.BANNED]),
+                ),
             },
         });
     }
