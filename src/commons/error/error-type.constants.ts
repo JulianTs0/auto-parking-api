@@ -19,6 +19,11 @@ export const Errors = {
         status: 404,
         message: 'User has been deleted',
     },
+    FORBIDDEN: {
+        key: 'FORBIDDEN',
+        status: 403,
+        message: 'Forbidden',
+    },
     UNAUTHORIZED: {
         key: 'UNAUTHORIZED',
         status: 401,
