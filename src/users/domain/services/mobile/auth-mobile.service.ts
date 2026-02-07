@@ -9,13 +9,13 @@ export class AuthMobileService implements AuthMobileServiceI {
     constructor(
         private readonly authCoreService: AuthService,
         private readonly userRepository: UserRepositoryI,
-    ) {}
+    ) { }
 
     public async register(request: RegisterReq): Promise<void> {
         const emailCheck: boolean =
             await this.userRepository.existsByEmail(request.email);
 
-        if (!emailCheck) {
+        if (emailCheck) {
             throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
         }
 
@@ -29,11 +29,11 @@ export class AuthMobileService implements AuthMobileServiceI {
         return Promise.resolve();
     }
 
-    public async resendVerifyEmail(): Promise<void> {}
+    public async resendVerifyEmail(): Promise<void> { }
 
-    public async verifyEmail(): Promise<void> {}
+    public async verifyEmail(): Promise<void> { }
 
-    public async recoverPassword(): Promise<void> {}
+    public async recoverPassword(): Promise<void> { }
 
-    public async changePassword(): Promise<void> {}
+    public async changePassword(): Promise<void> { }
 }
