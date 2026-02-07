@@ -1,1 +1,1 @@
-export abstract class UserWebServiceI {}
+export abstract class UserWebServiceI { }

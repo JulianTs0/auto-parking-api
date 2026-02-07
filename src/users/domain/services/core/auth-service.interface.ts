@@ -9,6 +9,7 @@ import {
 
 export abstract class AuthServiceI {
     abstract auth(request: AuthReq): Promise<AuthRes>;
+    abstract validateToken(rawToken: string): Promise<User>;
     abstract login(request: LoginReq): Promise<LoginRes>;
     abstract register(request: RegisterReq): Promise<User>;
     abstract resendVerifyEmail(): Promise<void>;

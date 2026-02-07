@@ -26,32 +26,33 @@ export class AuthService implements AuthServiceI {
         private readonly userRepository: UserRepositoryI,
     ) { }
 
-    public async auth(request: AuthReq): Promise<AuthRes> {
-        const token: string | null = await this.authHelper.parseToken(
-            request.authorization,
-        );
+    public async validateToken(rawToken: string): Promise<User> {
+        const token: string | null =
+            await this.authHelper.parseToken(rawToken);
 
-        if (token == null) {
+        if (token == null)
             throw new ServiceError(Errors.UNAUTHORIZED);
-        }
 
         const id: string = await this.authHelper.getSubject(token);
         const user: User | null =
             await this.userRepository.findById(id);
 
-        if (user == null) {
+        if (user == null)
             throw new ServiceError(Errors.USER_NOT_FOUND);
-        }
-
-        if (user.isDeleted()) {
+        if (user.isDeleted())
             throw new ServiceError(Errors.USER_DELETED);
-        }
-
-        if (user.isInactive()) {
+        if (user.isInactive())
             throw new ServiceError(Errors.USER_NOT_ACTIVATED);
-        }
 
-        return Promise.resolve(AuthMapper.auth().toResponse(user));
+        return user;
+    }
+
+    public async auth(request: AuthReq): Promise<AuthRes> {
+        const user: User = await this.validateToken(
+            request.authorization,
+        );
+
+        return AuthMapper.auth().toResponse(user);
     }
 
     public async login(request: LoginReq): Promise<LoginRes> {

@@ -1,1 +1,1 @@
-export abstract class UserMobileServiceI {}
+export abstract class UserMobileServiceI { }
