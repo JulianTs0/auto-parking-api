@@ -23,7 +23,7 @@ export class AuthWebController {
     constructor(
         private readonly authWebService: AuthWebServiceI,
         private readonly authCoreService: AuthServiceI,
-    ) {}
+    ) { }
 
     @Patch('/login')
     public async login(
@@ -32,7 +32,7 @@ export class AuthWebController {
         return await this.authCoreService.login(loginRequest);
     }
 
-    @Get('/auth')
+    @Get()
     public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
         return await this.authCoreService.auth(request);
     }

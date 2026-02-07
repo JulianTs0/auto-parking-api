@@ -23,7 +23,7 @@ export class AuthMobileController {
     constructor(
         private readonly authMobileService: AuthMobileServiceI,
         private readonly authCoreService: AuthServiceI,
-    ) {}
+    ) { }
 
     @Patch('/login')
     public async login(
@@ -32,7 +32,7 @@ export class AuthMobileController {
         return await this.authCoreService.login(loginRequest);
     }
 
-    @Get('/auth')
+    @Get()
     public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
         return await this.authCoreService.auth(request);
     }
