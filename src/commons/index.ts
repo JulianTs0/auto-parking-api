@@ -1,5 +1,6 @@
 // Config
 export * from './config/id-generator.util';
+export * from './config/manual-validator.util';
 
 // DTOs
 export * from './dto/token.dto';
