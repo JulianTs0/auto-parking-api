@@ -3,13 +3,16 @@ import { AuthRes } from '../../response/auth.response.dto';
 
 export class AuthUserMapper {
     public toResponse(user: User): AuthRes {
-        const response = new AuthRes();
-        response.id = user.id;
-        response.fullName = user.fullName;
-        response.email = user.email;
-        response.phoneNumber = user.phoneNumber;
-        response.status = user.status;
-        response.roles = [...user.roles];
+        const response = new AuthRes({
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            status: user.status,
+            roles: [...user.roles],
+            createdAt: user.createdAt,
+            updateAt: user.updateAt,
+        });
 
         return response;
     }

@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { RegexValidators } from 'src/users/domain/validator/regex.validator';
+import { RegexValidators } from 'src/users/domain';
 
 export class LoginReq {
     @IsNotEmpty()
