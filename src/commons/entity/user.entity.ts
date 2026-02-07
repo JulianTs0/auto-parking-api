@@ -79,4 +79,8 @@ export class User {
     public isInactive(): boolean {
         return this.status == UserStatus.INACTIVE;
     }
+
+    public isAdmin(): boolean {
+        return this.roles.has(Role.ADMIN);
+    }
 }
