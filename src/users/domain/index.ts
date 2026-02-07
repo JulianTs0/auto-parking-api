@@ -16,7 +16,7 @@ export * from './dto/users/request/get-by-id.request.dto';
 export * from './dto/users/response/edit.response.dto';
 export * from './dto/users/response/get-by-id.response.dto';
 export * from './dto/users/mapper/user.mapper';
-// export * from './dto/users/mapper/implementation/DeleteMapper';
+export * from './dto/users/mapper/implementation/delete.mapper';
 export * from './dto/users/mapper/implementation/edit.mapper';
 export * from './dto/users/mapper/implementation/get-by-id.mapper';
 
