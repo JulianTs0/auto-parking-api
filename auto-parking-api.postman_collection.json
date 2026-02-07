@@ -92,7 +92,113 @@
                         },
                         {
                             "name": "User Controller",
-                            "item": []
+                            "item": [
+                                {
+                                    "name": "Get Profile",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/web/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "web",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Edit Profile",
+                                    "request": {
+                                        "method": "PUT",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"fullName\": \"Updated Name\",\n    \"phoneNumber\": \"+1234567890\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{base_url}}/web/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "web",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Delete Account",
+                                    "request": {
+                                        "method": "DELETE",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"password\": \"Password123!\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{base_url}}/web/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "web",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
                         }
                     ]
                 }
@@ -186,7 +292,113 @@
                         },
                         {
                             "name": "User Controller",
-                            "item": []
+                            "item": [
+                                {
+                                    "name": "Get Profile",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{base_url}}/mobile/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "mobile",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Edit Profile",
+                                    "request": {
+                                        "method": "PUT",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"fullName\": \"Updated Name\",\n    \"phoneNumber\": \"+1234567890\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{base_url}}/mobile/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "mobile",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Delete Account",
+                                    "request": {
+                                        "method": "DELETE",
+                                        "header": [
+                                            {
+                                                "key": "authorization",
+                                                "value": "Bearer <token>",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"password\": \"Password123!\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{base_url}}/mobile/users/:id",
+                                            "host": ["{{base_url}}"],
+                                            "path": [
+                                                "mobile",
+                                                "users",
+                                                ":id"
+                                            ],
+                                            "variable": [
+                                                {
+                                                    "key": "id",
+                                                    "value": "user-uuid"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
                         }
                     ]
                 }
