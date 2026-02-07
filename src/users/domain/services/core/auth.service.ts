@@ -24,20 +24,18 @@ export class AuthService implements AuthServiceI {
     constructor(
         private readonly authHelper: AuthHelper,
         private readonly userRepository: UserRepositoryI,
-    ) {}
+    ) { }
 
     public async auth(request: AuthReq): Promise<AuthRes> {
-        const validation: boolean = await this.authHelper.verifyToken(
-            request.token,
+        const token: string | null = await this.authHelper.parseToken(
+            request.authorization,
         );
 
-        if (!validation) {
+        if (token == null) {
             throw new ServiceError(Errors.UNAUTHORIZED);
         }
 
-        const id: string = await this.authHelper.getSubject(
-            request.token,
-        );
+        const id: string = await this.authHelper.getSubject(token);
         const user: User | null =
             await this.userRepository.findById(id);
 
@@ -108,11 +106,11 @@ export class AuthService implements AuthServiceI {
         return user;
     }
 
-    public async resendVerifyEmail(): Promise<void> {}
+    public async resendVerifyEmail(): Promise<void> { }
 
-    public async verifyEmail(): Promise<void> {}
+    public async verifyEmail(): Promise<void> { }
 
-    public async recoverPassword(): Promise<void> {}
+    public async recoverPassword(): Promise<void> { }
 
-    public async changePassword(): Promise<void> {}
+    public async changePassword(): Promise<void> { }
 }
