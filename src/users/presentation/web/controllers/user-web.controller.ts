@@ -25,12 +25,12 @@ export class UserWebController {
     constructor(
         private readonly userCoreService: UserServiceI,
         private readonly userWebService: UserWebServiceI,
-    ) {}
+    ) { }
 
     @UseGuards(AuthGuard)
     @Get(':id')
     public async getById(
-        @Param('id') request: GetByIdReq,
+        @Param() request: GetByIdReq,
     ): Promise<GetByIdRes> {
         return await this.userCoreService.getById(request);
     }
