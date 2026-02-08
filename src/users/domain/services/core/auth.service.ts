@@ -17,7 +17,7 @@ import {
     User,
     UserStatus,
 } from 'src/commons';
-import { AuthHelper } from 'src/users/config';
+import { AuthHelper } from 'src/users/config/helpers/auth.helper';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
@@ -72,7 +72,10 @@ export class AuthService implements AuthServiceI {
         }
 
         if (
-            !this.authHelper.validatePassword(user, request.password)
+            !(await this.authHelper.validatePassword(
+                user,
+                request.password,
+            ))
         ) {
             throw new ServiceError(Errors.INVALID_PASSWORD);
         }
