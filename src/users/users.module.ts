@@ -64,24 +64,45 @@ import {
         PostgresUserDao,
 
         // Config Providers
-        { provide: PasswordEncoderI, useClass: BcryptEncoder },
-        { provide: TokenHandlerI, useClass: JWTHandler },
+        {
+            provide: PasswordEncoderI,
+            useClass: BcryptEncoder,
+        },
+        {
+            provide: TokenHandlerI,
+            useClass: JWTHandler,
+        },
 
         // Repository
         UserRepository,
-        { provide: UserRepositoryI, useExisting: UserRepository },
+        {
+            provide: UserRepositoryI,
+            useExisting: UserRepository,
+        },
 
         // Core Services
         AuthService,
-        { provide: AuthServiceI, useExisting: AuthService },
+        {
+            provide: AuthServiceI,
+            useExisting: AuthService,
+        },
         UserService,
-        { provide: UserServiceI, useExisting: UserService },
+        {
+            provide: UserServiceI,
+            useExisting: UserService,
+        },
 
         // Web Services
         AuthWebService,
-        { provide: AuthWebServiceI, useExisting: AuthWebService },
+        {
+            provide: AuthWebServiceI,
+            useExisting: AuthWebService,
+        },
         UserWebService,
-        { provide: UserWebServiceI, useExisting: UserWebService },
+        {
+            provide: UserWebServiceI,
+            useExisting: UserWebService,
+        },
 
         // Mobile Services
         AuthMobileService,
@@ -97,4 +118,4 @@ import {
     ],
     exports: [AuthService, UserService, UserRepository],
 })
-export class UsersModule {}
+export class UsersModule { }
