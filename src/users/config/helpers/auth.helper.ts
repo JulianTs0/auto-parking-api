@@ -8,7 +8,7 @@ export class AuthHelper {
     constructor(
         private readonly passwordEncoder: PasswordEncoderI,
         private readonly tokenHandler: TokenHandlerI,
-    ) { }
+    ) {}
 
     public async hashPassword(password: string): Promise<string> {
         return this.passwordEncoder.hash(password);
@@ -18,8 +18,10 @@ export class AuthHelper {
         user: User,
         password: string,
     ): Promise<boolean> {
-        const inputHash = await this.passwordEncoder.hash(password);
-        return user.passwordHash === inputHash;
+        return this.passwordEncoder.compare(
+            password,
+            user.passwordHash,
+        );
     }
 
     public async parseToken(

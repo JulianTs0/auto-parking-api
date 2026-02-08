@@ -10,4 +10,11 @@ export class BcryptEncoder implements PasswordEncoderI {
         const salt = await bcrypt.genSalt(this.saltRounds);
         return bcrypt.hash(data, salt);
     }
+
+    public async compare(
+        data: string,
+        encrypted: string,
+    ): Promise<boolean> {
+        return bcrypt.compare(data, encrypted);
+    }
 }
