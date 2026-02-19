@@ -1,16 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule } from '@nestjs/jwt';
 import { AppConfigModule } from 'src/config/config.module';
-
-// Config
-import {
-    BcryptEncoder,
-    JWTHandler,
-    PasswordEncoderI,
-    TokenHandlerI,
-    AuthHelper,
-} from './config';
+import { AuthModule } from 'src/auth/auth.module';
 
 // Persistence
 import {
@@ -22,25 +13,17 @@ import {
 // Domain Imports
 import {
     UserRepositoryI,
-    AuthServiceI,
     UserServiceI,
-    AuthWebServiceI,
     UserWebServiceI,
-    AuthMobileServiceI,
     UserMobileServiceI,
-    AuthService,
     UserService,
-    AuthWebService,
     UserWebService,
-    AuthMobileService,
     UserMobileService,
 } from './domain';
 
 // Presentation
 import {
-    AuthWebController,
     UserWebController,
-    AuthMobileController,
     UserMobileController,
 } from './presentation';
 
@@ -48,30 +31,12 @@ import {
     imports: [
         TypeOrmModule.forFeature([UserModel]),
         AppConfigModule,
-        JwtModule.register({}),
+        forwardRef(() => AuthModule),
     ],
-    controllers: [
-        AuthWebController,
-        UserWebController,
-        AuthMobileController,
-        UserMobileController,
-    ],
+    controllers: [UserWebController, UserMobileController],
     providers: [
-        // Helpers
-        AuthHelper,
-
         // DAO
         PostgresUserDao,
-
-        // Config Providers
-        {
-            provide: PasswordEncoderI,
-            useClass: BcryptEncoder,
-        },
-        {
-            provide: TokenHandlerI,
-            useClass: JWTHandler,
-        },
 
         // Repository
         UserRepository,
@@ -81,11 +46,6 @@ import {
         },
 
         // Core Services
-        AuthService,
-        {
-            provide: AuthServiceI,
-            useExisting: AuthService,
-        },
         UserService,
         {
             provide: UserServiceI,
@@ -93,11 +53,6 @@ import {
         },
 
         // Web Services
-        AuthWebService,
-        {
-            provide: AuthWebServiceI,
-            useExisting: AuthWebService,
-        },
         UserWebService,
         {
             provide: UserWebServiceI,
@@ -105,17 +60,12 @@ import {
         },
 
         // Mobile Services
-        AuthMobileService,
-        {
-            provide: AuthMobileServiceI,
-            useExisting: AuthMobileService,
-        },
         UserMobileService,
         {
             provide: UserMobileServiceI,
             useExisting: UserMobileService,
         },
     ],
-    exports: [AuthService, UserService, UserRepository],
+    exports: [UserService, UserRepository],
 })
-export class UsersModule { }
+export class UsersModule {}

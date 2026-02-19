@@ -7,10 +7,11 @@ import {
     HttpStatus,
     Param,
     Put,
-    Request,
     UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/users/config';
+import { User } from 'src/commons';
+import { AuthUser } from 'src/commons/decorators/auth-user.decorator';
+import { AuthGuard } from 'src/auth/config';
 import {
     EditRes,
     GetByIdReq,
@@ -25,7 +26,7 @@ export class UserWebController {
     constructor(
         private readonly userCoreService: UserServiceI,
         private readonly userWebService: UserWebServiceI,
-    ) { }
+    ) {}
 
     @UseGuards(AuthGuard)
     @Get(':id')
@@ -40,10 +41,10 @@ export class UserWebController {
     public async edit(
         @Param('id') id: string,
         @Body() body: Record<string, any>,
-        @Request() req: any,
+        @AuthUser() authUser: User,
     ): Promise<EditRes> {
         return await this.userCoreService.edit(
-            UserMapper.edit().toRequest(id, req.user, body),
+            UserMapper.edit().toRequest(id, authUser, body),
         );
     }
 
@@ -53,10 +54,10 @@ export class UserWebController {
     public async delete(
         @Param('id') id: string,
         @Body() body: Record<string, any>,
-        @Request() req: any,
+        @AuthUser() authUser: User,
     ): Promise<void> {
         return await this.userCoreService.delete(
-            UserMapper.delete().toRequest(id, req.user, body),
+            UserMapper.delete().toRequest(id, authUser, body),
         );
     }
 }

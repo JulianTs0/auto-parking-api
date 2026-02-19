@@ -5,7 +5,7 @@ import {
     LoginReq,
     LoginRes,
     RegisterReq,
-} from 'src/users/domain';
+} from 'src/auth/domain';
 
 export abstract class AuthServiceI {
     abstract auth(request: AuthReq): Promise<AuthRes>;

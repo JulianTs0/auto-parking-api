@@ -9,21 +9,21 @@ import {
     Post,
 } from '@nestjs/common';
 import {
+    AuthMobileServiceI,
     AuthReq,
     AuthRes,
     AuthServiceI,
-    AuthWebServiceI,
     LoginReq,
     LoginRes,
     RegisterReq,
-} from 'src/users/domain';
+} from 'src/auth/domain';
 
-@Controller('web/auth')
-export class AuthWebController {
+@Controller('mobile/auth')
+export class AuthMobileController {
     constructor(
-        private readonly authWebService: AuthWebServiceI,
+        private readonly authMobileService: AuthMobileServiceI,
         private readonly authCoreService: AuthServiceI,
-    ) { }
+    ) {}
 
     @Patch('/login')
     public async login(
@@ -39,7 +39,7 @@ export class AuthWebController {
 
     @Post('/register')
     @HttpCode(HttpStatus.CREATED)
-    async register(@Body() request: RegisterReq): Promise<void> {
-        return await this.authWebService.register(request);
+    async create(@Body() request: RegisterReq): Promise<void> {
+        return await this.authMobileService.register(request);
     }
 }

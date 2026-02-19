@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenHandlerI } from './token-handler.interface';
 import { User } from 'src/commons';
-import { ConfigService } from '@nestjs/config';
+import { EnvConfigService } from 'src/config/env.service';
 
 export interface JwtPayload {
     sub: string;
@@ -20,14 +20,10 @@ export class JWTHandler implements TokenHandlerI {
     constructor(
         private readonly jwtService: JwtService,
 
-        private readonly configService: ConfigService,
+        private readonly configService: EnvConfigService,
     ) {
-        this.secret =
-            this.configService.getOrThrow<string>('JWT_SECRET');
-        this.expirationSecconds = parseInt(
-            this.configService.getOrThrow<string>('JWT_EXPIRATION'),
-            10,
-        );
+        this.secret = this.configService.jwtSecret;
+        this.expirationSecconds = configService.jwtExpiration;
     }
 
     private async parseToken(token: string): Promise<JwtPayload> {

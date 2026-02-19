@@ -6,7 +6,7 @@ import {
     Matches,
 } from 'class-validator';
 import { User } from 'src/commons';
-import { RegexValidators } from 'src/users/domain/index';
+import { RegexValidators } from 'src/commons/config/regex.validator';
 
 export class EditReq {
     @IsNotEmpty()

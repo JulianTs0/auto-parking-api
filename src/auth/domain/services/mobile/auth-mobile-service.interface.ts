@@ -1,4 +1,4 @@
-import { RegisterReq } from 'src/users/domain';
+import { RegisterReq } from 'src/auth/domain';
 
 export abstract class AuthMobileServiceI {
     abstract register(request: RegisterReq): Promise<void>;

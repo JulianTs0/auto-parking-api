@@ -5,8 +5,8 @@ import {
     LoginReq,
     LoginRes,
     RegisterReq,
-    UserRepositoryI,
-} from 'src/users/domain';
+} from 'src/auth/domain';
+import { UserServiceI } from 'src/users/domain';
 import { AuthServiceI } from './auth-service.interface';
 import { Injectable } from '@nestjs/common';
 import {
@@ -17,15 +17,17 @@ import {
     User,
     UserStatus,
 } from 'src/commons';
-import { AuthHelper } from 'src/users/config/helpers/auth.helper';
+import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
     constructor(
         private readonly authHelper: AuthHelper,
-        private readonly userRepository: UserRepositoryI,
-    ) { }
+        private readonly userService: UserServiceI,
+    ) {}
 
+    @Transactional()
     public async validateToken(rawToken: string): Promise<User> {
         const token: string | null =
             await this.authHelper.parseToken(rawToken);
@@ -35,7 +37,7 @@ export class AuthService implements AuthServiceI {
 
         const id: string = await this.authHelper.getSubject(token);
         const user: User | null =
-            await this.userRepository.findById(id);
+            await this.userService.findUserById(id);
 
         if (user == null)
             throw new ServiceError(Errors.USER_NOT_FOUND);
@@ -47,6 +49,7 @@ export class AuthService implements AuthServiceI {
         return user;
     }
 
+    @Transactional()
     public async auth(request: AuthReq): Promise<AuthRes> {
         const user: User = await this.validateToken(
             request.authorization,
@@ -55,9 +58,10 @@ export class AuthService implements AuthServiceI {
         return AuthMapper.auth().toResponse(user);
     }
 
+    @Transactional()
     public async login(request: LoginReq): Promise<LoginRes> {
         const user: User | null =
-            await this.userRepository.findByEmail(request.email);
+            await this.userService.findUserByEmail(request.email);
 
         if (user == null) {
             throw new ServiceError(Errors.USER_NOT_FOUND);
@@ -81,7 +85,7 @@ export class AuthService implements AuthServiceI {
         }
 
         user.updateAt = new Date();
-        const logged: User = await this.userRepository.update(user);
+        const logged: User = await this.userService.updateUser(user);
 
         const token: Token =
             await this.authHelper.createToken(logged);
@@ -110,11 +114,11 @@ export class AuthService implements AuthServiceI {
         return user;
     }
 
-    public async resendVerifyEmail(): Promise<void> { }
+    public async resendVerifyEmail(): Promise<void> {}
 
-    public async verifyEmail(): Promise<void> { }
+    public async verifyEmail(): Promise<void> {}
 
-    public async recoverPassword(): Promise<void> { }
+    public async recoverPassword(): Promise<void> {}
 
-    public async changePassword(): Promise<void> { }
+    public async changePassword(): Promise<void> {}
 }

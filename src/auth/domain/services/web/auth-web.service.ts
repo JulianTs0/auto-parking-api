@@ -1,21 +1,24 @@
-import { RegisterReq, UserRepositoryI } from 'src/users/domain';
+import { RegisterReq } from 'src/auth/domain';
+import { UserServiceI } from 'src/users/domain';
 import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../core/auth.service';
 import { Errors, Role, ServiceError, User } from 'src/commons';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
     constructor(
         private readonly authCoreService: AuthService,
-        private readonly userRepository: UserRepositoryI,
+        private readonly userService: UserServiceI,
     ) {}
 
+    @Transactional()
     public async register(request: RegisterReq): Promise<void> {
-        const userCheck: User | null =
-            await this.userRepository.findByEmail(request.email);
+        const userCheck: boolean =
+            await this.userService.existsUserByEmail(request.email);
 
-        if (userCheck != null) {
+        if (userCheck) {
             throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
         }
 
@@ -28,7 +31,7 @@ export class AuthWebService implements AuthWebServiceI {
             Role.OWNER,
         ]);
 
-        const saved: User = await this.userRepository.save(user);
+        const saved: User = await this.userService.saveUser(user);
 
         return Promise.resolve();
     }

@@ -1,10 +1,11 @@
 import {
+    IsEmail,
     IsNotEmpty,
     IsOptional,
     IsString,
     Matches,
 } from 'class-validator';
-import { RegexValidators } from 'src/users/domain';
+import { RegexValidators } from 'src/commons/config/regex.validator';
 
 export class RegisterReq {
     @IsNotEmpty()
@@ -14,7 +15,7 @@ export class RegisterReq {
 
     @IsNotEmpty()
     @IsString()
-    @Matches(RegexValidators.EMAIL)
+    @IsEmail()
     readonly email: string;
 
     @IsOptional()
