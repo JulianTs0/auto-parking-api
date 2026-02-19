@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EnvConfigService {
-    constructor(private readonly configService: ConfigService) {}
+    constructor(private readonly configService: ConfigService) { }
 
     get dbHost(): string {
         return this.configService.getOrThrow<string>('DB_HOST');
@@ -63,5 +63,9 @@ export class EnvConfigService {
             this.configService.getOrThrow<string>('MAIL_PORT'),
             10,
         );
+    }
+
+    get isSync(): boolean {
+        return this.configService.getOrThrow<string>('ENV') === 'dev';
     }
 }

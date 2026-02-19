@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Errors, ServiceError } from 'src/commons';
-import { addTransactionalDataSource } from 'typeorm-transactional';
-import { DataSource } from 'typeorm';
 import { EnvConfigService } from 'src/config/env.service';
 
 @Module({
@@ -19,18 +16,10 @@ import { EnvConfigService } from 'src/config/env.service';
                 password: configService.dbPassword,
                 database: configService.dbName,
                 autoLoadEntities: true,
-                synchronize: true,
+                synchronize: configService.isSync,
             }),
-            dataSourceFactory: async (options) => {
-                if (!options) {
-                    throw new ServiceError(Errors.INTERNAL_ERROR);
-                }
-                return addTransactionalDataSource(
-                    new DataSource(options),
-                );
-            },
         }),
     ],
     exports: [TypeOrmModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
