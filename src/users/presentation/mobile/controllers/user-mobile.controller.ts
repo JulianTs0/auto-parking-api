@@ -9,10 +9,13 @@ import {
     Put,
     UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons';
 import { AuthUser } from 'src/commons/decorators/auth-user.decorator';
 import { AuthGuard } from 'src/auth/config';
 import {
+    DeleteReq,
+    EditReq,
     EditRes,
     GetByIdReq,
     GetByIdRes,
@@ -20,7 +23,9 @@ import {
     UserMobileServiceI,
     UserServiceI,
 } from 'src/users/domain';
+import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
 
+@ApiTags('users/mobile')
 @Controller('mobile/users')
 export class UserMobileController {
     constructor(
@@ -28,6 +33,12 @@ export class UserMobileController {
         private readonly userMobileService: UserMobileServiceI,
     ) {}
 
+    @ApiEndpoint({
+        summary: 'Obtener usuario por ID',
+        description: 'Obtiene los detalles de un usuario específico',
+        type: GetByIdRes,
+        isAuth: true,
+    })
     @UseGuards(AuthGuard)
     @Get(':id')
     public async getById(
@@ -36,6 +47,13 @@ export class UserMobileController {
         return await this.userCoreService.getById(request);
     }
 
+    @ApiEndpoint({
+        summary: 'Editar usuario',
+        description: 'Actualiza la información de un usuario',
+        type: EditRes,
+        body: EditReq,
+        isAuth: true,
+    })
     @UseGuards(AuthGuard)
     @Put(':id')
     public async edit(
@@ -48,6 +66,13 @@ export class UserMobileController {
         );
     }
 
+    @ApiEndpoint({
+        summary: 'Eliminar usuario',
+        description: 'Elimina un usuario del sistema',
+        status: HttpStatus.NO_CONTENT,
+        body: DeleteReq,
+        isAuth: true,
+    })
     @UseGuards(AuthGuard)
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
