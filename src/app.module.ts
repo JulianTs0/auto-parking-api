@@ -9,6 +9,10 @@ import {
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ClsModule } from 'nestjs-cls';
 import { DatabaseModule } from './database/database.module';
+import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { DataSource } from 'typeorm';
+import { AppLoggerModule } from './logger/logger.module';
 
 @Module({
     imports: [
@@ -21,11 +25,20 @@ import { DatabaseModule } from './database/database.module';
                     req.headers['x-request-id'] ??
                     crypto.randomUUID(),
             },
+            plugins: [
+                new ClsPluginTransactional({
+                    imports: [DatabaseModule],
+                    adapter: new TransactionalAdapterTypeOrm({
+                        dataSourceToken: DataSource,
+                    }),
+                }),
+            ],
         }),
         AppConfigModule,
         AuthModule,
         UsersModule,
         DatabaseModule,
+        AppLoggerModule,
     ],
     controllers: [],
     providers: [
@@ -39,4 +52,4 @@ import { DatabaseModule } from './database/database.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule { }
