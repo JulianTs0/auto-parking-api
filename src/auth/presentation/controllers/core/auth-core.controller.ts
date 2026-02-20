@@ -3,30 +3,22 @@ import {
     Controller,
     Get,
     Headers,
-    HttpCode,
-    HttpStatus,
     Patch,
-    Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
-    AuthMobileServiceI,
     AuthReq,
     AuthRes,
     AuthServiceI,
     LoginReq,
     LoginRes,
-    RegisterReq,
 } from 'src/auth/domain';
 import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
 
-@ApiTags('auth/mobile')
-@Controller('mobile/auth')
-export class AuthMobileController {
-    constructor(
-        private readonly authMobileService: AuthMobileServiceI,
-        private readonly authCoreService: AuthServiceI,
-    ) {}
+@ApiTags('auth/core')
+@Controller('core/auth')
+export class AuthCoreController {
+    constructor(private readonly authCoreService: AuthServiceI) {}
 
     @ApiEndpoint({
         summary: 'Iniciar sesión',
@@ -52,17 +44,5 @@ export class AuthMobileController {
     @Get()
     public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
         return await this.authCoreService.auth(request);
-    }
-
-    @ApiEndpoint({
-        summary: 'Registrar usuario',
-        description: 'Registra un nuevo usuario en la plataforma',
-        status: HttpStatus.CREATED,
-        body: RegisterReq,
-    })
-    @Post('/register')
-    @HttpCode(HttpStatus.CREATED)
-    async create(@Body() request: RegisterReq): Promise<void> {
-        return await this.authMobileService.register(request);
     }
 }

@@ -25,6 +25,7 @@ import {
 import {
     UserWebController,
     UserMobileController,
+    UserCoreController,
 } from './presentation';
 
 @Module({
@@ -33,7 +34,11 @@ import {
         AppConfigModule,
         forwardRef(() => AuthModule),
     ],
-    controllers: [UserWebController, UserMobileController],
+    controllers: [
+        UserWebController,
+        UserMobileController,
+        UserCoreController,
+    ],
     providers: [
         // DAO
         PostgresUserDao,

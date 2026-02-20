@@ -1,2 +1,3 @@
-export * from './mobile/controllers/user-mobile.controller';
-export * from './web/controllers/user-web.controller';
+export * from './controllers/core/user-core.controller';
+export * from './controllers/mobile/user-mobile.controller';
+export * from './controllers/web/user-web.controller';

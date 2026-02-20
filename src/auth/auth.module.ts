@@ -27,6 +27,7 @@ import {
 import {
     AuthWebController,
     AuthMobileController,
+    AuthCoreController,
 } from './presentation';
 @Module({
     imports: [
@@ -34,7 +35,11 @@ import {
         AppConfigModule,
         JwtModule.register({}),
     ],
-    controllers: [AuthWebController, AuthMobileController],
+    controllers: [
+        AuthWebController,
+        AuthMobileController,
+        AuthCoreController,
+    ],
     providers: [
         // Helpers
         AuthHelper,

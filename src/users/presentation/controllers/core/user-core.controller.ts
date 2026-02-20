@@ -20,18 +20,14 @@ import {
     GetByIdReq,
     GetByIdRes,
     UserMapper,
-    UserMobileServiceI,
     UserServiceI,
 } from 'src/users/domain';
 import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
 
-@ApiTags('users/mobile')
-@Controller('mobile/users')
-export class UserMobileController {
-    constructor(
-        private readonly userCoreService: UserServiceI,
-        private readonly userMobileService: UserMobileServiceI,
-    ) {}
+@ApiTags('users/core')
+@Controller('core/users')
+export class UserCoreController {
+    constructor(private readonly userCoreService: UserServiceI) {}
 
     @ApiEndpoint({
         summary: 'Obtener usuario por ID',
