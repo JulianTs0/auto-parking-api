@@ -18,7 +18,7 @@ import {
     UserStatus,
 } from 'src/commons';
 import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
-import { Transactional } from 'typeorm-transactional';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class AuthService implements AuthServiceI {

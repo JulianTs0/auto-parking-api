@@ -4,7 +4,7 @@ import { AuthMobileServiceI } from './auth-mobile-service.interface';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../core/auth.service';
 import { Errors, Role, ServiceError, User } from 'src/commons';
-import { Transactional } from 'typeorm-transactional';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class AuthMobileService implements AuthMobileServiceI {

@@ -10,6 +10,7 @@ import {
     PasswordEncoderI,
     TokenHandlerI,
     AuthHelper,
+    AuthGuard,
 } from './config';
 
 // Domain Imports
@@ -27,7 +28,6 @@ import {
     AuthWebController,
     AuthMobileController,
 } from './presentation';
-
 @Module({
     imports: [
         forwardRef(() => UsersModule),
@@ -38,6 +38,8 @@ import {
     providers: [
         // Helpers
         AuthHelper,
+
+        AuthGuard,
 
         // Config Providers
         {
@@ -70,6 +72,13 @@ import {
             useExisting: AuthMobileService,
         },
     ],
-    exports: [AuthService, AuthHelper],
+    exports: [
+        AuthService,
+        AuthHelper,
+        AuthServiceI,
+        AuthWebServiceI,
+        AuthMobileServiceI,
+        AuthGuard,
+    ],
 })
 export class AuthModule {}
