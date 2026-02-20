@@ -66,6 +66,6 @@ import {
             useExisting: UserMobileService,
         },
     ],
-    exports: [UserService, UserRepository],
+    exports: [UserService, UserRepository, UserServiceI],
 })
 export class UsersModule {}

@@ -11,7 +11,7 @@ import { UserServiceI } from './user-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Errors, ServiceError, User, UserStatus } from 'src/commons';
 import { AuthHelper } from 'src/auth/config';
-import { Transactional } from 'typeorm-transactional';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class UserService implements UserServiceI {
