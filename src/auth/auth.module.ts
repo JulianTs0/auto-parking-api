@@ -29,10 +29,14 @@ import {
     AuthMobileController,
     AuthCoreController,
 } from './presentation';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { AppEventsModule } from 'src/app-events/app-events.module';
 @Module({
     imports: [
         forwardRef(() => UsersModule),
+        NotificationsModule,
         AppConfigModule,
+        AppEventsModule,
         JwtModule.register({}),
     ],
     controllers: [
@@ -41,12 +45,7 @@ import {
         AuthCoreController,
     ],
     providers: [
-        // Helpers
-        AuthHelper,
-
-        AuthGuard,
-
-        // Config Providers
+        // Config Providers (must be before AuthHelper)
         {
             provide: PasswordEncoderI,
             useClass: BcryptEncoder,
@@ -55,6 +54,11 @@ import {
             provide: TokenHandlerI,
             useClass: JWTHandler,
         },
+
+        // Helpers
+        AuthHelper,
+
+        AuthGuard,
 
         // Core Services
         AuthService,
