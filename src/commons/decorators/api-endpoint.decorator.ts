@@ -8,6 +8,10 @@ import {
     ApiResponse,
     ApiBearerAuth,
     ApiBody,
+    ApiParamOptions,
+    ApiQueryOptions,
+    ApiParam,
+    ApiQuery,
 } from '@nestjs/swagger';
 
 export interface ApiEndpointParams {
@@ -17,6 +21,8 @@ export interface ApiEndpointParams {
     status?: HttpStatus;
     isAuth?: boolean;
     body?: any;
+    pathParams?: ApiParamOptions[];
+    queryParams?: ApiQueryOptions[];
 }
 
 export function ApiEndpoint(params: ApiEndpointParams) {
@@ -27,6 +33,8 @@ export function ApiEndpoint(params: ApiEndpointParams) {
         status = HttpStatus.OK,
         isAuth = false,
         body,
+        pathParams,
+        queryParams,
     } = params;
 
     const decorators = [
@@ -61,6 +69,18 @@ export function ApiEndpoint(params: ApiEndpointParams) {
                 description: 'Prohibido - No tienes permisos',
             }),
         );
+    }
+
+    if (pathParams && pathParams.length > 0) {
+        pathParams.forEach((param) => {
+            decorators.push(ApiParam(param));
+        });
+    }
+
+    if (queryParams && queryParams.length > 0) {
+        queryParams.forEach((query) => {
+            decorators.push(ApiQuery(query));
+        });
     }
 
     if (body) {
