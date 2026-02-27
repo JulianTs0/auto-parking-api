@@ -13,6 +13,8 @@ import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-t
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { DataSource } from 'typeorm';
 import { AppLoggerModule } from './logger/logger.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AppEventsModule } from './app-events/app-events.module';
 
 @Module({
     imports: [
@@ -39,6 +41,8 @@ import { AppLoggerModule } from './logger/logger.module';
         UsersModule,
         DatabaseModule,
         AppLoggerModule,
+        NotificationsModule,
+        AppEventsModule,
     ],
     controllers: [],
     providers: [
