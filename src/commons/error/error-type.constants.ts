@@ -29,6 +29,11 @@ export const Errors = {
         status: 401,
         message: 'Unauthorized',
     },
+    USER_ALREADY_ACTIVATED: {
+        key: 'USER_ALREADY_ACTIVATED',
+        status: 404,
+        message: 'User already activated',
+    },
     INVALID_PASSWORD: {
         key: 'INVALID_PASSWORD',
         status: 400,
