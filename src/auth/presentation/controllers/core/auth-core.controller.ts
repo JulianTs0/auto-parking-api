@@ -13,12 +13,13 @@ import {
     LoginReq,
     LoginRes,
 } from 'src/auth/domain';
+import { VerifyEmailReq } from 'src/auth/domain/dto/auth/request/verify-email.request.dto';
 import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
 
 @ApiTags('auth/core')
-@Controller('core/auth')
+@Controller('auth')
 export class AuthCoreController {
-    constructor(private readonly authCoreService: AuthServiceI) {}
+    constructor(private readonly authCoreService: AuthServiceI) { }
 
     @ApiEndpoint({
         summary: 'Iniciar sesión',
@@ -44,5 +45,18 @@ export class AuthCoreController {
     @Get()
     public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
         return await this.authCoreService.auth(request);
+    }
+
+    @ApiEndpoint({
+        summary: 'Verifica el mail',
+        description:
+            'Verifica el mail del usuario, lo actualiza a activo',
+        body: VerifyEmailReq,
+    })
+    @Patch('/verify')
+    public async verifyEmail(
+        @Body() request: VerifyEmailReq,
+    ): Promise<void> {
+        await this.authCoreService.verifyEmail(request);
     }
 }
