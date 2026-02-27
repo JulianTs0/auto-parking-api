@@ -16,10 +16,10 @@ import { AppConfigModule } from 'src/config/config.module';
                 password: configService.dbPassword,
                 database: configService.dbName,
                 autoLoadEntities: true,
-                synchronize: configService.isSync,
+                synchronize: configService.isDevelop,
             }),
         }),
     ],
     exports: [TypeOrmModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
