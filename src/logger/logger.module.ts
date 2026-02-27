@@ -2,6 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { ClsServiceManager } from 'nestjs-cls';
+import { EnvConfigService } from 'src/config/env.service';
+import { AppConfigModule } from 'src/config/config.module';
 
 const correlationIdFormat = winston.format((info) => {
     const cls = ClsServiceManager.getClsService();
@@ -13,21 +15,60 @@ const correlationIdFormat = winston.format((info) => {
     return info;
 });
 
+const developmentFormat = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    correlationIdFormat(),
+    winston.format.colorize({ all: true }),
+    winston.format.printf((info) => {
+        const {
+            timestamp,
+            level,
+            message,
+            context,
+            correlationId,
+            stack,
+        } = info;
+
+        let log = `[${timestamp}] [${level}]`;
+        if (context) log += ` [${context}]`;
+        if (correlationId) log += ` [ReqID: ${correlationId}]`;
+        log += ` ${message}`;
+
+        if (stack) log += `\n${stack}`;
+
+        return log;
+    }),
+);
+
+const productionFormat = winston.format.combine(
+    winston.format.timestamp(),
+    correlationIdFormat(),
+    winston.format.json(),
+);
+
 @Global()
 @Module({
     imports: [
-        WinstonModule.forRoot({
-            transports: [
-                new winston.transports.Console({
-                    format: winston.format.combine(
-                        winston.format.timestamp(),
-                        correlationIdFormat(),
-                        winston.format.json(),
-                    ),
-                }),
-            ],
+        WinstonModule.forRootAsync({
+            imports: [AppConfigModule],
+            inject: [EnvConfigService],
+            useFactory: (configService: EnvConfigService) => {
+                const isDev: boolean = configService.isDevelop;
+
+                return {
+                    transports: [
+                        new winston.transports.Console({
+                            format: !isDev
+                                ? productionFormat
+                                : developmentFormat,
+
+                            level: !isDev ? 'info' : 'debug',
+                        }),
+                    ],
+                };
+            },
         }),
     ],
     exports: [WinstonModule],
 })
-export class AppLoggerModule {}
+export class AppLoggerModule { }
