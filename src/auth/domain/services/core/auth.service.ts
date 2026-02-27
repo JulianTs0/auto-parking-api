@@ -19,13 +19,14 @@ import {
 } from 'src/commons';
 import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
 import { Transactional } from '@nestjs-cls/transactional';
+import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
     constructor(
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {
@@ -93,7 +94,7 @@ export class AuthService implements AuthServiceI {
         return Promise.resolve(AuthMapper.login().toResponse(token));
     }
 
-    public async register(request: RegisterReq): Promise<User> {
+    public async buildUser(request: RegisterReq): Promise<User> {
         const generatedId: string = IdGenerator.generateUUID();
         const paswordHash: string =
             await this.authHelper.hashPassword(request.password);
@@ -114,11 +115,36 @@ export class AuthService implements AuthServiceI {
         return user;
     }
 
-    public async resendVerifyEmail(): Promise<void> {}
+    public async resendVerifyEmail(): Promise<void> { }
 
-    public async verifyEmail(): Promise<void> {}
+    @Transactional()
+    public async verifyEmail(request: VerifyEmailReq): Promise<void> {
+        const token: string | null = await this.authHelper.parseToken(
+            request.token,
+            true,
+        );
 
-    public async recoverPassword(): Promise<void> {}
+        if (!token) {
+            throw new ServiceError(Errors.UNAUTHORIZED);
+        }
 
-    public async changePassword(): Promise<void> {}
+        const id: string = await this.authHelper.getSubject(token);
+        const user: User | null =
+            await this.userService.findUserById(id);
+
+        if (!user) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+        if (user.status == UserStatus.ACTIVE) {
+            throw new ServiceError(Errors.USER_ALREADY_ACTIVATED);
+        }
+
+        user.status = UserStatus.ACTIVE;
+
+        this.userService.updateUser(user);
+    }
+
+    public async recoverPassword(): Promise<void> { }
+
+    public async changePassword(): Promise<void> { }
 }

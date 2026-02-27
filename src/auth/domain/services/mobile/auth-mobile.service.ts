@@ -1,20 +1,23 @@
-import { RegisterReq } from 'src/auth/domain';
-import { UserServiceI } from 'src/users/domain';
+import { AuthServiceI, RegisterReq } from 'src/auth/domain';
 import { AuthMobileServiceI } from './auth-mobile-service.interface';
 import { Injectable } from '@nestjs/common';
-import { AuthService } from '../core/auth.service';
-import { Errors, Role, ServiceError, User } from 'src/commons';
+import { UserServiceI } from 'src/users/domain';
+import { Errors, Role, ServiceError, Token, User } from 'src/commons';
 import { Transactional } from '@nestjs-cls/transactional';
+import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
+import { EventPublisherI } from 'src/app-events/services/event-publisher.interface';
 
 @Injectable()
 export class AuthMobileService implements AuthMobileServiceI {
     constructor(
-        private readonly authCoreService: AuthService,
+        private readonly authCoreService: AuthServiceI,
         private readonly userService: UserServiceI,
+        private readonly authHelper: AuthHelper,
+        private readonly eventPublisher: EventPublisherI,
     ) {}
 
     @Transactional()
-    public async register(request: RegisterReq): Promise<void> {
+    public async register(request: RegisterReq) {
         const emailCheck: boolean =
             await this.userService.existsUserByEmail(request.email);
 
@@ -23,18 +26,21 @@ export class AuthMobileService implements AuthMobileServiceI {
         }
 
         const user: User =
-            await this.authCoreService.register(request);
+            await this.authCoreService.buildUser(request);
 
         user.roles.add(Role.CLIENT);
 
         const saved: User = await this.userService.saveUser(user);
 
+        const token: Token = await this.authHelper.createToken(saved);
+
+        this.eventPublisher.emit('auth.mobile.register', {
+            user: saved,
+            token,
+        });
+
         return Promise.resolve();
     }
-
-    public async resendVerifyEmail(): Promise<void> {}
-
-    public async verifyEmail(): Promise<void> {}
 
     public async recoverPassword(): Promise<void> {}
 
