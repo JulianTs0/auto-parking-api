@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UserMobileServiceI } from 'src/users/domain';
+import { UserMobileServiceI } from '../../../domain/services/mobile/user-mobile-service.interface';
 
 @ApiTags('users/mobile')
 @Controller('mobile/users')

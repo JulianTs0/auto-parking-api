@@ -1,4 +1,4 @@
-import { User } from 'src/commons';
+import { User, PageContent } from 'src/commons';
 
 export abstract class UserRepositoryI {
     abstract findById(id: string): Promise<User | null>;
@@ -8,4 +8,8 @@ export abstract class UserRepositoryI {
     abstract save(user: User): Promise<User>;
     abstract update(user: User): Promise<User>;
     abstract delete(id: string): Promise<boolean>;
+    abstract findInactiveOwnersPaginated(
+        size: number,
+        page: number,
+    ): Promise<PageContent<User>>;
 }

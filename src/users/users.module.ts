@@ -1,32 +1,24 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppConfigModule } from 'src/config/config.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { AppConfigModule } from 'src/config';
+import { AuthModule } from 'src/auth/';
 
-// Persistence
-import {
-    UserModel,
-    PostgresUserDao,
-    UserRepository,
-} from './persistance';
+import { UserModel } from './persistance/datasource/data/postgres/models/user.model';
+import { PostgresUserDao } from './persistance/datasource/data/postgres/dao/postgres-user.dao';
+import { UserRepository } from './persistance/repository/user.repository';
 
-// Domain Imports
-import {
-    UserRepositoryI,
-    UserServiceI,
-    UserWebServiceI,
-    UserMobileServiceI,
-    UserService,
-    UserWebService,
-    UserMobileService,
-} from './domain';
+import { UserRepositoryI } from './domain/repository/user-repository.interface';
+import { UserServiceI } from './domain/services/core/user-service.interface';
+import { UserWebServiceI } from './domain/services/web/user-web-service.interface';
+import { UserMobileServiceI } from './domain/services/mobile/user-mobile-service.interface';
 
-// Presentation
-import {
-    UserWebController,
-    UserMobileController,
-    UserCoreController,
-} from './presentation';
+import { UserService } from './domain/services/core/user.service';
+import { UserWebService } from './domain/services/web/user-web.service';
+import { UserMobileService } from './domain/services/mobile/user-mobile.service';
+
+import { UserWebController } from './presentation/controllers/web/user-web.controller';
+import { UserMobileController } from './presentation/controllers/mobile/user-mobile.controller';
+import { UserCoreController } from './presentation/controllers/core/user-core.controller';
 
 @Module({
     imports: [
@@ -73,4 +65,4 @@ import {
     ],
     exports: [UserService, UserRepository, UserServiceI],
 })
-export class UsersModule {}
+export class UsersModule { }

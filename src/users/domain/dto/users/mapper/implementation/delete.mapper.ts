@@ -1,20 +1,18 @@
-import { User } from 'src/commons';
+import { User } from '../../../../../../commons';
+import { DeleteBody } from '../../request/delete.body.dto';
 import { DeleteReq } from '../../request/delete.request.dto';
-import { ManualValidator } from 'src/commons';
 
 export class DeleteMapper {
     public toRequest(
         id: string,
-        user: User,
-        body: Record<string, any>,
+        body: DeleteBody,
+        authUser: User,
     ): DeleteReq {
         const request = new DeleteReq({
             id: id,
-            user: user,
-            password: body['password'],
+            body: body,
+            authUser: authUser,
         });
-
-        ManualValidator.validate(request);
 
         return request;
     }

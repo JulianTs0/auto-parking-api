@@ -1,24 +1,22 @@
-import {
-    DeleteReq,
-    EditReq,
-    EditRes,
-    GetByIdReq,
-    GetByIdRes,
-    UserMapper,
-    UserRepositoryI,
-} from 'src/users/domain';
+import { DeleteReq } from '../../dto/users/request/delete.request.dto';
+import { EditReq } from '../../dto/users/request/edit.request.dto';
+import { EditRes } from '../../dto/users/response/edit.response.dto';
+import { GetByIdReq } from '../../dto/users/request/get-by-id.request.dto';
+import { GetByIdRes } from '../../dto/users/response/get-by-id.response.dto';
+import { UserMapper } from '../../dto/users/mapper/user.mapper';
+import { UserRepositoryI } from '../../repository/user-repository.interface';
 import { UserServiceI } from './user-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Errors, ServiceError, User, UserStatus } from 'src/commons';
-import { AuthHelper } from 'src/auth/config';
 import { Transactional } from '@nestjs-cls/transactional';
+import { AuthHelper } from 'src/auth';
 
 @Injectable()
 export class UserService implements UserServiceI {
     constructor(
         private readonly userRepository: UserRepositoryI,
         private readonly authHepler: AuthHelper,
-    ) {}
+    ) { }
 
     @Transactional()
     public async getById(request: GetByIdReq): Promise<GetByIdRes> {
@@ -41,13 +39,13 @@ export class UserService implements UserServiceI {
         if (user == null)
             throw new ServiceError(Errors.USER_NOT_FOUND);
 
-        if (request.user.isAdmin()) {
+        if (request.authUser.isAdmin()) {
             user.status = UserStatus.BANNED;
-        } else if (request.user.id === user.id) {
+        } else if (request.authUser.id === user.id) {
             if (
                 !(await this.authHepler.validatePassword(
                     user,
-                    request.password,
+                    request.body.password,
                 ))
             ) {
                 throw new ServiceError(Errors.FORBIDDEN);
@@ -71,11 +69,11 @@ export class UserService implements UserServiceI {
         if (user == null)
             throw new ServiceError(Errors.USER_NOT_FOUND);
 
-        if (user.id !== request.user.id)
+        if (user.id !== request.authUser.id)
             throw new ServiceError(Errors.USER_NOT_FOUND);
 
-        user.fullName = request.fullName;
-        user.phoneNumber = request.phoneNumber ?? null;
+        user.fullName = request.body.fullName;
+        user.phoneNumber = request.body.phoneNumber ?? null;
 
         const updated: User = await this.userRepository.update(user);
 

@@ -1,22 +1,19 @@
-import { User } from 'src/commons';
+import { User } from '../../../../../../commons';
+import { EditBody } from '../../request/edit.body.dto';
 import { EditRes } from '../../response/edit.response.dto';
 import { EditReq } from '../../request/edit.request.dto';
-import { ManualValidator } from 'src/commons';
 
 export class EditMapper {
     public toRequest(
         id: string,
-        user: User,
-        body: Record<string, any>,
+        body: EditBody,
+        authUser: User,
     ): EditReq {
         const request = new EditReq({
             id: id,
-            fullName: body['fullName'],
-            phoneNumber: body['phoneNumber'],
-            user: user,
+            body: body,
+            authUser: authUser,
         });
-
-        ManualValidator.validate(request);
 
         return request;
     }

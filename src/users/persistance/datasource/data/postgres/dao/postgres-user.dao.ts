@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from '../models/user.model';
-import { In, Not, Repository } from 'typeorm';
-import { User, UserStatus } from 'src/commons';
+import { ArrayContains, In, Not, Repository } from 'typeorm';
+import { Role, User, UserStatus, Page } from 'src/commons';
 import { UserEntityMapper } from '../mapper/user-entity.mapper';
 
 @Injectable()
@@ -58,5 +58,27 @@ export class PostgresUserDao {
     public async delete(id: string): Promise<boolean> {
         const result = await this.typeRepository.delete(id);
         return (result.affected ?? 0) > 0;
+    }
+
+    public async findInactiveOwnersPaginated(
+        page: number,
+        size: number,
+    ): Promise<Page<UserModel>> {
+        const skip: number = (page - 1) * size;
+
+        const [userModels, itemCount] =
+            await this.typeRepository.findAndCount({
+                where: {
+                    status: UserStatus.INACTIVE,
+                    roles: ArrayContains([Role.OWNER]),
+                },
+                skip: skip,
+                take: size,
+                order: {
+                    createdAt: 'DESC',
+                },
+            });
+
+        return new Page(userModels, itemCount, page, size);
     }
 }
