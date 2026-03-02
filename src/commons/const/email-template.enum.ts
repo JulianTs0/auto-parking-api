@@ -4,6 +4,7 @@ export enum EmailFiles {
 
 export enum Subjects {
     EMAIL_VALIDATION = 'Validacion de mail',
+    OWNER_REQUEST = 'Peticion de acceso al sistema',
 }
 
 export interface EmailTemplate {
