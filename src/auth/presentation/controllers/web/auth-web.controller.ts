@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { User, ApiEndpoint, AuthUser } from 'src/commons';
-import { AuthWebServiceI } from 'src/auth/domain/services/web/auth-web-service.interface';
-import { RegisterReq } from 'src/auth/domain/dto/auth/request/register.request.dto';
-import { AuthGuard } from 'src/auth/config/guards/auth.guard';
-import { AcceptOwnerRequestBody } from 'src/auth/domain/dto/auth/request/accept-owner-request.body.dto';
-import { AuthMapper } from 'src/auth/domain/dto/auth/mapper/auth.mapper';
+import { AuthWebServiceI } from '../../../domain/services/web/auth-web-service.interface';
+import { RegisterReq } from '../../../domain/dto/auth/request/register.request.dto';
+import { AcceptOwnerRequestBody } from '../../../domain/dto/auth/request/accept-owner-request.body.dto';
+import { AuthGuard } from '../../../config/guards/auth.guard';
+import { AuthMapper } from '../../../domain/dto/auth/mapper/auth.mapper';
 
 @ApiTags('auth/web')
 @Controller('web/auth')
