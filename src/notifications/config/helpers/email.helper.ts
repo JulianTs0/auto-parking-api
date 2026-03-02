@@ -6,11 +6,11 @@ import {
     EmailTemplate,
     EmailTemplates,
 } from 'src/commons';
-import { EnvConfigService } from 'src/config/env.service';
+import { EnvConfigService } from 'src/config';
 
 @Injectable()
 export class EmailHelper {
-    constructor(private readonly configService: EnvConfigService) {}
+    constructor(private readonly configService: EnvConfigService) { }
 
     public getEmployeeRegister(token: string): string {
         const file: string = EmailFiles.DEFAULT;
