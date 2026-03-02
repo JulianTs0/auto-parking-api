@@ -2,8 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { ClsServiceManager } from 'nestjs-cls';
-import { EnvConfigService } from 'src/config/env.service';
-import { AppConfigModule } from 'src/config/config.module';
+import { AppConfigModule, EnvConfigService } from 'src/config';
 
 const correlationIdFormat = winston.format((info) => {
     const cls = ClsServiceManager.getClsService();
