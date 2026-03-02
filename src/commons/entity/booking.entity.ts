@@ -36,9 +36,10 @@ export class Booking {
         booking.subscription = Subscription.fromObject(
             object.subscription,
         );
-        booking.statusLogs = object.statusLogs
-            ?.map((s: any) => StatusLog.fromObject(s))
-            .filter((s): s is StatusLog => s !== null) || [];
+        booking.statusLogs =
+            object.statusLogs
+                ?.map((s: any) => StatusLog.fromObject(s))
+                .filter((s): s is StatusLog => s !== null) || [];
         booking.payment = Payment.fromObject(object.payment);
         return booking;
     }

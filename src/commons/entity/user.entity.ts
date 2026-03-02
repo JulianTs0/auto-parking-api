@@ -80,6 +80,10 @@ export class User {
         return this.status == UserStatus.INACTIVE;
     }
 
+    public isActive(): boolean {
+        return this.status == UserStatus.ACTIVE;
+    }
+
     public isAdmin(): boolean {
         return this.roles.has(Role.ADMIN);
     }

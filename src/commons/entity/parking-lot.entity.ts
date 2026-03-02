@@ -24,15 +24,18 @@ export class ParkingLot {
         parkingLot.name = object.name;
         parkingLot.address = object.address;
         parkingLot.gracePeriodMinutes = object.gracePeriodMinutes;
-        parkingLot.spots = object.spots
-            ?.map((s: any) => ParkingSpot.fromObject(s))
-            .filter((s): s is ParkingSpot => s !== null) || [];
-        parkingLot.shifts = object.shifts
-            ?.map((s: any) => Shift.fromObject(s))
-            .filter((s): s is Shift => s !== null) || [];
-        parkingLot.pricingRules = object.pricingRules
-            ?.map((p: any) => PricingRule.fromObject(p))
-            .filter((p): p is PricingRule => p !== null) || [];
+        parkingLot.spots =
+            object.spots
+                ?.map((s: any) => ParkingSpot.fromObject(s))
+                .filter((s): s is ParkingSpot => s !== null) || [];
+        parkingLot.shifts =
+            object.shifts
+                ?.map((s: any) => Shift.fromObject(s))
+                .filter((s): s is Shift => s !== null) || [];
+        parkingLot.pricingRules =
+            object.pricingRules
+                ?.map((p: any) => PricingRule.fromObject(p))
+                .filter((p): p is PricingRule => p !== null) || [];
         return parkingLot;
     }
 
