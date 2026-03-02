@@ -5,7 +5,7 @@ import {
     IsString,
     Matches,
 } from 'class-validator';
-import { RegexValidators } from 'src/commons/config/regex.validator';
+import { RegexValidators } from 'src/commons';
 
 export class LoginReq {
     @ApiProperty({

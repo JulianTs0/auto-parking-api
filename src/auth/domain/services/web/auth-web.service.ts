@@ -1,11 +1,13 @@
-import { AuthServiceI, RegisterReq } from 'src/auth/domain';
+import { AcceptOwnerRequestReq } from '../../dto/auth/request/accept-owner-request.request.dto';
+import { AuthServiceI } from '../core/auth-service.interface';
+import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
-import { UserServiceI } from 'src/users/domain';
 import { Errors, Role, ServiceError, Token, User } from 'src/commons';
-import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
-import { EventPublisherI } from 'src/app-events/services/event-publisher.interface';
+import { AuthHelper } from '../../../config/helpers/auth.helper';
+import { UserServiceI } from 'src/users';
+import { EventPublisherI } from 'src/app-events';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
@@ -14,7 +16,7 @@ export class AuthWebService implements AuthWebServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async register(request: RegisterReq) {
@@ -34,21 +36,42 @@ export class AuthWebService implements AuthWebServiceI {
             Role.OWNER,
         ]);
 
-        const saved: User = await this.userService.saveUser(user);
-
-        const token: Token = await this.authHelper.createToken(saved);
-
-        this.eventPublisher.emit('auth.web.register', {
-            user: saved,
-            token,
-        });
+        await this.userService.saveUser(user);
 
         return Promise.resolve();
     }
 
-    public async recoverPassword(): Promise<void> {}
+    public async acceptOwnerRequest(
+        request: AcceptOwnerRequestReq,
+    ): Promise<void> {
+        if (!request.authUser.isAdmin()) {
+            throw new ServiceError(Errors.FORBIDDEN);
+        }
 
-    public async changePassword(): Promise<void> {}
+        const user: User | null =
+            await this.userService.findUserByEmail(
+                request.body.ownerEmail,
+            );
 
-    public async registerEmployee(): Promise<void> {}
+        if (!user) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        if (!user.isInactive || user.roles.has(Role.OWNER)) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        const token: Token = await this.authHelper.createToken(user);
+
+        await this.eventPublisher.emit('auth.register', {
+            user: user,
+            token,
+        });
+    }
+
+    public async recoverPassword(): Promise<void> { }
+
+    public async changePassword(): Promise<void> { }
+
+    public async registerEmployee(): Promise<void> { }
 }

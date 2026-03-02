@@ -1,11 +1,18 @@
-import { AuthServiceI, RegisterReq } from 'src/auth/domain';
+import { AuthServiceI } from '../core/auth-service.interface';
+import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthMobileServiceI } from './auth-mobile-service.interface';
 import { Injectable } from '@nestjs/common';
-import { UserServiceI } from 'src/users/domain';
-import { Errors, Role, ServiceError, Token, User } from 'src/commons';
+import { UserServiceI } from '../../../../users/domain/services/core/user-service.interface';
+import {
+    Errors,
+    Role,
+    ServiceError,
+    Token,
+    User,
+} from '../../../../commons';
 import { Transactional } from '@nestjs-cls/transactional';
-import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
-import { EventPublisherI } from 'src/app-events/services/event-publisher.interface';
+import { AuthHelper } from '../../../config/helpers/auth.helper';
+import { EventPublisherI } from '../../../../app-events/services/event-publisher.interface';
 
 @Injectable()
 export class AuthMobileService implements AuthMobileServiceI {
@@ -34,7 +41,7 @@ export class AuthMobileService implements AuthMobileServiceI {
 
         const token: Token = await this.authHelper.createToken(saved);
 
-        this.eventPublisher.emit('auth.mobile.register', {
+        this.eventPublisher.emit('auth.register', {
             user: saved,
             token,
         });

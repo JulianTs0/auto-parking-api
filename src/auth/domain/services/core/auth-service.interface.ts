@@ -1,12 +1,10 @@
-import { User } from 'src/commons';
-import {
-    AuthReq,
-    AuthRes,
-    LoginReq,
-    LoginRes,
-    RegisterReq,
-} from 'src/auth/domain';
+import { AuthReq } from '../../dto/auth/request/auth.request.dto';
+import { AuthRes } from '../../dto/auth/response/auth.response.dto';
+import { LoginReq } from '../../dto/auth/request/login.request.dto';
+import { LoginRes } from '../../dto/auth/response/login.response.dto';
+import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto';
+import { User } from 'src/commons';
 
 export abstract class AuthServiceI {
     abstract auth(request: AuthReq): Promise<AuthRes>;

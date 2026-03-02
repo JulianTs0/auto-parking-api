@@ -1,14 +1,16 @@
-import {
-    AuthMapper,
-    AuthReq,
-    AuthRes,
-    LoginReq,
-    LoginRes,
-    RegisterReq,
-} from 'src/auth/domain';
-import { UserServiceI } from 'src/users/domain';
 import { AuthServiceI } from './auth-service.interface';
 import { Injectable } from '@nestjs/common';
+import { AuthHelper } from '../../../config/helpers/auth.helper';
+import { Transactional } from '@nestjs-cls/transactional';
+import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto';
+import { AuthRes } from '../../dto/auth/response/auth.response.dto';
+import { AuthReq } from '../../dto/auth/request/auth.request.dto';
+import { AuthMapper } from '../../dto/auth/mapper/auth.mapper';
+import { LoginReq } from '../../dto/auth/request/login.request.dto';
+import { LoginRes } from '../../dto/auth/response/login.response.dto';
+import { RegisterReq } from '../../dto/auth/request/register.request.dto';
+import { UserServiceI } from 'src/users';
+import { EventPublisherI } from 'src/app-events';
 import {
     Errors,
     IdGenerator,
@@ -17,15 +19,13 @@ import {
     User,
     UserStatus,
 } from 'src/commons';
-import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
-import { Transactional } from '@nestjs-cls/transactional';
-import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
     constructor(
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
+        private readonly eventPublisher: EventPublisherI,
     ) { }
 
     @Transactional()
@@ -115,7 +115,24 @@ export class AuthService implements AuthServiceI {
         return user;
     }
 
-    public async resendVerifyEmail(): Promise<void> { }
+    @Transactional()
+    public async resendVerifyEmail(): Promise<void> {
+        const user: User | null =
+            await this.userService.findUserByEmail('email');
+
+        if (!user) return;
+
+        if (user.isActive()) {
+            throw new ServiceError(Errors.USER_ALREADY_ACTIVATED);
+        }
+
+        const token: Token = await this.authHelper.createToken(user);
+
+        await this.eventPublisher.emit('auth.register', {
+            user: user,
+            token,
+        });
+    }
 
     @Transactional()
     public async verifyEmail(request: VerifyEmailReq): Promise<void> {

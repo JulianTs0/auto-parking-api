@@ -1,36 +1,29 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { AppConfigModule } from 'src/config/config.module';
-import { UsersModule } from 'src/users/users.module';
 
-// Config
-import {
-    BcryptEncoder,
-    JWTHandler,
-    PasswordEncoderI,
-    TokenHandlerI,
-    AuthHelper,
-    AuthGuard,
-} from './config';
+import { UsersModule } from 'src/users';
+import { NotificationsModule } from 'src/notifications';
+import { AppConfigModule } from 'src/config';
+import { AppEventsModule } from 'src/app-events';
 
-// Domain Imports
-import {
-    AuthServiceI,
-    AuthWebServiceI,
-    AuthMobileServiceI,
-    AuthService,
-    AuthWebService,
-    AuthMobileService,
-} from './domain';
+import { BcryptEncoder } from './config/providers/bcrypt-encoder.provider';
+import { JWTHandler } from './config/providers/jwt-handler.provider';
+import { PasswordEncoderI } from './config/providers/password-encoder.interface';
+import { TokenHandlerI } from './config/providers/token-handler.interface';
+import { AuthHelper } from './config/helpers/auth.helper';
+import { AuthGuard } from './config/guards/auth.guard';
 
-// Presentation
-import {
-    AuthWebController,
-    AuthMobileController,
-    AuthCoreController,
-} from './presentation';
-import { NotificationsModule } from 'src/notifications/notifications.module';
-import { AppEventsModule } from 'src/app-events/app-events.module';
+import { AuthServiceI } from './domain/services/core/auth-service.interface';
+import { AuthWebServiceI } from './domain/services/web/auth-web-service.interface';
+import { AuthMobileServiceI } from './domain/services/mobile/auth-mobile-service.interface';
+import { AuthService } from './domain/services/core/auth.service';
+import { AuthWebService } from './domain/services/web/auth-web.service';
+import { AuthMobileService } from './domain/services/mobile/auth-mobile.service';
+
+import { AuthWebController } from './presentation/controllers/web/auth-web.controller';
+import { AuthMobileController } from './presentation/controllers/mobile/auth-mobile.controller';
+import { AuthCoreController } from './presentation/controllers/core/auth-core.controller';
+
 @Module({
     imports: [
         forwardRef(() => UsersModule),
@@ -90,4 +83,4 @@ import { AppEventsModule } from 'src/app-events/app-events.module';
         AuthGuard,
     ],
 })
-export class AuthModule {}
+export class AuthModule { }

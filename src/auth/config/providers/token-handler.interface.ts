@@ -9,5 +9,5 @@ export abstract class TokenHandlerI {
 
     abstract getSubject(token: string): Promise<string>;
 
-    abstract getExpirationDate(token: String): Promise<Date>;
+    abstract getExpirationDate(token: string): Promise<Date>;
 }

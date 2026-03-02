@@ -6,15 +6,16 @@ import {
     Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthMobileServiceI, RegisterReq } from 'src/auth/domain';
-import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
+import { AuthMobileServiceI } from '../../../domain/services/mobile/auth-mobile-service.interface';
+import { RegisterReq } from '../../../domain/dto/auth/request/register.request.dto';
+import { ApiEndpoint } from 'src/commons';
 
 @ApiTags('auth/mobile')
 @Controller('mobile/auth')
 export class AuthMobileController {
     constructor(
         private readonly authMobileService: AuthMobileServiceI,
-    ) {}
+    ) { }
 
     @ApiEndpoint({
         summary: 'Registrar usuario',

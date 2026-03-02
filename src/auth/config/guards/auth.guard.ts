@@ -4,11 +4,11 @@ import {
     ExecutionContext,
 } from '@nestjs/common';
 import { User } from 'src/commons';
-import { AuthServiceI } from 'src/auth/domain';
+import { AuthServiceI } from '../../domain/services/core/auth-service.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(private authService: AuthServiceI) {}
+    constructor(private readonly authService: AuthServiceI) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();

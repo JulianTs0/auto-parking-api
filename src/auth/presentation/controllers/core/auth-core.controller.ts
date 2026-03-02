@@ -6,15 +6,13 @@ import {
     Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-    AuthReq,
-    AuthRes,
-    AuthServiceI,
-    LoginReq,
-    LoginRes,
-} from 'src/auth/domain';
-import { VerifyEmailReq } from 'src/auth/domain/dto/auth/request/verify-email.request.dto';
-import { ApiEndpoint } from 'src/commons/decorators/api-endpoint.decorator';
+import { AuthReq } from '../../../domain/dto/auth/request/auth.request.dto';
+import { AuthRes } from '../../../domain/dto/auth/response/auth.response.dto';
+import { AuthServiceI } from '../../../domain/services/core/auth-service.interface';
+import { LoginReq } from '../../../domain/dto/auth/request/login.request.dto';
+import { LoginRes } from '../../../domain/dto/auth/response/login.response.dto';
+import { VerifyEmailReq } from '../../../domain/dto/auth/request/verify-email.request.dto';
+import { ApiEndpoint } from 'src/commons';
 
 @ApiTags('auth/core')
 @Controller('auth')
