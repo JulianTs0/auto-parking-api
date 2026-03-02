@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EmailServiceI } from './email-service.interface';
 import { type Transporter } from 'nodemailer';
-import { EnvConfigService } from 'src/config/env.service';
-import { EmailHelper } from 'src/notifications/config/helpers/email.helper';
+import { EmailHelper } from '../../../config/helpers/email.helper';
 import { SendMailReq } from '../../dto/email/request/send-mail.request.dto';
-import { ValidateDto } from 'src/commons/decorators/validate-dto.decorator';
-import { MAIL_TRANSPORTER } from 'src/commons/const/app.const';
+import { ValidateDto, MAIL_TRANSPORTER } from 'src/commons';
+import { EnvConfigService } from 'src/config';
 
 @Injectable()
 export class EmailService implements EmailServiceI {

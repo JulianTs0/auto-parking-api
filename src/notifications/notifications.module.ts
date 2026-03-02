@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
-import { AppConfigModule } from 'src/config/config.module';
-import { EnvConfigService } from 'src/config/env.service';
 import { EmailService } from './domain/services/core/email.service';
 import { EmailHelper } from './config/helpers/email.helper';
 import { EmailServiceI } from './domain/services/core/email-service.interface';
-import { MAIL_TRANSPORTER } from 'src/commons/const/app.const';
+import { MAIL_TRANSPORTER } from 'src/commons';
 import { EmailSuscriber } from './application/suscribers/email.suscriber';
+import { AppConfigModule, EnvConfigService } from 'src/config';
 
 @Module({
     imports: [AppConfigModule],
@@ -37,4 +36,4 @@ import { EmailSuscriber } from './application/suscribers/email.suscriber';
     ],
     exports: [MAIL_TRANSPORTER, EmailServiceI, EmailService],
 })
-export class NotificationsModule {}
+export class NotificationsModule { }

@@ -5,21 +5,12 @@ import {
     EmailFiles,
     EmailTemplate,
     EmailTemplates,
-} from 'src/commons/const/email-template.enum';
+} from 'src/commons';
 import { EnvConfigService } from 'src/config/env.service';
 
 @Injectable()
 export class EmailHelper {
-    constructor(private readonly configService: EnvConfigService) { }
-
-    public getOwnerRequest(token: string): string {
-        const file: string = EmailFiles.DEFAULT;
-        const template: EmailTemplate = EmailTemplates.OWNER_REQUEST;
-        const link: string =
-            this.configService.serverUrl + '/auth/admin/req' + token;
-
-        return this.buildEmailTemplate(file, template, link);
-    }
+    constructor(private readonly configService: EnvConfigService) {}
 
     public getEmployeeRegister(token: string): string {
         const file: string = EmailFiles.DEFAULT;
