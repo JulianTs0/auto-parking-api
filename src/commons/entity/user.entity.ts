@@ -71,17 +71,17 @@ export class User {
 
     public isDeleted(): boolean {
         return (
-            this.status == UserStatus.DELETED ||
-            this.status == UserStatus.BANNED
+            this.status === UserStatus.DELETED ||
+            this.status === UserStatus.BANNED
         );
     }
 
     public isInactive(): boolean {
-        return this.status == UserStatus.INACTIVE;
+        return this.status === UserStatus.INACTIVE;
     }
 
     public isActive(): boolean {
-        return this.status == UserStatus.ACTIVE;
+        return this.status === UserStatus.ACTIVE;
     }
 
     public isAdmin(): boolean {
