@@ -2,7 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EmailServiceI } from './email-service.interface';
 import { type Transporter } from 'nodemailer';
 import { EmailHelper } from '../../../config/helpers/email.helper';
-import { SendMailReq } from '../../dto/email/request/send-mail.request.dto';
+import { SendVerifyMailReq } from '../../dto/email/request/send-mail.request.dto';
+import { SendEmployeeRegistrationMailReq } from '../../dto/email/request/send-employee-registration-mail.request.dto';
 import { ValidateDto, MAIL_TRANSPORTER } from 'src/commons';
 import { EnvConfigService } from 'src/config';
 
@@ -13,7 +14,7 @@ export class EmailService implements EmailServiceI {
         private readonly transporter: Transporter,
         private readonly configService: EnvConfigService,
         private readonly emailHelper: EmailHelper,
-    ) { }
+    ) {}
 
     private async sendMail(
         to: string,
@@ -30,12 +31,29 @@ export class EmailService implements EmailServiceI {
         return Promise.resolve();
     }
 
-    @ValidateDto(SendMailReq)
-    public async sendVerifyMail(request: SendMailReq): Promise<void> {
+    @ValidateDto(SendVerifyMailReq)
+    public async sendVerifyMail(
+        request: SendVerifyMailReq,
+    ): Promise<void> {
         const template: string =
             this.emailHelper.getEmailVerification(
                 request.token.accessToken,
             );
+
+        await this.sendMail(request.to, request.subject, template);
+
+        return Promise.resolve();
+    }
+
+    @ValidateDto(SendEmployeeRegistrationMailReq)
+    public async sendEmployeeRegistrationMail(
+        request: SendEmployeeRegistrationMailReq,
+    ): Promise<void> {
+        const template: string = this.emailHelper.getEmployeeRegister(
+            request.token.accessToken,
+            request.ownerFullName,
+            request.ownerEmail,
+        );
 
         await this.sendMail(request.to, request.subject, template);
 

@@ -1,5 +1,12 @@
-import { SendMailReq } from '../../dto/email/request/send-mail.request.dto';
+import { SendVerifyMailReq } from '../../dto/email/request/send-mail.request.dto';
+import { SendEmployeeRegistrationMailReq } from '../../dto/email/request/send-employee-registration-mail.request.dto';
 
 export abstract class EmailServiceI {
-    abstract sendVerifyMail(request: SendMailReq): Promise<void>;
+    abstract sendVerifyMail(
+        request: SendVerifyMailReq,
+    ): Promise<void>;
+
+    abstract sendEmployeeRegistrationMail(
+        request: SendEmployeeRegistrationMailReq,
+    ): Promise<void>;
 }

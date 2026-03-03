@@ -18,4 +18,20 @@ export class EmailSuscriber {
             token: payload.token,
         });
     }
+
+    @OnEvent('auth.employee.register', { async: true })
+    public async handleEmployeeRegistere(payload: {
+        user: User;
+        token: Token;
+        ownerFullName: string;
+        ownerEmail: string;
+    }) {
+        await this.emailService.sendEmployeeRegistrationMail({
+            to: payload.user.email,
+            subject: Subjects.EMAIL_VALIDATION,
+            token: payload.token,
+            ownerFullName: payload.ownerFullName,
+            ownerEmail: payload.ownerEmail,
+        });
+    }
 }

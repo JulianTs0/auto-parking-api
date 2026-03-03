@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
     IsEmail,
@@ -8,7 +7,7 @@ import {
 } from 'class-validator';
 import { Token } from 'src/commons';
 
-export class SendVerifyMailReq {
+export class SendEmployeeRegistrationMailReq {
     @IsNotEmpty()
     @IsString()
     @IsEmail()
@@ -22,7 +21,16 @@ export class SendVerifyMailReq {
     @Type(() => Token)
     readonly token: Token;
 
-    constructor(init?: Partial<SendVerifyMailReq>) {
+    @IsNotEmpty()
+    @IsString()
+    @IsEmail()
+    readonly ownerEmail: string;
+
+    @IsNotEmpty()
+    @IsString()
+    readonly ownerFullName: string;
+
+    constructor(init?: Partial<SendEmployeeRegistrationMailReq>) {
         Object.assign(this, init);
     }
 }
