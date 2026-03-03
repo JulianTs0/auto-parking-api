@@ -16,7 +16,7 @@ export class AuthWebService implements AuthWebServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async register(request: RegisterReq) {
@@ -57,7 +57,7 @@ export class AuthWebService implements AuthWebServiceI {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
-        if (!user.isInactive || user.roles.has(Role.OWNER)) {
+        if (!user.isInactive || !user.roles.has(Role.OWNER)) {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
@@ -69,9 +69,9 @@ export class AuthWebService implements AuthWebServiceI {
         });
     }
 
-    public async recoverPassword(): Promise<void> { }
+    public async recoverPassword(): Promise<void> {}
 
-    public async changePassword(): Promise<void> { }
+    public async changePassword(): Promise<void> {}
 
-    public async registerEmployee(): Promise<void> { }
+    public async registerEmployee(): Promise<void> {}
 }

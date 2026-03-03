@@ -26,7 +26,7 @@ export class AuthService implements AuthServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {
@@ -161,7 +161,7 @@ export class AuthService implements AuthServiceI {
         this.userService.updateUser(user);
     }
 
-    public async recoverPassword(): Promise<void> { }
+    public async recoverPassword(): Promise<void> {}
 
-    public async changePassword(): Promise<void> { }
+    public async changePassword(): Promise<void> {}
 }
