@@ -14,11 +14,12 @@ import { RegisterReq } from '../../../domain/dto/auth/request/register.request.d
 import { AcceptOwnerRequestBody } from '../../../domain/dto/auth/request/accept-owner-request.body.dto';
 import { AuthGuard } from '../../../config/guards/auth.guard';
 import { AuthMapper } from '../../../domain/dto/auth/mapper/auth.mapper';
+import { AcceptOwnerRequestReq } from 'src/auth/domain/dto/auth/request/accept-owner-request.request.dto';
 
 @ApiTags('auth/web')
 @Controller('web/auth')
 export class AuthWebController {
-    constructor(private readonly authWebService: AuthWebServiceI) { }
+    constructor(private readonly authWebService: AuthWebServiceI) {}
 
     @ApiEndpoint({
         summary: 'Registrar usuario',
@@ -32,9 +33,15 @@ export class AuthWebController {
         return await this.authWebService.register(request);
     }
 
+    @ApiEndpoint({
+        summary: '',
+        description: '',
+        type: AcceptOwnerRequestReq,
+        isAuth: true,
+    })
     @Patch('/accept/owner')
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard)
     async acceptOwnerRequest(
         @Body() body: AcceptOwnerRequestBody,
         @AuthUser() authUser: User,
