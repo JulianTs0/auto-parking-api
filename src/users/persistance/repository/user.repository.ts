@@ -7,7 +7,7 @@ import { UserModel } from '../datasource/data/postgres/models/user.model';
 
 @Injectable()
 export class UserRepository implements UserRepositoryI {
-    constructor(private readonly dao: PostgresUserDao) { }
+    constructor(private readonly dao: PostgresUserDao) {}
 
     public async findById(id: string): Promise<User | null> {
         const model = await this.dao.findById(id);
@@ -29,7 +29,7 @@ export class UserRepository implements UserRepositoryI {
         page: number,
     ): Promise<PageContent<User>> {
         const models: Page<UserModel> =
-            await this.dao.findInactiveOwnersPaginated(size, page);
+            await this.dao.findInactiveOwnersPaginated(page, size);
 
         return new PageContent<User>({
             content: UserEntityMapper.toDomainList(models.content),
