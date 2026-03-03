@@ -36,4 +36,4 @@ import { AppConfigModule, EnvConfigService } from 'src/config';
     ],
     exports: [MAIL_TRANSPORTER, EmailServiceI, EmailService],
 })
-export class NotificationsModule { }
+export class NotificationsModule {}

@@ -83,4 +83,4 @@ import { AuthCoreController } from './presentation/controllers/core/auth-core.co
         AuthGuard,
     ],
 })
-export class AuthModule { }
+export class AuthModule {}

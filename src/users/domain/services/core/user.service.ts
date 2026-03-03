@@ -16,7 +16,7 @@ export class UserService implements UserServiceI {
     constructor(
         private readonly userRepository: UserRepositoryI,
         private readonly authHepler: AuthHelper,
-    ) { }
+    ) {}
 
     @Transactional()
     public async getById(request: GetByIdReq): Promise<GetByIdRes> {

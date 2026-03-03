@@ -65,4 +65,4 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
     ],
     exports: [UserService, UserRepository, UserServiceI],
 })
-export class UsersModule { }
+export class UsersModule {}
