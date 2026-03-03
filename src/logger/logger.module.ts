@@ -70,4 +70,4 @@ const productionFormat = winston.format.combine(
     ],
     exports: [WinstonModule],
 })
-export class AppLoggerModule { }
+export class AppLoggerModule {}

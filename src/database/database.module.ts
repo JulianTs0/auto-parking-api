@@ -21,4 +21,4 @@ import { AppConfigModule, EnvConfigService } from 'src/config';
     ],
     exports: [TypeOrmModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}
