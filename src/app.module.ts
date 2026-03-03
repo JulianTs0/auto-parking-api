@@ -56,4 +56,4 @@ import { AppEventsModule } from './app-events';
         },
     ],
 })
-export class AppModule { }
+export class AppModule {}
