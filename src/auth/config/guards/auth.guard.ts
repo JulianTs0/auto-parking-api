@@ -3,7 +3,7 @@ import {
     CanActivate,
     ExecutionContext,
 } from '@nestjs/common';
-import { User } from 'src/commons';
+import { Errors, ServiceError, User } from 'src/commons';
 import { AuthServiceI } from '../../domain/services/core/auth-service.interface';
 
 @Injectable()
@@ -13,7 +13,12 @@ export class AuthGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request: Request = context.switchToHttp().getRequest();
 
-        const authHeader: string = request.headers['authorization'];
+        const authHeader: string | null =
+            request.headers['authorization'];
+
+        if (!authHeader) {
+            throw new ServiceError(Errors.UNAUTHORIZED);
+        }
 
         const user: User =
             await this.authService.validateToken(authHeader);
