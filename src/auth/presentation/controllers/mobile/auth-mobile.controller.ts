@@ -15,7 +15,7 @@ import { ApiEndpoint } from 'src/commons';
 export class AuthMobileController {
     constructor(
         private readonly authMobileService: AuthMobileServiceI,
-    ) { }
+    ) {}
 
     @ApiEndpoint({
         summary: 'Registrar usuario',

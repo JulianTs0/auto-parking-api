@@ -8,6 +8,7 @@ import { Errors, Role, ServiceError, Token, User } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
 import { UserServiceI } from 'src/users';
 import { EventPublisherI } from 'src/app-events';
+import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
@@ -73,5 +74,45 @@ export class AuthWebService implements AuthWebServiceI {
 
     public async changePassword(): Promise<void> {}
 
-    public async registerEmployee(): Promise<void> {}
+    public async registerEmployee(
+        request: RegisterEmployeeReq,
+    ): Promise<void> {
+        if (!request.authUser.roles.has(Role.OWNER)) {
+            throw new ServiceError(Errors.FORBIDDEN);
+        }
+
+        const userCheck: User | null =
+            await this.userService.findUserByEmail(
+                request.body.email,
+            );
+
+        if (userCheck) {
+            // Logica alternativa
+
+            if (!userCheck.roles.has(Role.EMPLOYEE)) {
+                userCheck.roles.add(Role.EMPLOYEE);
+            }
+
+            await this.userService.updateUser(userCheck);
+
+            return;
+        }
+
+        const user: User = await this.authCoreService.buildUser(
+            request.body,
+        );
+
+        user.roles = new Set([Role.CLIENT, Role.EMPLOYEE]);
+
+        const saved: User = await this.userService.saveUser(user);
+
+        const token: Token = await this.authHelper.createToken(saved);
+
+        await this.eventPublisher.emit('auth.employee.register', {
+            user: saved,
+            token: token,
+            ownerFullName: request.authUser.fullName,
+            ownerEmail: request.authUser.email,
+        });
+    }
 }

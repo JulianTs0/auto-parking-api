@@ -1,6 +1,7 @@
 import { AcceptOwnerRequestMapper } from './implementation/accept-owner-request.mapper';
 import { AuthUserMapper } from './implementation/auth-user.mapper';
 import { LoginMapper } from './implementation/login.mapper';
+import { RegisterEmployeeMapper } from './implementation/register-employee.mapper';
 
 export class AuthMapper {
     public static auth(): AuthUserMapper {
@@ -13,5 +14,9 @@ export class AuthMapper {
 
     public static acceptOwnerRequest(): AcceptOwnerRequestMapper {
         return new AcceptOwnerRequestMapper();
+    }
+
+    public static registerEmployee(): RegisterEmployeeMapper {
+        return new RegisterEmployeeMapper();
     }
 }

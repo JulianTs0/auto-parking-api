@@ -17,7 +17,7 @@ import { ApiEndpoint } from 'src/commons';
 @ApiTags('auth/core')
 @Controller('auth')
 export class AuthCoreController {
-    constructor(private readonly authCoreService: AuthServiceI) { }
+    constructor(private readonly authCoreService: AuthServiceI) {}
 
     @ApiEndpoint({
         summary: 'Iniciar sesión',
