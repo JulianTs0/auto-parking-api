@@ -10,7 +10,7 @@ import { AuthGuard } from 'src/auth';
 @ApiTags('users/web')
 @Controller('web/users')
 export class UserWebController {
-    constructor(private readonly userWebService: UserWebServiceI) { }
+    constructor(private readonly userWebService: UserWebServiceI) {}
 
     @ApiEndpoint({
         summary: 'Obtener solicitudes de propietario',
@@ -34,8 +34,8 @@ export class UserWebController {
             },
         ],
     })
-    @UseGuards(AuthGuard)
     @Get('owner/requests')
+    @UseGuards(AuthGuard)
     public async getOwnerRequest(
         @Query() query: GetOwnerRequestQuery,
         @AuthUser() authUser: User,

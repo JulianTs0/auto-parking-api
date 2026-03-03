@@ -23,7 +23,7 @@ import { DeleteBody } from '../../../domain/dto/users/request/delete.body.dto';
 @ApiTags('users/core')
 @Controller('users')
 export class UserCoreController {
-    constructor(private readonly userCoreService: UserServiceI) { }
+    constructor(private readonly userCoreService: UserServiceI) {}
 
     @ApiEndpoint({
         summary: 'Obtener usuario por ID',
