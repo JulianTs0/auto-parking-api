@@ -32,7 +32,7 @@ export const EmailTemplates: Record<string, EmailTemplate> = {
     EMPLOYEE_VERIFY: {
         title: 'Registro de empleado',
         message:
-            'Su empleador se comunico con el sistema y quiere que se una a trabajar con el en el parking',
+            'Su empleador se comunico con el sistema y quiere que se una a trabajar con el en el parking\n Los datos del empleador son:\n ',
         buttonText: 'Suscribirme como empleado',
         defaultLink: 'https://autoparking.com/login',
     },
