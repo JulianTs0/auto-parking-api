@@ -30,7 +30,7 @@ export class AuthService implements AuthServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {

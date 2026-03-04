@@ -5,6 +5,8 @@ import { ArrayContains, In, Not, Repository } from 'typeorm';
 import { Role, User, UserStatus, Page } from 'src/commons';
 import { UserEntityMapper } from '../mapper/user-entity.mapper';
 
+const EXCLUDED_STATUSES = [UserStatus.DELETED, UserStatus.BANNED];
+
 @Injectable()
 export class PostgresUserDao {
     constructor(
@@ -14,7 +16,10 @@ export class PostgresUserDao {
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({
-            where: { id: id },
+            where: {
+                id: id,
+                status: Not(In(EXCLUDED_STATUSES)),
+            },
         });
         return model;
     }
@@ -23,7 +28,10 @@ export class PostgresUserDao {
         email: string,
     ): Promise<UserModel | null> {
         return await this.typeRepository.findOne({
-            where: { email: email },
+            where: {
+                email: email,
+                status: Not(In(EXCLUDED_STATUSES)),
+            },
         });
     }
 
@@ -31,15 +39,16 @@ export class PostgresUserDao {
         return await this.typeRepository.exists({
             where: {
                 email: email,
-                status: Not(
-                    In([UserStatus.DELETED, UserStatus.BANNED]),
-                ),
             },
         });
     }
 
     public async findAll(): Promise<UserModel[]> {
-        const models = await this.typeRepository.find();
+        const models = await this.typeRepository.find({
+            where: {
+                status: Not(In(EXCLUDED_STATUSES)),
+            },
+        });
         return models;
     }
 
