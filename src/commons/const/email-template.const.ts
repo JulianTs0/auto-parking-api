@@ -5,6 +5,7 @@ export enum EmailFiles {
 export enum Subjects {
     EMAIL_VALIDATION = 'Validacion de mail',
     OWNER_REQUEST = 'Peticion de acceso al sistema',
+    RECOVER_PASSWORD = 'Recuperacion de contraseña',
 }
 
 export interface EmailTemplate {

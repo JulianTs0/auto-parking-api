@@ -1,5 +1,5 @@
 export * from './const/app.const';
-export * from './const/email-template.enum';
+export * from './const/email-template.const';
 export * from './const/log-status.enum';
 export * from './const/payment-type.enum';
 export * from './const/role.enum';
