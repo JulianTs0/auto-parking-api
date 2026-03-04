@@ -19,6 +19,7 @@ import { RecoverPasswordReq } from 'src/auth/domain/dto/auth/request/recover-pas
 import { EditPasswordBody } from 'src/auth/domain/dto/auth/request/edit-password.body.dto';
 import { AuthGuard } from 'src/auth/config/guards/auth.guard';
 import { AuthMapper } from 'src/auth/domain/dto/auth/mapper/auth.mapper';
+import { ResendEmailReq } from 'src/auth/domain/dto/auth/request/resend-email.request.dto';
 
 @ApiTags('auth/core')
 @Controller('auth')
@@ -75,6 +76,18 @@ export class AuthCoreController {
         @Body() request: RecoverPasswordReq,
     ): Promise<void> {
         await this.authCoreService.recoverPassword(request);
+    }
+
+    @ApiEndpoint({
+        summary: 'Reenvia el mail de registro',
+        description: 'Reenvia el mail de registro',
+        body: ResendEmailReq,
+    })
+    @Post('/email/resend')
+    public async resendEmail(
+        @Body() request: ResendEmailReq,
+    ): Promise<void> {
+        await this.authCoreService.resendVerifyEmail(request);
     }
 
     @ApiEndpoint({

@@ -22,6 +22,7 @@ import {
 } from 'src/commons';
 import { RecoverPasswordReq } from '../../dto/auth/request/recover-password.request.dto';
 import { EditPasswordReq } from '../../dto/auth/request/edit-password.request.dto';
+import { ResendEmailReq } from '../../dto/auth/request/resend-email.request.dto';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
@@ -29,7 +30,7 @@ export class AuthService implements AuthServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {
@@ -119,9 +120,11 @@ export class AuthService implements AuthServiceI {
     }
 
     @Transactional()
-    public async resendVerifyEmail(): Promise<void> {
+    public async resendVerifyEmail(
+        request: ResendEmailReq,
+    ): Promise<void> {
         const user: User | null =
-            await this.userService.findUserByEmail('email');
+            await this.userService.findUserByEmail(request.email);
 
         if (!user) return;
 

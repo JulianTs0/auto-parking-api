@@ -7,13 +7,16 @@ import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto'
 import { User } from 'src/commons';
 import { RecoverPasswordReq } from '../../dto/auth/request/recover-password.request.dto';
 import { EditPasswordReq } from '../../dto/auth/request/edit-password.request.dto';
+import { ResendEmailReq } from '../../dto/auth/request/resend-email.request.dto';
 
 export abstract class AuthServiceI {
     abstract auth(request: AuthReq): Promise<AuthRes>;
     abstract validateToken(rawToken: string): Promise<User>;
     abstract login(request: LoginReq): Promise<LoginRes>;
     abstract buildUser(request: RegisterReq): Promise<User>;
-    abstract resendVerifyEmail(): Promise<void>;
+    abstract resendVerifyEmail(
+        request: ResendEmailReq,
+    ): Promise<void>;
     abstract verifyEmail(request: VerifyEmailReq): Promise<void>;
     abstract recoverPassword(
         request: RecoverPasswordReq,
