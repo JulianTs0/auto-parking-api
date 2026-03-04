@@ -30,6 +30,13 @@ export class UserCoreController {
         description: 'Obtiene los detalles de un usuario específico',
         type: GetByIdRes,
         isAuth: true,
+        pathParams: [
+            {
+                name: 'id',
+                description: 'Identificador único del usuario',
+                type: String,
+            },
+        ],
     })
     @UseGuards(AuthGuard)
     @Get(':id')
@@ -45,6 +52,14 @@ export class UserCoreController {
         type: EditRes,
         body: EditBody,
         isAuth: true,
+        pathParams: [
+            {
+                name: 'id',
+                description:
+                    'Identificador único del usuario a editar',
+                type: String,
+            },
+        ],
     })
     @UseGuards(AuthGuard)
     @Put(':id')
@@ -64,6 +79,14 @@ export class UserCoreController {
         status: HttpStatus.NO_CONTENT,
         body: DeleteBody,
         isAuth: true,
+        pathParams: [
+            {
+                name: 'id',
+                description:
+                    'Identificador único del usuario a eliminar',
+                type: String,
+            },
+        ],
     })
     @UseGuards(AuthGuard)
     @Delete(':id')
