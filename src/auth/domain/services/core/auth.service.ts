@@ -10,6 +10,7 @@ import { LoginReq } from '../../dto/auth/request/login.request.dto';
 import { LoginRes } from '../../dto/auth/response/login.response.dto';
 import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { UserServiceI } from 'src/users';
+import { AuthEvents } from 'src/auth';
 import { EventPublisherI } from 'src/app-events';
 import {
     Errors,
@@ -19,6 +20,8 @@ import {
     User,
     UserStatus,
 } from 'src/commons';
+import { RecoverPasswordReq } from '../../dto/auth/request/recover-password.request.dto';
+import { EditPasswordReq } from '../../dto/auth/request/edit-password.request.dto';
 
 @Injectable()
 export class AuthService implements AuthServiceI {
@@ -128,7 +131,7 @@ export class AuthService implements AuthServiceI {
 
         const token: Token = await this.authHelper.createToken(user);
 
-        await this.eventPublisher.emit('auth.register', {
+        await this.eventPublisher.emit(AuthEvents.REGISTER, {
             user: user,
             token,
         });
@@ -161,7 +164,35 @@ export class AuthService implements AuthServiceI {
         this.userService.updateUser(user);
     }
 
-    public async recoverPassword(): Promise<void> {}
+    @Transactional()
+    public async recoverPassword(
+        request: RecoverPasswordReq,
+    ): Promise<void> {
+        const user: User | null =
+            await this.userService.findUserByEmail(request.email);
 
-    public async changePassword(): Promise<void> {}
+        if (!user || user.status != UserStatus.ACTIVE) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        const token: Token = await this.authHelper.createToken(user);
+
+        await this.eventPublisher.emit(AuthEvents.RECOVER_PASSWORD, {
+            user: user,
+            token: token,
+        });
+    }
+
+    @Transactional()
+    public async changePassword(
+        request: EditPasswordReq,
+    ): Promise<void> {
+        const user: User = request.authUser;
+
+        user.passwordHash = await this.authHelper.hashPassword(
+            request.body.newPassword,
+        );
+
+        await this.userService.updateUser(user);
+    }
 }

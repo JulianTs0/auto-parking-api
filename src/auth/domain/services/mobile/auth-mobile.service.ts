@@ -3,13 +3,8 @@ import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthMobileServiceI } from './auth-mobile-service.interface';
 import { Injectable } from '@nestjs/common';
 import { UserServiceI } from '../../../../users/domain/services/core/user-service.interface';
-import {
-    Errors,
-    Role,
-    ServiceError,
-    Token,
-    User,
-} from '../../../../commons';
+import { AuthEvents } from 'src/auth';
+import { Errors, Role, ServiceError, Token, User } from 'src/commons';
 import { Transactional } from '@nestjs-cls/transactional';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
 import { EventPublisherI } from '../../../../app-events/services/event-publisher.interface';
@@ -41,15 +36,11 @@ export class AuthMobileService implements AuthMobileServiceI {
 
         const token: Token = await this.authHelper.createToken(saved);
 
-        this.eventPublisher.emit('auth.register', {
+        this.eventPublisher.emit(AuthEvents.REGISTER, {
             user: saved,
             token,
         });
 
         return Promise.resolve();
     }
-
-    public async recoverPassword(): Promise<void> {}
-
-    public async changePassword(): Promise<void> {}
 }

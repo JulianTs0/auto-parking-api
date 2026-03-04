@@ -6,6 +6,7 @@ import { SendVerifyMailReq } from '../../dto/email/request/send-mail.request.dto
 import { SendEmployeeRegistrationMailReq } from '../../dto/email/request/send-employee-registration-mail.request.dto';
 import { ValidateDto, MAIL_TRANSPORTER } from 'src/commons';
 import { EnvConfigService } from 'src/config';
+import { SendRecoverMailReq } from '../../dto/email/request/send-recover-mail.request.dto';
 
 @Injectable()
 export class EmailService implements EmailServiceI {
@@ -37,6 +38,20 @@ export class EmailService implements EmailServiceI {
     ): Promise<void> {
         const template: string =
             this.emailHelper.getEmailVerification(
+                request.token.accessToken,
+            );
+
+        await this.sendMail(request.to, request.subject, template);
+
+        return Promise.resolve();
+    }
+
+    @ValidateDto(SendRecoverMailReq)
+    public async sendRecoverMail(
+        request: SendRecoverMailReq,
+    ): Promise<void> {
+        const template: string =
+            this.emailHelper.getRecoverPasswordRequest(
                 request.token.accessToken,
             );
 

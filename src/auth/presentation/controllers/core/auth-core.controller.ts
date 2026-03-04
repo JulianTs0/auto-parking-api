@@ -4,6 +4,8 @@ import {
     Get,
     Headers,
     Patch,
+    Post,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthReq } from '../../../domain/dto/auth/request/auth.request.dto';
@@ -12,7 +14,11 @@ import { AuthServiceI } from '../../../domain/services/core/auth-service.interfa
 import { LoginReq } from '../../../domain/dto/auth/request/login.request.dto';
 import { LoginRes } from '../../../domain/dto/auth/response/login.response.dto';
 import { VerifyEmailReq } from '../../../domain/dto/auth/request/verify-email.request.dto';
-import { ApiEndpoint } from 'src/commons';
+import { ApiEndpoint, AuthUser, User } from 'src/commons';
+import { RecoverPasswordReq } from 'src/auth/domain/dto/auth/request/recover-password.request.dto';
+import { EditPasswordBody } from 'src/auth/domain/dto/auth/request/edit-password.body.dto';
+import { AuthGuard } from 'src/auth/config/guards/auth.guard';
+import { AuthMapper } from 'src/auth/domain/dto/auth/mapper/auth.mapper';
 
 @ApiTags('auth/core')
 @Controller('auth')
@@ -56,5 +62,35 @@ export class AuthCoreController {
         @Body() request: VerifyEmailReq,
     ): Promise<void> {
         await this.authCoreService.verifyEmail(request);
+    }
+
+    @ApiEndpoint({
+        summary: 'Recupera un token',
+        description:
+            'Recupera una token para poder cambiar la contraseña',
+        body: RecoverPasswordReq,
+    })
+    @Post('/recover')
+    public async recoverPassword(
+        @Body() request: RecoverPasswordReq,
+    ): Promise<void> {
+        await this.authCoreService.recoverPassword(request);
+    }
+
+    @ApiEndpoint({
+        summary: 'Cambia la contraseña',
+        description: 'Cambia la contraseña',
+        body: EditPasswordBody,
+        isAuth: true,
+    })
+    @Patch('/password')
+    @UseGuards(AuthGuard)
+    public async changePassword(
+        @Body() body: EditPasswordBody,
+        @AuthUser() authUser: User,
+    ): Promise<void> {
+        await this.authCoreService.changePassword(
+            AuthMapper.editPassword().toRequest(body, authUser),
+        );
     }
 }

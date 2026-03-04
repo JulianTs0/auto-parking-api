@@ -4,6 +4,7 @@ import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
+import { AuthEvents } from 'src/auth';
 import { Errors, Role, ServiceError, Token, User } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
 import { UserServiceI } from 'src/users';
@@ -64,15 +65,11 @@ export class AuthWebService implements AuthWebServiceI {
 
         const token: Token = await this.authHelper.createToken(user);
 
-        await this.eventPublisher.emit('auth.register', {
+        await this.eventPublisher.emit(AuthEvents.REGISTER, {
             user: user,
             token,
         });
     }
-
-    public async recoverPassword(): Promise<void> {}
-
-    public async changePassword(): Promise<void> {}
 
     public async registerEmployee(
         request: RegisterEmployeeReq,
@@ -108,7 +105,7 @@ export class AuthWebService implements AuthWebServiceI {
 
         const token: Token = await this.authHelper.createToken(saved);
 
-        await this.eventPublisher.emit('auth.employee.register', {
+        await this.eventPublisher.emit(AuthEvents.EMPLOYEE_REGISTER, {
             user: saved,
             token: token,
             ownerFullName: request.authUser.fullName,

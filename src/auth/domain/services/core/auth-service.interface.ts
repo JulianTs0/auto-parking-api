@@ -5,6 +5,8 @@ import { LoginRes } from '../../dto/auth/response/login.response.dto';
 import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { VerifyEmailReq } from '../../dto/auth/request/verify-email.request.dto';
 import { User } from 'src/commons';
+import { RecoverPasswordReq } from '../../dto/auth/request/recover-password.request.dto';
+import { EditPasswordReq } from '../../dto/auth/request/edit-password.request.dto';
 
 export abstract class AuthServiceI {
     abstract auth(request: AuthReq): Promise<AuthRes>;
@@ -13,6 +15,8 @@ export abstract class AuthServiceI {
     abstract buildUser(request: RegisterReq): Promise<User>;
     abstract resendVerifyEmail(): Promise<void>;
     abstract verifyEmail(request: VerifyEmailReq): Promise<void>;
-    abstract recoverPassword(): Promise<void>;
-    abstract changePassword(): Promise<void>;
+    abstract recoverPassword(
+        request: RecoverPasswordReq,
+    ): Promise<void>;
+    abstract changePassword(request: EditPasswordReq): Promise<void>;
 }

@@ -34,6 +34,14 @@ export class AuthWebController {
         return await this.authWebService.register(request);
     }
 
+    @ApiEndpoint({
+        summary: 'Registrar empleado',
+        description:
+            'Registra un nuevo empleado en la plataforma (solo Owners pueden hacerlo)',
+        status: HttpStatus.CREATED,
+        body: RegisterEmployeeBody,
+        isAuth: true,
+    })
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
     @Post('/employee/register')
@@ -48,10 +56,12 @@ export class AuthWebController {
     }
 
     @ApiEndpoint({
-        summary: '',
-        description: '',
+        summary: 'Aceptar solicitud de propietario',
+        description:
+            'Acepta la solicitud de un usuario para convertirse en propietario y le envía un token de verificación',
         type: AcceptOwnerRequestReq,
         isAuth: true,
+        body: AcceptOwnerRequestBody,
     })
     @Patch('/accept/owner')
     @HttpCode(HttpStatus.OK)

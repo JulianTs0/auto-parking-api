@@ -1,4 +1,5 @@
 export * from './config/helpers/auth.helper';
+export * from './config/utils/auth-events.enum';
 
 export * from './config/providers/password-encoder.interface';
 export * from './config/providers/token-handler.interface';
