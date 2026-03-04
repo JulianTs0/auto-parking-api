@@ -53,7 +53,7 @@ export class GetByIdRes {
         example: '2023-01-02T12:00:00Z',
         description: 'Fecha de la última actualización del usuario',
     })
-    public readonly updateAt: Date;
+    public readonly updatedAt: Date;
 
     constructor(init?: Partial<GetByIdRes>) {
         Object.assign(this, init);

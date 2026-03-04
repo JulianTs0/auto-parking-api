@@ -11,7 +11,7 @@ export class AuthUserMapper {
             status: user.status,
             roles: [...user.roles],
             createdAt: user.createdAt,
-            updateAt: user.updateAt,
+            updatedAt: user.updatedAt,
         });
 
         return response;

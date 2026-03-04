@@ -89,7 +89,7 @@ export class AuthService implements AuthServiceI {
             throw new ServiceError(Errors.INVALID_PASSWORD);
         }
 
-        user.updateAt = new Date();
+        user.updatedAt = new Date();
         const logged: User = await this.userService.updateUser(user);
 
         const token: Token =

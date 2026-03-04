@@ -53,7 +53,7 @@ export class EditRes {
         example: '2023-01-03T15:30:00Z',
         description: 'Fecha de la última actualización del usuario',
     })
-    public readonly updateAt: Date;
+    public readonly updatedAt: Date;
 
     constructor(init?: Partial<EditRes>) {
         Object.assign(this, init);

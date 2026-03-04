@@ -13,7 +13,7 @@ export class UserEntityMapper {
         entity.status = userModel.status;
         entity.roles = new Set(userModel.roles);
         entity.createdAt = userModel.createdAt;
-        entity.updateAt = userModel.updatedAt;
+        entity.updatedAt = userModel.updatedAt;
         entity.phoneNumber = userModel.phoneNumber;
         entity.subscriptions = [];
         entity.vehicles = [];

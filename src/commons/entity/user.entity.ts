@@ -20,7 +20,7 @@ export class User {
 
     public createdAt: Date;
 
-    public updateAt: Date;
+    public updatedAt: Date;
 
     public phoneNumber: string | null;
 
@@ -47,7 +47,7 @@ export class User {
         user.status = object.status;
         user.roles = object.roles;
         user.createdAt = object.createdAt;
-        user.updateAt = object.updateAt;
+        user.updatedAt = object.updatedAt;
         user.phoneNumber = object.phoneNumber;
         user.subscriptions =
             object.subscriptions
