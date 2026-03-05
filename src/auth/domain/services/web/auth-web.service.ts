@@ -5,11 +5,20 @@ import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
 import { AuthEvents } from 'src/auth';
-import { Errors, Role, ServiceError, Token, User } from 'src/commons';
+import {
+    Errors,
+    Role,
+    ServiceError,
+    Token,
+    User,
+    UserStatus,
+} from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
 import { UserServiceI } from 'src/users';
 import { EventPublisherI } from 'src/app-events';
 import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
+import { RequestOwnerUpgradeReq } from '../../dto/auth/request/request-owner-upgrade-request.dto';
+import { UpgradeToOwnerReq } from '../../dto/auth/request/upgrade-to-owner.request.dto';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
@@ -22,21 +31,24 @@ export class AuthWebService implements AuthWebServiceI {
 
     @Transactional()
     public async register(request: RegisterReq) {
-        const userCheck: boolean =
-            await this.userService.existsUserByEmail(request.email);
+        const existingUser: User | null =
+            await this.userService.findUserByEmail(request.email);
 
-        if (userCheck) {
+        if (existingUser) {
+            if (
+                existingUser.roles.has(Role.CLIENT) &&
+                !existingUser.roles.has(Role.OWNER)
+            ) {
+                throw new ServiceError(Errors.CLIENT_ALREADY_EXISTS);
+            }
             throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
         }
 
         const user: User =
             await this.authCoreService.buildUser(request);
 
-        user.roles = new Set([
-            Role.CLIENT,
-            Role.EMPLOYEE,
-            Role.OWNER,
-        ]);
+        user.roles = new Set([Role.CLIENT]);
+        user.status = UserStatus.PENDING_OWNER;
 
         await this.userService.saveUser(user);
 
@@ -59,7 +71,7 @@ export class AuthWebService implements AuthWebServiceI {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
-        if (!user.isInactive || !user.roles.has(Role.OWNER)) {
+        if (user.status !== UserStatus.PENDING_OWNER) {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
@@ -84,8 +96,6 @@ export class AuthWebService implements AuthWebServiceI {
             );
 
         if (userCheck) {
-            // Logica alternativa
-
             if (!userCheck.roles.has(Role.EMPLOYEE)) {
                 userCheck.roles.add(Role.EMPLOYEE);
             }
@@ -111,5 +121,52 @@ export class AuthWebService implements AuthWebServiceI {
             ownerFullName: request.authUser.fullName,
             ownerEmail: request.authUser.email,
         });
+    }
+
+    @Transactional()
+    public async requestOwnerUpgrade(
+        request: RequestOwnerUpgradeReq,
+    ): Promise<void> {
+        const user: User | null =
+            await this.userService.findUserByEmail(
+                request.body.email,
+            );
+
+        if (!user) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        if (!user.roles.has(Role.CLIENT)) {
+            throw new ServiceError(Errors.FORBIDDEN);
+        }
+
+        if (user.roles.has(Role.OWNER)) {
+            throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
+        }
+
+        user.status = UserStatus.PENDING_OWNER;
+
+        await this.userService.updateUser(user);
+    }
+
+    @Transactional()
+    public async upgrade(request: UpgradeToOwnerReq): Promise<void> {
+        const user: User | null =
+            await this.userService.findUserByEmail(
+                request.body.email,
+            );
+
+        if (!user) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        if (user.status !== UserStatus.PENDING_OWNER) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        user.roles.add(Role.OWNER);
+        user.status = UserStatus.ACTIVE;
+
+        await this.userService.updateUser(user);
     }
 }
