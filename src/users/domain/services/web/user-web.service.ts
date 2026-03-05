@@ -18,7 +18,7 @@ export class UserWebService implements UserWebServiceI {
         }
 
         const models: PageContent<User> =
-            await this.userRepository.findInactiveOwnersPaginated(
+            await this.userRepository.findPendingOwnersPaginated(
                 request.size,
                 request.page,
             );

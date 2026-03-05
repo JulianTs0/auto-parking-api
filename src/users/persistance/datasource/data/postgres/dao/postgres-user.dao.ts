@@ -69,7 +69,7 @@ export class PostgresUserDao {
         return (result.affected ?? 0) > 0;
     }
 
-    public async findInactiveOwnersPaginated(
+    public async findPendingOwnersPaginated(
         page: number,
         size: number,
     ): Promise<Page<UserModel>> {
@@ -78,8 +78,7 @@ export class PostgresUserDao {
         const [userModels, itemCount] =
             await this.typeRepository.findAndCount({
                 where: {
-                    status: UserStatus.INACTIVE,
-                    roles: ArrayContains([Role.OWNER]),
+                    status: UserStatus.PENDING_OWNER,
                 },
                 skip: skip,
                 take: size,

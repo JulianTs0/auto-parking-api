@@ -24,12 +24,12 @@ export class UserRepository implements UserRepositoryI {
         return response;
     }
 
-    public async findInactiveOwnersPaginated(
+    public async findPendingOwnersPaginated(
         size: number,
         page: number,
     ): Promise<PageContent<User>> {
         const models: Page<UserModel> =
-            await this.dao.findInactiveOwnersPaginated(page, size);
+            await this.dao.findPendingOwnersPaginated(page, size);
 
         return new PageContent<User>({
             content: UserEntityMapper.toDomainList(models.content),
