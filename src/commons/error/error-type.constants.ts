@@ -54,6 +54,12 @@ export const Errors = {
         status: 400,
         message: 'Email already exists',
     },
+    CLIENT_ALREADY_EXISTS: {
+        key: 'CLIENT_ALREADY_EXISTS',
+        status: 400,
+        message:
+            'User already exists as client, please request upgrade to owner',
+    },
 } as const;
 
 export type ErrorType = (typeof Errors)[keyof typeof Errors];
