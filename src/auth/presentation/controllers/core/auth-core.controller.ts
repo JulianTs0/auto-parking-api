@@ -27,6 +27,18 @@ export class AuthCoreController {
     constructor(private readonly authCoreService: AuthServiceI) {}
 
     @ApiEndpoint({
+        summary: 'Obtener usuario autenticado',
+        description:
+            'Obtiene la información del usuario actual basado en el token',
+        type: AuthRes,
+        isAuth: true,
+    })
+    @Get()
+    public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
+        return await this.authCoreService.auth(request);
+    }
+
+    @ApiEndpoint({
         summary: 'Iniciar sesión',
         description:
             'Autentica a un usuario y devuelve un token de acceso',
@@ -41,18 +53,6 @@ export class AuthCoreController {
     }
 
     @ApiEndpoint({
-        summary: 'Obtener usuario autenticado',
-        description:
-            'Obtiene la información del usuario actual basado en el token',
-        type: AuthRes,
-        isAuth: true,
-    })
-    @Get()
-    public async auth(@Headers() request: AuthReq): Promise<AuthRes> {
-        return await this.authCoreService.auth(request);
-    }
-
-    @ApiEndpoint({
         summary: 'Verifica el mail',
         description:
             'Verifica el mail del usuario, lo actualiza a activo',
@@ -63,6 +63,23 @@ export class AuthCoreController {
         @Body() request: VerifyEmailReq,
     ): Promise<void> {
         await this.authCoreService.verifyEmail(request);
+    }
+
+    @ApiEndpoint({
+        summary: 'Cambia la contraseña',
+        description: 'Cambia la contraseña',
+        body: EditPasswordBody,
+        isAuth: true,
+    })
+    @Patch('/password')
+    @UseGuards(AuthGuard)
+    public async changePassword(
+        @Body() body: EditPasswordBody,
+        @AuthUser() authUser: User,
+    ): Promise<void> {
+        await this.authCoreService.changePassword(
+            AuthMapper.editPassword().toRequest(body, authUser),
+        );
     }
 
     @ApiEndpoint({
@@ -88,22 +105,5 @@ export class AuthCoreController {
         @Body() request: ResendEmailReq,
     ): Promise<void> {
         await this.authCoreService.resendVerifyEmail(request);
-    }
-
-    @ApiEndpoint({
-        summary: 'Cambia la contraseña',
-        description: 'Cambia la contraseña',
-        body: EditPasswordBody,
-        isAuth: true,
-    })
-    @Patch('/password')
-    @UseGuards(AuthGuard)
-    public async changePassword(
-        @Body() body: EditPasswordBody,
-        @AuthUser() authUser: User,
-    ): Promise<void> {
-        await this.authCoreService.changePassword(
-            AuthMapper.editPassword().toRequest(body, authUser),
-        );
     }
 }
