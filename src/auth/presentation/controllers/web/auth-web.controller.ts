@@ -9,8 +9,8 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { User, ApiEndpoint, AuthUser } from 'src/commons';
+import { ApiTags } from '@nestjs/swagger';
+import { User, ApiEndpoint, AuthUser, Role } from 'src/commons';
 import { AuthWebServiceI } from '../../../domain/services/web/auth-web-service.interface';
 import { RegisterReq } from '../../../domain/dto/auth/request/register.request.dto';
 import { AcceptOwnerRequestBody } from '../../../domain/dto/auth/request/accept-owner-request.body.dto';
@@ -22,17 +22,14 @@ import { RequestOwnerUpgradeBody } from '../../../domain/dto/auth/request/reques
 import { UpgradeToOwnerBody } from '../../../domain/dto/auth/request/upgrade-to-owner.body.dto';
 import { GetOwnerRequestQuery } from '../../../domain/dto/auth/request/get-owner-request.query';
 import { GetOwnerRequestRes } from '../../../domain/dto/auth/response/get-owner-request.response.dto';
+import { RolesGuard } from 'src/auth/config/guards/roles.guard';
+import { Roles } from 'src/commons/decorators/roles.decorator';
 
 @ApiTags('auth/web')
 @Controller('web/auth')
 export class AuthWebController {
     constructor(private readonly authWebService: AuthWebServiceI) {}
 
-    /**
-     * Registrar un nuevo usuario owner
-     * Registra un nuevo usuario en la plataforma como owner. El usuario queda en estado INACTIVE
-     * hasta que un admin apruebe su solicitud y valide su email.
-     */
     @ApiEndpoint({
         summary: 'Registrar usuario owner',
         description:
@@ -46,10 +43,6 @@ export class AuthWebController {
         return await this.authWebService.register(request);
     }
 
-    /**
-     * Registrar un nuevo empleado
-     * Registra un nuevo empleado en la plataforma (solo Owners pueden hacerlo).
-     */
     @ApiEndpoint({
         summary: 'Registrar empleado',
         description:
@@ -58,8 +51,8 @@ export class AuthWebController {
         body: RegisterEmployeeBody,
         isAuth: true,
     })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.OWNER)
     @Post('/employee/register')
     @HttpCode(HttpStatus.CREATED)
     async registerEmployee(
@@ -71,11 +64,6 @@ export class AuthWebController {
         );
     }
 
-    /**
-     * Obtener solicitudes de propietario
-     * Obtiene la lista de solicitudes de propietario, ordenadas por fecha de creación (más recientes primero).
-     * Solo admins pueden acceder a este endpoint.
-     */
     @ApiEndpoint({
         summary: 'Obtener solicitudes de propietario',
         description:
@@ -99,7 +87,8 @@ export class AuthWebController {
         ],
     })
     @Get('/owner/requests')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     public async getOwnerRequests(
         @Query() query: GetOwnerRequestQuery,
         @AuthUser() authUser: User,
@@ -109,11 +98,6 @@ export class AuthWebController {
         );
     }
 
-    /**
-     * Aceptar solicitud de propietario
-     * El admin acepta la solicitud de un usuario para convertirse en propietario
-     * y le envía un token de verificación por email.
-     */
     @ApiEndpoint({
         summary: 'Aceptar solicitud de propietario',
         description:
@@ -124,7 +108,8 @@ export class AuthWebController {
     })
     @Patch('/accept/owner')
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     async acceptOwnerRequest(
         @Body() body: AcceptOwnerRequestBody,
         @AuthUser() authUser: User,
@@ -134,11 +119,6 @@ export class AuthWebController {
         );
     }
 
-    /**
-     * Solicitar upgrade a owner
-     * Un usuario CLIENT existente solicita convertirse en owner.
-     * Queda en estado PENDING hasta que un admin apruebe su solicitud.
-     */
     @ApiEndpoint({
         summary: 'Solicitar upgrade a owner',
         description:
@@ -148,7 +128,8 @@ export class AuthWebController {
     })
     @Patch('/request/upgrade/owner')
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.CLIENT)
     async requestOwnerUpgrade(
         @Body() body: RequestOwnerUpgradeBody,
         @AuthUser() authUser: User,
@@ -161,11 +142,6 @@ export class AuthWebController {
         );
     }
 
-    /**
-     * Completar upgrade a owner
-     * El usuario completa el proceso de upgrade a owner después de recibir el email de verificación.
-     * Cambia el estado a ACTIVE y asigna el rol OWNER.
-     */
     @ApiEndpoint({
         summary: 'Completar upgrade a owner',
         description:

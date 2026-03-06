@@ -12,6 +12,7 @@ import { PasswordEncoderI } from './config/providers/password-encoder.interface'
 import { TokenHandlerI } from './config/providers/token-handler.interface';
 import { AuthHelper } from './config/helpers/auth.helper';
 import { AuthGuard } from './config/guards/auth.guard';
+import { RolesGuard } from './config/guards/roles.guard';
 
 import { AuthServiceI } from './domain/services/core/auth-service.interface';
 import { AuthWebServiceI } from './domain/services/web/auth-web-service.interface';
@@ -52,6 +53,7 @@ import { AuthCoreController } from './presentation/controllers/core/auth-core.co
         AuthHelper,
 
         AuthGuard,
+        RolesGuard,
 
         // Core Services
         AuthService,
@@ -81,6 +83,7 @@ import { AuthCoreController } from './presentation/controllers/core/auth-core.co
         AuthWebServiceI,
         AuthMobileServiceI,
         AuthGuard,
+        RolesGuard,
     ],
 })
 export class AuthModule {}
