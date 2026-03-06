@@ -94,12 +94,10 @@ export class UserService implements UserServiceI {
         return await this.userRepository.existsByEmail(email);
     }
 
-    @Transactional()
     public async saveUser(user: User): Promise<User> {
         return await this.userRepository.save(user);
     }
 
-    @Transactional()
     public async updateUser(user: User): Promise<User> {
         return await this.userRepository.update(user);
     }

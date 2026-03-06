@@ -13,10 +13,12 @@ import { OwnerRequestRepository } from './persistance/repository/owner-request.r
 import { UserRepositoryI } from './domain/repository/user-repository.interface';
 import { OwnerRequestRepositoryI } from './domain/repository/owner-request-repository.interface';
 import { UserServiceI } from './domain/services/core/user-service.interface';
+import { OwnerRequestServiceI } from './domain/services/core/owner-request-service.interface';
 import { UserWebServiceI } from './domain/services/web/user-web-service.interface';
 import { UserMobileServiceI } from './domain/services/mobile/user-mobile-service.interface';
 
 import { UserService } from './domain/services/core/user.service';
+import { OwnerRequestService } from './domain/services/core/owner-request.service';
 import { UserWebService } from './domain/services/web/user-web.service';
 import { UserMobileService } from './domain/services/mobile/user-mobile.service';
 
@@ -58,6 +60,11 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
             provide: UserServiceI,
             useExisting: UserService,
         },
+        OwnerRequestService,
+        {
+            provide: OwnerRequestServiceI,
+            useExisting: OwnerRequestService,
+        },
 
         // Web Services
         UserWebService,
@@ -78,6 +85,8 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
         UserRepository,
         UserServiceI,
         UserRepositoryI,
+        OwnerRequestService,
+        OwnerRequestServiceI,
         OwnerRequestRepository,
         OwnerRequestRepositoryI,
     ],

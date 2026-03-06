@@ -16,7 +16,7 @@ import {
     UserStatus,
 } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
-import { UserServiceI } from 'src/users';
+import { UserServiceI, OwnerRequestServiceI } from 'src/users';
 import { EventPublisherI } from 'src/app-events';
 import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
 import { RequestOwnerUpgradeReq } from '../../dto/auth/request/request-owner-upgrade-request.dto';
@@ -25,7 +25,6 @@ import { GetOwnerRequestReq } from '../../dto/auth/request/get-owner-request.req
 import { GetOwnerRequestRes } from '../../dto/auth/response/get-owner-request.response.dto';
 import { AuthMapper } from '../../dto/auth/mapper/auth.mapper';
 import { OwnerRequest, OwnerRequestStatus } from 'src/commons';
-import { OwnerRequestRepositoryI } from 'src/users/domain/repository/owner-request-repository.interface';
 import { OwnerRequestLoadProfile } from 'src/users/persistance/datasource/data/postgres/profiles/owner-request-load.profile';
 
 @Injectable()
@@ -34,7 +33,7 @@ export class AuthWebService implements AuthWebServiceI {
         private readonly authCoreService: AuthServiceI,
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
-        private readonly ownerRequestRepository: OwnerRequestRepositoryI,
+        private readonly ownerRequestService: OwnerRequestServiceI,
         private readonly eventPublisher: EventPublisherI,
     ) {}
 
@@ -66,7 +65,7 @@ export class AuthWebService implements AuthWebServiceI {
         ownerRequest.user = savedUser;
         ownerRequest.status = OwnerRequestStatus.PENDING;
 
-        await this.ownerRequestRepository.save(ownerRequest);
+        await this.ownerRequestService.save(ownerRequest);
 
         return Promise.resolve();
     }
@@ -75,12 +74,8 @@ export class AuthWebService implements AuthWebServiceI {
     public async acceptOwnerRequest(
         request: AcceptOwnerRequestReq,
     ): Promise<void> {
-        if (!request.authUser.isAdmin()) {
-            throw new ServiceError(Errors.FORBIDDEN);
-        }
-
         const ownerRequest: OwnerRequest | null =
-            await this.ownerRequestRepository.findPendingByUserEmail(
+            await this.ownerRequestService.findPendingByUserEmail(
                 request.body.ownerEmail,
                 OwnerRequestLoadProfile.WITH_USER,
             );
@@ -90,7 +85,7 @@ export class AuthWebService implements AuthWebServiceI {
         }
 
         ownerRequest.status = OwnerRequestStatus.APPROVED;
-        await this.ownerRequestRepository.update(ownerRequest);
+        await this.ownerRequestService.update(ownerRequest);
 
         const token: Token = await this.authHelper.createToken(
             ownerRequest.user,
@@ -106,10 +101,6 @@ export class AuthWebService implements AuthWebServiceI {
     public async registerEmployee(
         request: RegisterEmployeeReq,
     ): Promise<void> {
-        if (!request.authUser.roles.has(Role.OWNER)) {
-            throw new ServiceError(Errors.FORBIDDEN);
-        }
-
         const userCheck: User | null =
             await this.userService.findUserByEmail(
                 request.body.email,
@@ -156,16 +147,12 @@ export class AuthWebService implements AuthWebServiceI {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
-        if (!user.roles.has(Role.CLIENT)) {
-            throw new ServiceError(Errors.FORBIDDEN);
-        }
-
         if (user.roles.has(Role.OWNER)) {
             throw new ServiceError(Errors.EMAIL_ALREADY_EXISTS);
         }
 
         const existingRequest =
-            await this.ownerRequestRepository.findPendingByUserEmail(
+            await this.ownerRequestService.findPendingByUserEmail(
                 user.email,
             );
 
@@ -180,7 +167,7 @@ export class AuthWebService implements AuthWebServiceI {
         ownerRequest.user = user;
         ownerRequest.status = OwnerRequestStatus.PENDING;
 
-        await this.ownerRequestRepository.save(ownerRequest);
+        await this.ownerRequestService.save(ownerRequest);
     }
 
     @Transactional()
@@ -195,9 +182,8 @@ export class AuthWebService implements AuthWebServiceI {
         }
 
         const ownerRequest =
-            await this.ownerRequestRepository.findByUserEmail(
+            await this.ownerRequestService.findByUserEmail(
                 user.email,
-                OwnerRequestLoadProfile.WITH_USER,
             );
 
         if (
@@ -213,18 +199,15 @@ export class AuthWebService implements AuthWebServiceI {
         await this.userService.updateUser(user);
 
         ownerRequest.status = OwnerRequestStatus.COMPLETED;
-        await this.ownerRequestRepository.update(ownerRequest);
+        await this.ownerRequestService.update(ownerRequest);
     }
 
+    @Transactional()
     public async getOwnerRequests(
         request: GetOwnerRequestReq,
     ): Promise<GetOwnerRequestRes> {
-        if (!request.authUser.isAdmin()) {
-            throw new ServiceError(Errors.FORBIDDEN);
-        }
-
         const models: PageContent<OwnerRequest> =
-            await this.ownerRequestRepository.findRequestsPaginated(
+            await this.ownerRequestService.findRequestsPaginated(
                 request.page,
                 request.size,
                 OwnerRequestLoadProfile.WITH_USER,

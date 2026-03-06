@@ -17,6 +17,7 @@ export * from './domain/dto/users/mapper/implementation/get-owner-request.mapper
 export * from './domain/repository/user-repository.interface';
 
 export * from './domain/services/core/user-service.interface';
+export * from './domain/services/core/owner-request-service.interface';
 export * from './domain/services/web/user-web-service.interface';
 export * from './domain/services/mobile/user-mobile-service.interface';
 
