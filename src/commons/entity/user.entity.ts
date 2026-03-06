@@ -81,14 +81,7 @@ export class User {
     }
 
     public isActive(): boolean {
-        return (
-            this.status === UserStatus.ACTIVE ||
-            this.status == UserStatus.PENDING_OWNER
-        );
-    }
-
-    public isPendingOwner(): boolean {
-        return this.status === UserStatus.PENDING_OWNER;
+        return this.status === UserStatus.ACTIVE;
     }
 
     public isAdmin(): boolean {

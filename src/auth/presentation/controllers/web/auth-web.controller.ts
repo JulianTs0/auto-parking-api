@@ -1,10 +1,12 @@
 import {
     Body,
     Controller,
+    Get,
     HttpCode,
     HttpStatus,
     Patch,
     Post,
+    Query,
     UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -18,16 +20,23 @@ import { RegisterEmployeeBody } from '../../../domain/dto/auth/request/register-
 import { AcceptOwnerRequestReq } from '../../../domain/dto/auth/request/accept-owner-request.request.dto';
 import { RequestOwnerUpgradeBody } from '../../../domain/dto/auth/request/request-owner-upgrade-body.dto';
 import { UpgradeToOwnerBody } from '../../../domain/dto/auth/request/upgrade-to-owner.body.dto';
+import { GetOwnerRequestQuery } from '../../../domain/dto/auth/request/get-owner-request.query';
+import { GetOwnerRequestRes } from '../../../domain/dto/auth/response/get-owner-request.response.dto';
 
 @ApiTags('auth/web')
 @Controller('web/auth')
 export class AuthWebController {
     constructor(private readonly authWebService: AuthWebServiceI) {}
 
+    /**
+     * Registrar un nuevo usuario owner
+     * Registra un nuevo usuario en la plataforma como owner. El usuario queda en estado INACTIVE
+     * hasta que un admin apruebe su solicitud y valide su email.
+     */
     @ApiEndpoint({
-        summary: 'Registrar usuario',
+        summary: 'Registrar usuario owner',
         description:
-            'Registra un nuevo usuario en la plataforma como owner. El usuario queda en estado PENDING_OWNER hasta que un admin apruebe su solicitud',
+            'Registra un nuevo usuario en la plataforma como owner. El usuario queda en estado INACTIVE hasta que un admin apruebe su solicitud',
         status: HttpStatus.CREATED,
         body: RegisterReq,
     })
@@ -37,6 +46,10 @@ export class AuthWebController {
         return await this.authWebService.register(request);
     }
 
+    /**
+     * Registrar un nuevo empleado
+     * Registra un nuevo empleado en la plataforma (solo Owners pueden hacerlo).
+     */
     @ApiEndpoint({
         summary: 'Registrar empleado',
         description:
@@ -58,6 +71,49 @@ export class AuthWebController {
         );
     }
 
+    /**
+     * Obtener solicitudes de propietario
+     * Obtiene la lista de solicitudes de propietario, ordenadas por fecha de creación (más recientes primero).
+     * Solo admins pueden acceder a este endpoint.
+     */
+    @ApiEndpoint({
+        summary: 'Obtener solicitudes de propietario',
+        description:
+            'Obtiene la lista de solicitudes de propietario, ordenadas por fecha de creación. Solo admins pueden acceder',
+        type: GetOwnerRequestRes,
+        isAuth: true,
+        queryParams: [
+            {
+                name: 'page',
+                description: 'Número de página (mínimo 1)',
+                required: true,
+                type: Number,
+            },
+            {
+                name: 'size',
+                description:
+                    'Cantidad de elementos por página (mínimo 1, máximo 25)',
+                required: true,
+                type: Number,
+            },
+        ],
+    })
+    @Get('/owner/requests')
+    @UseGuards(AuthGuard)
+    public async getOwnerRequests(
+        @Query() query: GetOwnerRequestQuery,
+        @AuthUser() authUser: User,
+    ): Promise<GetOwnerRequestRes> {
+        return await this.authWebService.getOwnerRequests(
+            AuthMapper.getOwnerRequest().toRequest(query, authUser),
+        );
+    }
+
+    /**
+     * Aceptar solicitud de propietario
+     * El admin acepta la solicitud de un usuario para convertirse en propietario
+     * y le envía un token de verificación por email.
+     */
     @ApiEndpoint({
         summary: 'Aceptar solicitud de propietario',
         description:
@@ -78,10 +134,15 @@ export class AuthWebController {
         );
     }
 
+    /**
+     * Solicitar upgrade a owner
+     * Un usuario CLIENT existente solicita convertirse en owner.
+     * Queda en estado PENDING hasta que un admin apruebe su solicitud.
+     */
     @ApiEndpoint({
         summary: 'Solicitar upgrade a owner',
         description:
-            'Un usuario CLIENT existente solicita convertirse en owner. Queda en estado PENDING_OWNER hasta que un admin apruebe su solicitud',
+            'Un usuario CLIENT existente solicita convertirse en owner. Queda en estado PENDING hasta que un admin apruebe su solicitud',
         isAuth: true,
         body: RequestOwnerUpgradeBody,
     })
@@ -100,6 +161,11 @@ export class AuthWebController {
         );
     }
 
+    /**
+     * Completar upgrade a owner
+     * El usuario completa el proceso de upgrade a owner después de recibir el email de verificación.
+     * Cambia el estado a ACTIVE y asigna el rol OWNER.
+     */
     @ApiEndpoint({
         summary: 'Completar upgrade a owner',
         description:

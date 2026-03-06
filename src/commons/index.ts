@@ -7,6 +7,7 @@ export * from './const/shift-status.enum';
 export * from './const/spot-status.enum';
 export * from './const/subscription-status.enum';
 export * from './const/user-status.enum';
+export * from './const/owner-request-status.enum';
 export * from './config/id-generator.util';
 export * from './config/regex.validator';
 export * from './decorators/api-endpoint.decorator';
@@ -33,6 +34,7 @@ export * from './entity/parking-spot.entity';
 export * from './entity/parking-spot-type.entity';
 export * from './entity/parking-lot.entity';
 export * from './entity/booking.entity';
+export * from './entity/owner-request.entity';
 
 export * from './dto/page.dto';
 export * from './dto/page-content.dto';

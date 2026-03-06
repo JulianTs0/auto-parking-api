@@ -1,6 +1,7 @@
 import { AcceptOwnerRequestMapper } from './implementation/accept-owner-request.mapper';
 import { AuthUserMapper } from './implementation/auth-user.mapper';
 import { EditPasswordMapper } from './implementation/edit-password.mapper';
+import { GetOwnerRequestMapper } from './implementation/get-owner-request.mapper';
 import { LoginMapper } from './implementation/login.mapper';
 import { RegisterEmployeeMapper } from './implementation/register-employee.mapper';
 import { RequestOwnerUpgradeMapper } from './implementation/request-owner-upgrade.mapper';
@@ -33,5 +34,9 @@ export class AuthMapper {
 
     public static requestOwnerUpgrade(): RequestOwnerUpgradeMapper {
         return new RequestOwnerUpgradeMapper();
+    }
+
+    public static getOwnerRequest(): GetOwnerRequestMapper {
+        return new GetOwnerRequestMapper();
     }
 }

@@ -8,8 +8,4 @@ export abstract class UserRepositoryI {
     abstract save(user: User): Promise<User>;
     abstract update(user: User): Promise<User>;
     abstract delete(id: string): Promise<boolean>;
-    abstract findPendingOwnersPaginated(
-        size: number,
-        page: number,
-    ): Promise<PageContent<User>>;
 }

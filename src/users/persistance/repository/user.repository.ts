@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { User, PageContent, Page } from 'src/commons';
+import { User } from 'src/commons';
 import { UserRepositoryI } from '../../domain/repository/user-repository.interface';
 import { PostgresUserDao } from '../datasource/data/postgres/dao/postgres-user.dao';
 import { UserEntityMapper } from '../datasource/data/postgres/mapper/user-entity.mapper';
-import { UserModel } from '../datasource/data/postgres/models/user.model';
 
 @Injectable()
 export class UserRepository implements UserRepositoryI {
-    constructor(private readonly dao: PostgresUserDao) {}
+    constructor(private readonly dao: PostgresUserDao) { }
 
     public async findById(id: string): Promise<User | null> {
         const model = await this.dao.findById(id);
@@ -22,20 +21,6 @@ export class UserRepository implements UserRepositoryI {
     public async existsByEmail(email: string): Promise<boolean> {
         const response = await this.dao.existsByEmail(email);
         return response;
-    }
-
-    public async findPendingOwnersPaginated(
-        size: number,
-        page: number,
-    ): Promise<PageContent<User>> {
-        const models: Page<UserModel> =
-            await this.dao.findPendingOwnersPaginated(page, size);
-
-        return new PageContent<User>({
-            content: UserEntityMapper.toDomainList(models.content),
-            page: models.page,
-            nextPage: models.hasNext ? models.page + 1 : null,
-        });
     }
 
     public async findAll(): Promise<User[]> {

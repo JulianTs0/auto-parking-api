@@ -1,13 +1,11 @@
-import {
-    User,
-    OwnerRequest,
-    ServiceError,
-    Errors,
-    PageContent,
-} from 'src/commons';
+import { User, OwnerRequest, PageContent } from 'src/commons';
 import { GetOwnerRequestQuery } from '../../request/get-owner-request.query';
 import { GetOwnerRequestReq } from '../../request/get-owner-request.request.dto';
-import { GetOwnerRequestRes } from '../../response/get-owner-request.response.dto';
+import {
+    GetOwnerRequestRes,
+    OwnerRequestItemRes,
+    OwnerRequestUserData,
+} from '../../response/get-owner-request.response.dto';
 
 export class GetOwnerRequestMapper {
     public toRequest(
@@ -25,25 +23,33 @@ export class GetOwnerRequestMapper {
     public toResponse(
         requests: PageContent<OwnerRequest>,
     ): GetOwnerRequestRes {
-        const usersResponse = requests.content.map((request) => {
+        const requestsResponse = requests.content.map((request) => {
             const user = request.user;
+            if (!user)
+                throw new Error('User not loaded in OwnerRequest');
 
-            if (!user) throw new ServiceError(Errors.INTERNAL_ERROR);
-
-            return {
+            const userData: OwnerRequestUserData = {
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
                 status: user.status,
                 roles: [...user.roles],
+            };
+
+            const item: OwnerRequestItemRes = {
+                id: request.id,
+                status: request.status,
                 createdAt: request.createdAt,
                 updatedAt: request.updatedAt,
+                user: userData,
             };
+
+            return item;
         });
 
         return new GetOwnerRequestRes({
-            users: usersResponse,
+            requests: requestsResponse,
             nextPage: requests.nextPage,
         });
     }

@@ -60,6 +60,17 @@ export const Errors = {
         message:
             'User already exists as client, please request upgrade to owner',
     },
+    OWNER_REQUEST_ALREADY_EXISTS: {
+        key: 'OWNER_REQUEST_ALREADY_EXISTS',
+        status: 400,
+        message:
+            'A request to become an owner is already pending for this user',
+    },
+    OWNER_REQUEST_NOT_FOUND: {
+        key: 'OWNER_REQUEST_NOT_FOUND',
+        status: 404,
+        message: 'Owner request not found or not approved',
+    },
 } as const;
 
 export type ErrorType = (typeof Errors)[keyof typeof Errors];
