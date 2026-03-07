@@ -10,7 +10,7 @@ import { EnvConfigService } from 'src/config';
 
 @Injectable()
 export class EmailHelper {
-    constructor(private readonly configService: EnvConfigService) {}
+    constructor(private readonly configService: EnvConfigService) { }
 
     public getEmployeeRegister(
         token: string,
@@ -18,8 +18,9 @@ export class EmailHelper {
         ownerEmail: string,
     ): string {
         const file: string = EmailFiles.DEFAULT;
-        const template: EmailTemplate =
-            EmailTemplates.EMPLOYEE_VERIFY;
+        const template: EmailTemplate = {
+            ...EmailTemplates.EMPLOYEE_VERIFY,
+        };
 
         template.message += `Nombre ${ownerFullName}\nEmail: ${ownerEmail}`;
 

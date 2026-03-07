@@ -4,14 +4,14 @@ import { ServiceError } from '../error/service.error';
 import { Errors } from '../error/error-type.constants';
 
 export function ValidateDto(dtoClass: any) {
-    return function (
+    return function(
         target: any,
         propertyKey: string,
         descriptor: PropertyDescriptor,
     ) {
         const originalMethod = descriptor.value;
 
-        descriptor.value = function (...args: any[]) {
+        descriptor.value = function(...args: any[]) {
             const instance = plainToInstance(dtoClass, args[0]);
             const errors = validateSync(instance);
 

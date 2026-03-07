@@ -1,17 +1,159 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { EnvConfigService } from 'src/config/env.service';
+import { User } from 'src/commons';
+import { JWTHandler, JwtPayload } from './jwt-handler.provider';
 
-describe('JwtHandlerProvider', () => {
-    let provider: any;
+describe('JWTHandler', () => {
+    let handler: JWTHandler;
+    let jwtServiceMock: jest.Mocked<JwtService>;
+
+    const mockSecret = 'super-secreto-123';
+    const mockExpiration = 3600;
 
     beforeEach(async () => {
+        const mockJwtService = {
+            verifyAsync: jest.fn(),
+            signAsync: jest.fn(),
+        };
+
+        const mockConfigService = {
+            jwtSecret: mockSecret,
+            jwtExpiration: mockExpiration,
+        };
+
         const module: TestingModule = await Test.createTestingModule({
-            providers: [],
+            providers: [
+                JWTHandler,
+                {
+                    provide: JwtService,
+                    useValue: mockJwtService,
+                },
+                {
+                    provide: EnvConfigService,
+                    useValue: mockConfigService,
+                },
+            ],
         }).compile();
 
-        provider = module.get<any>('JwtHandlerProvider');
+        handler = module.get<JWTHandler>(JWTHandler);
+        jwtServiceMock = module.get(JwtService);
+
+        jest.clearAllMocks();
     });
 
-    it('should be defined', () => {
-        expect(provider).toBeDefined();
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('sanity check', () => {
+        expect(handler).toBeDefined();
+    });
+
+    describe('createToken()', () => {
+        it('debería calcular la expiración correctamente y firmar el token', async () => {
+            // Arrange
+            //
+            const mockUser = {
+                id: 'user-123',
+                email: 'test@test.com',
+            } as User;
+            const mockToken = 'header.payload.signature';
+
+            jest.spyOn(Date, 'now').mockReturnValue(1000000);
+
+            jwtServiceMock.signAsync.mockResolvedValue(mockToken);
+
+            // Act
+            const result = await handler.createToken(mockUser);
+
+            // Assert
+            const expectedNow = 1000;
+            const expectedExpiration = expectedNow + mockExpiration;
+
+            expect(jwtServiceMock.signAsync).toHaveBeenCalledWith(
+                {
+                    sub: mockUser.id,
+                    email: mockUser.email,
+                    iat: expectedNow,
+                    exp: expectedExpiration,
+                },
+                {
+                    secret: mockSecret,
+                    algorithm: 'HS256',
+                },
+            );
+            expect(result).toBe(mockToken);
+        });
+    });
+
+    describe('verifyToken()', () => {
+        it('debería retornar true si el token es válido', async () => {
+            // Arrange
+            jwtServiceMock.verifyAsync.mockResolvedValue(
+                {} as JwtPayload,
+            );
+
+            // Act
+            const result = await handler.verifyToken('token-valido');
+
+            // Assert
+            expect(result).toBe(true);
+            expect(jwtServiceMock.verifyAsync).toHaveBeenCalled();
+        });
+
+        it('debería retornar false si el token es inválido o expiró', async () => {
+            // Arrange
+            jwtServiceMock.verifyAsync.mockRejectedValue(
+                new Error('Token Expired'),
+            );
+
+            // Act
+            const result =
+                await handler.verifyToken('token-invalido');
+
+            // Assert
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('getSubject()', () => {
+        it('debería retornar el "sub" del token decodificado', async () => {
+            // Arrange
+            const mockPayload: JwtPayload = {
+                sub: 'user-123',
+                email: '',
+                iat: 0,
+                exp: 0,
+            };
+            jwtServiceMock.verifyAsync.mockResolvedValue(mockPayload);
+
+            // Act
+            const result = await handler.getSubject('any-token');
+
+            // Assert
+            expect(result).toBe('user-123');
+        });
+    });
+
+    describe('getExpirationDate()', () => {
+        it('debería transformar el "exp" en un objeto Date válido', async () => {
+            // Arrange
+            const timestamp = 1700000000;
+            const mockPayload: JwtPayload = {
+                sub: '',
+                email: '',
+                iat: 0,
+                exp: timestamp,
+            };
+            jwtServiceMock.verifyAsync.mockResolvedValue(mockPayload);
+
+            // Act
+            const result =
+                await handler.getExpirationDate('any-token');
+
+            // Assert
+            expect(result).toEqual(new Date(timestamp * 1000));
+        });
     });
 });
