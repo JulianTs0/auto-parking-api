@@ -16,7 +16,7 @@ export class AuthMobileService implements AuthMobileServiceI {
         private readonly userService: UserServiceI,
         private readonly authHelper: AuthHelper,
         private readonly eventPublisher: EventPublisherI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async register(request: RegisterReq) {
@@ -40,7 +40,5 @@ export class AuthMobileService implements AuthMobileServiceI {
             user: saved,
             token,
         });
-
-        return Promise.resolve();
     }
 }

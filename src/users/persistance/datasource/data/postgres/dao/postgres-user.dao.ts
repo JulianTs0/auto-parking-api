@@ -12,7 +12,7 @@ export class PostgresUserDao {
     constructor(
         @InjectRepository(UserModel)
         private readonly typeRepository: Repository<UserModel>,
-    ) {}
+    ) { }
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({
@@ -41,15 +41,6 @@ export class PostgresUserDao {
                 email: email,
             },
         });
-    }
-
-    public async findAll(): Promise<UserModel[]> {
-        const models = await this.typeRepository.find({
-            where: {
-                status: Not(In(EXCLUDED_STATUSES)),
-            },
-        });
-        return models;
     }
 
     public async save(user: User): Promise<UserModel> {

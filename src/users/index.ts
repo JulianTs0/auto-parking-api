@@ -21,4 +21,6 @@ export * from './domain/services/core/owner-request-service.interface';
 export * from './domain/services/web/user-web-service.interface';
 export * from './domain/services/mobile/user-mobile-service.interface';
 
+export * from './persistance/datasource/data/postgres/profiles/owner-request-load.profile';
+
 export * from './users.module';

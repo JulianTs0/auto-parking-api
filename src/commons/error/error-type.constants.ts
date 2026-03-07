@@ -16,7 +16,7 @@ export const Errors = {
     },
     USER_DELETED: {
         key: 'USER_DELETED',
-        status: 404,
+        status: 410,
         message: 'User has been deleted',
     },
     FORBIDDEN: {
@@ -31,12 +31,12 @@ export const Errors = {
     },
     USER_ALREADY_ACTIVATED: {
         key: 'USER_ALREADY_ACTIVATED',
-        status: 404,
+        status: 409,
         message: 'User already activated',
     },
     INVALID_PASSWORD: {
         key: 'INVALID_PASSWORD',
-        status: 400,
+        status: 401,
         message: 'Invalid password',
     },
     MISSING_REQUIRED_FIELDS: {

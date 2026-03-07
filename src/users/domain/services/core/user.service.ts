@@ -16,7 +16,7 @@ export class UserService implements UserServiceI {
     constructor(
         private readonly userRepository: UserRepositoryI,
         private readonly authHepler: AuthHelper,
-    ) {}
+    ) { }
 
     @Transactional()
     public async getById(request: GetByIdReq): Promise<GetByIdRes> {
@@ -27,7 +27,7 @@ export class UserService implements UserServiceI {
         if (user == null)
             throw new ServiceError(Errors.USER_NOT_FOUND);
 
-        return Promise.resolve(UserMapper.getById().toResponse(user));
+        return UserMapper.getById().toResponse(user);
     }
 
     @Transactional()
@@ -56,8 +56,6 @@ export class UserService implements UserServiceI {
         }
 
         await this.userRepository.update(user);
-
-        return Promise.resolve();
     }
 
     @Transactional()
@@ -77,7 +75,7 @@ export class UserService implements UserServiceI {
 
         const updated: User = await this.userRepository.update(user);
 
-        return Promise.resolve(UserMapper.edit().toResponse(updated));
+        return UserMapper.edit().toResponse(updated);
     }
 
     public async findUserById(id: string): Promise<User | null> {

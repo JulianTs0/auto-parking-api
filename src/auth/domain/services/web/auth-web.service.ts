@@ -14,9 +14,15 @@ import {
     Token,
     User,
     UserStatus,
+    OwnerRequest,
+    OwnerRequestStatus,
 } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
-import { UserServiceI, OwnerRequestServiceI } from 'src/users';
+import {
+    UserServiceI,
+    OwnerRequestServiceI,
+    OwnerRequestLoadProfile,
+} from 'src/users';
 import { EventPublisherI } from 'src/app-events';
 import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
 import { RequestOwnerUpgradeReq } from '../../dto/auth/request/request-owner-upgrade-request.dto';
@@ -24,8 +30,6 @@ import { UpgradeToOwnerReq } from '../../dto/auth/request/upgrade-to-owner.reque
 import { GetOwnerRequestReq } from '../../dto/auth/request/get-owner-request.request.dto';
 import { GetOwnerRequestRes } from '../../dto/auth/response/get-owner-request.response.dto';
 import { AuthMapper } from '../../dto/auth/mapper/auth.mapper';
-import { OwnerRequest, OwnerRequestStatus } from 'src/commons';
-import { OwnerRequestLoadProfile } from 'src/users/persistance/datasource/data/postgres/profiles/owner-request-load.profile';
 
 @Injectable()
 export class AuthWebService implements AuthWebServiceI {
@@ -35,7 +39,7 @@ export class AuthWebService implements AuthWebServiceI {
         private readonly userService: UserServiceI,
         private readonly ownerRequestService: OwnerRequestServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async register(request: RegisterReq) {
@@ -66,8 +70,6 @@ export class AuthWebService implements AuthWebServiceI {
         ownerRequest.status = OwnerRequestStatus.PENDING;
 
         await this.ownerRequestService.save(ownerRequest);
-
-        return Promise.resolve();
     }
 
     @Transactional()
@@ -91,7 +93,7 @@ export class AuthWebService implements AuthWebServiceI {
             ownerRequest.user,
         );
 
-        await this.eventPublisher.emit(AuthEvents.REGISTER, {
+        this.eventPublisher.emit(AuthEvents.REGISTER, {
             user: ownerRequest.user,
             token,
         });
@@ -126,7 +128,7 @@ export class AuthWebService implements AuthWebServiceI {
 
         const token: Token = await this.authHelper.createToken(saved);
 
-        await this.eventPublisher.emit(AuthEvents.EMPLOYEE_REGISTER, {
+        this.eventPublisher.emit(AuthEvents.EMPLOYEE_REGISTER, {
             user: saved,
             token: token,
             ownerFullName: request.authUser.fullName,

@@ -6,6 +6,12 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    app.setGlobalPrefix('api/v1');
+
+    app.enableCors({ origin: process.env.ALLOWED_ORIGINS });
+
+    app.enableShutdownHooks();
+
     const config = new DocumentBuilder()
         .setTitle('Autoparking API')
         .setDescription('Documentación de la api')

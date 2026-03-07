@@ -23,11 +23,6 @@ export class UserRepository implements UserRepositoryI {
         return response;
     }
 
-    public async findAll(): Promise<User[]> {
-        const models = await this.dao.findAll();
-        return UserEntityMapper.toDomainList(models);
-    }
-
     public async save(user: User): Promise<User> {
         const model = await this.dao.save(user);
         return UserEntityMapper.toDomain(model)!;

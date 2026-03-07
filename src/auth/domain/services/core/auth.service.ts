@@ -30,7 +30,7 @@ export class AuthService implements AuthServiceI {
         private readonly authHelper: AuthHelper,
         private readonly userService: UserServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) {}
+    ) { }
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {
@@ -95,7 +95,7 @@ export class AuthService implements AuthServiceI {
         const token: Token =
             await this.authHelper.createToken(logged);
 
-        return Promise.resolve(AuthMapper.login().toResponse(token));
+        return AuthMapper.login().toResponse(token);
     }
 
     public async buildUser(request: RegisterReq): Promise<User> {
@@ -134,7 +134,7 @@ export class AuthService implements AuthServiceI {
 
         const token: Token = await this.authHelper.createToken(user);
 
-        await this.eventPublisher.emit(AuthEvents.REGISTER, {
+        this.eventPublisher.emit(AuthEvents.REGISTER, {
             user: user,
             token,
         });
@@ -164,7 +164,7 @@ export class AuthService implements AuthServiceI {
 
         user.status = UserStatus.ACTIVE;
 
-        this.userService.updateUser(user);
+        await this.userService.updateUser(user);
     }
 
     @Transactional()
@@ -180,7 +180,7 @@ export class AuthService implements AuthServiceI {
 
         const token: Token = await this.authHelper.createToken(user);
 
-        await this.eventPublisher.emit(AuthEvents.RECOVER_PASSWORD, {
+        this.eventPublisher.emit(AuthEvents.RECOVER_PASSWORD, {
             user: user,
             token: token,
         });

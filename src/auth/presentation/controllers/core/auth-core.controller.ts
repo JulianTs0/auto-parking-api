@@ -24,7 +24,7 @@ import { ResendEmailReq } from 'src/auth/domain/dto/auth/request/resend-email.re
 @ApiTags('auth/core')
 @Controller('auth')
 export class AuthCoreController {
-    constructor(private readonly authCoreService: AuthServiceI) {}
+    constructor(private readonly authCoreService: AuthServiceI) { }
 
     @ApiEndpoint({
         summary: 'Obtener usuario autenticado',
@@ -45,7 +45,7 @@ export class AuthCoreController {
         type: LoginRes,
         body: LoginReq,
     })
-    @Patch('/login')
+    @Post('/login')
     public async login(
         @Body() loginRequest: LoginReq,
     ): Promise<LoginRes> {
@@ -58,7 +58,7 @@ export class AuthCoreController {
             'Verifica el mail del usuario, lo actualiza a activo',
         body: VerifyEmailReq,
     })
-    @Patch('/verify')
+    @Post('/verify')
     public async verifyEmail(
         @Body() request: VerifyEmailReq,
     ): Promise<void> {
