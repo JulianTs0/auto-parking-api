@@ -8,12 +8,12 @@ export abstract class OwnerRequestRepositoryI {
         id: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null>;
-    abstract findPendingByUserEmail(
-        email: string,
+    abstract findPendingByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null>;
-    abstract findByUserEmail(
-        email: string,
+    abstract findByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null>;
     abstract findRequestsPaginated(

@@ -5,18 +5,23 @@ import { GetByIdReq } from '../../dto/users/request/get-by-id.request.dto';
 import { GetByIdRes } from '../../dto/users/response/get-by-id.response.dto';
 import { UserMapper } from '../../dto/users/mapper/user.mapper';
 import { UserRepositoryI } from '../../repository/user-repository.interface';
-import { UserServiceI } from './user-service.interface';
+import {
+    UserInternalServiceI,
+    UserServiceI,
+} from './user-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Errors, ServiceError, User, UserStatus } from 'src/commons';
 import { Transactional } from '@nestjs-cls/transactional';
 import { AuthHelper } from 'src/auth';
 
 @Injectable()
-export class UserService implements UserServiceI {
+export class UserService
+    implements UserServiceI, UserInternalServiceI
+{
     constructor(
         private readonly userRepository: UserRepositoryI,
         private readonly authHepler: AuthHelper,
-    ) { }
+    ) {}
 
     @Transactional()
     public async getById(request: GetByIdReq): Promise<GetByIdRes> {

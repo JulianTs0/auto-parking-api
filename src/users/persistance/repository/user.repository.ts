@@ -6,7 +6,7 @@ import { UserEntityMapper } from '../datasource/data/postgres/mapper/user-entity
 
 @Injectable()
 export class UserRepository implements UserRepositoryI {
-    constructor(private readonly dao: PostgresUserDao) { }
+    constructor(private readonly dao: PostgresUserDao) {}
 
     public async findById(id: string): Promise<User | null> {
         const model = await this.dao.findById(id);

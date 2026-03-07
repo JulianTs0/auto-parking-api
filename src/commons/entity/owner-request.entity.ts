@@ -4,7 +4,7 @@ import { OwnerRequestStatus } from '../const/owner-request-status.enum';
 export class OwnerRequest {
     public id: string;
 
-    public user?: User;
+    public user: User;
 
     public status: OwnerRequestStatus;
 
@@ -24,8 +24,10 @@ export class OwnerRequest {
         const request = new OwnerRequest();
         request.id = object.id;
         request.user = object.user
-            ? (User.fromObject(object.user) ?? undefined)
-            : undefined;
+            ? User.fromObject(object.user)!
+            : object.userId
+              ? new User({ id: object.userId })
+              : new User();
         request.status = object.status;
         request.createdAt = object.createdAt;
         request.updatedAt = object.updatedAt;

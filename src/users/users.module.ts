@@ -12,8 +12,11 @@ import { OwnerRequestRepository } from './persistance/repository/owner-request.r
 
 import { UserRepositoryI } from './domain/repository/user-repository.interface';
 import { OwnerRequestRepositoryI } from './domain/repository/owner-request-repository.interface';
-import { UserServiceI } from './domain/services/core/user-service.interface';
-import { OwnerRequestServiceI } from './domain/services/core/owner-request-service.interface';
+import {
+    UserInternalServiceI,
+    UserServiceI,
+} from './domain/services/core/user-service.interface';
+import { OwnerRequestInternalServiceI } from './domain/services/core/owner-request-service.interface';
 import { UserWebServiceI } from './domain/services/web/user-web-service.interface';
 import { UserMobileServiceI } from './domain/services/mobile/user-mobile-service.interface';
 
@@ -60,9 +63,13 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
             provide: UserServiceI,
             useExisting: UserService,
         },
+        {
+            provide: UserInternalServiceI,
+            useExisting: UserService,
+        },
         OwnerRequestService,
         {
-            provide: OwnerRequestServiceI,
+            provide: OwnerRequestInternalServiceI,
             useExisting: OwnerRequestService,
         },
 
@@ -84,11 +91,10 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
         UserService,
         UserRepository,
         UserServiceI,
+        UserInternalServiceI,
         UserRepositoryI,
         OwnerRequestService,
-        OwnerRequestServiceI,
-        OwnerRequestRepository,
-        OwnerRequestRepositoryI,
+        OwnerRequestInternalServiceI,
     ],
 })
-export class UsersModule {}
+export class UsersModule { }

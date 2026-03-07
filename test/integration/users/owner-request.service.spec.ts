@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OwnerRequestService } from '../../../src/users/domain/services/core/owner-request.service';
-import { OwnerRequestServiceI } from '../../../src/users/domain/services/core/owner-request-service.interface';
+import { OwnerRequestInternalServiceI } from '../../../src/users/domain/services/core/owner-request-service.interface';
 
 describe('OwnerRequestService (Integration)', () => {
     let service: OwnerRequestService;
@@ -10,7 +10,7 @@ describe('OwnerRequestService (Integration)', () => {
             providers: [
                 OwnerRequestService,
                 {
-                    provide: OwnerRequestServiceI,
+                    provide: OwnerRequestInternalServiceI,
                     useValue: {},
                 },
             ],

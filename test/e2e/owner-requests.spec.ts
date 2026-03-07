@@ -6,7 +6,7 @@ import { AppModule } from '../../src/app.module';
 describe('OwnerRequests (E2E)', () => {
     let app: INestApplication;
     let httpServer: any;
-    let authToken = '';
+    const authToken = '';
 
     beforeAll(async () => {
         const moduleFixture: TestingModule =

@@ -12,7 +12,7 @@ export class PostgresUserDao {
     constructor(
         @InjectRepository(UserModel)
         private readonly typeRepository: Repository<UserModel>,
-    ) { }
+    ) {}
 
     public async findById(id: string): Promise<UserModel | null> {
         const model = await this.typeRepository.findOne({

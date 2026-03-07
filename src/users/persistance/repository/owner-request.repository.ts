@@ -36,12 +36,12 @@ export class OwnerRequestRepository implements OwnerRequestRepositoryI {
             : null;
     }
 
-    public async findPendingByUserEmail(
-        email: string,
+    public async findPendingByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null> {
-        const model = await this.postgresDao.findPendingByUserEmail(
-            email,
+        const model = await this.postgresDao.findPendingByUserId(
+            userId,
             profile,
         );
 
@@ -50,12 +50,12 @@ export class OwnerRequestRepository implements OwnerRequestRepositoryI {
             : null;
     }
 
-    public async findByUserEmail(
-        email: string,
+    public async findByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null> {
-        const model = await this.postgresDao.findByUserEmail(
-            email,
+        const model = await this.postgresDao.findByUserId(
+            userId,
             profile,
         );
 

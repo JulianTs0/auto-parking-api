@@ -2,7 +2,7 @@ import { AuthServiceI } from '../core/auth-service.interface';
 import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthMobileServiceI } from './auth-mobile-service.interface';
 import { Injectable } from '@nestjs/common';
-import { UserServiceI } from '../../../../users/domain/services/core/user-service.interface';
+import { UserInternalServiceI } from 'src/users';
 import { AuthEvents } from 'src/auth';
 import { Errors, Role, ServiceError, Token, User } from 'src/commons';
 import { Transactional } from '@nestjs-cls/transactional';
@@ -13,10 +13,10 @@ import { EventPublisherI } from '../../../../app-events/services/event-publisher
 export class AuthMobileService implements AuthMobileServiceI {
     constructor(
         private readonly authCoreService: AuthServiceI,
-        private readonly userService: UserServiceI,
+        private readonly userService: UserInternalServiceI,
         private readonly authHelper: AuthHelper,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async register(request: RegisterReq) {

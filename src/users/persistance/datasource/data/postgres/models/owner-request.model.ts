@@ -17,9 +17,16 @@ export class OwnerRequestModel {
     @PrimaryColumn('uuid')
     public id: string;
 
-    @ManyToOne(() => UserModel, { onDelete: 'CASCADE' })
+    @Column({ name: 'user_id', type: 'uuid', nullable: false })
+    public userId: string;
+
+    @ManyToOne(() => UserModel, {
+        onDelete: 'CASCADE',
+        nullable: true,
+        eager: false,
+    })
     @JoinColumn({ name: 'user_id' })
-    public user: UserModel;
+    public user?: UserModel;
 
     @Column({
         name: 'status',

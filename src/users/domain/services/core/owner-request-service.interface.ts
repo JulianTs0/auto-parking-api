@@ -1,15 +1,15 @@
 import { OwnerRequest, PageContent } from 'src/commons';
 import { OwnerRequestLoadProfile } from '../../../persistance/datasource/data/postgres/profiles/owner-request-load.profile';
 
-export abstract class OwnerRequestServiceI {
+export abstract class OwnerRequestInternalServiceI {
     abstract save(request: OwnerRequest): Promise<OwnerRequest>;
     abstract update(request: OwnerRequest): Promise<OwnerRequest>;
-    abstract findByUserEmail(
-        email: string,
+    abstract findByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null>;
-    abstract findPendingByUserEmail(
-        email: string,
+    abstract findPendingByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null>;
     abstract findRequestsPaginated(

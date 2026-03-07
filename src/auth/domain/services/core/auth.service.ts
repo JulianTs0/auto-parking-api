@@ -9,7 +9,7 @@ import { AuthMapper } from '../../dto/auth/mapper/auth.mapper';
 import { LoginReq } from '../../dto/auth/request/login.request.dto';
 import { LoginRes } from '../../dto/auth/response/login.response.dto';
 import { RegisterReq } from '../../dto/auth/request/register.request.dto';
-import { UserServiceI } from 'src/users';
+import { UserInternalServiceI } from 'src/users';
 import { AuthEvents } from 'src/auth';
 import { EventPublisherI } from 'src/app-events';
 import {
@@ -28,9 +28,9 @@ import { ResendEmailReq } from '../../dto/auth/request/resend-email.request.dto'
 export class AuthService implements AuthServiceI {
     constructor(
         private readonly authHelper: AuthHelper,
-        private readonly userService: UserServiceI,
+        private readonly userService: UserInternalServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async validateToken(rawToken: string): Promise<User> {

@@ -19,9 +19,9 @@ import {
 } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
 import {
-    UserServiceI,
-    OwnerRequestServiceI,
+    OwnerRequestInternalServiceI,
     OwnerRequestLoadProfile,
+    UserInternalServiceI,
 } from 'src/users';
 import { EventPublisherI } from 'src/app-events';
 import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
@@ -36,10 +36,10 @@ export class AuthWebService implements AuthWebServiceI {
     constructor(
         private readonly authCoreService: AuthServiceI,
         private readonly authHelper: AuthHelper,
-        private readonly userService: UserServiceI,
-        private readonly ownerRequestService: OwnerRequestServiceI,
+        private readonly userService: UserInternalServiceI,
+        private readonly ownerRequestService: OwnerRequestInternalServiceI,
         private readonly eventPublisher: EventPublisherI,
-    ) { }
+    ) {}
 
     @Transactional()
     public async register(request: RegisterReq) {
@@ -76,13 +76,22 @@ export class AuthWebService implements AuthWebServiceI {
     public async acceptOwnerRequest(
         request: AcceptOwnerRequestReq,
     ): Promise<void> {
-        const ownerRequest: OwnerRequest | null =
-            await this.ownerRequestService.findPendingByUserEmail(
+        const user: User | null =
+            await this.userService.findUserByEmail(
                 request.body.ownerEmail,
+            );
+
+        if (!user) {
+            throw new ServiceError(Errors.USER_NOT_FOUND);
+        }
+
+        const ownerRequest: OwnerRequest | null =
+            await this.ownerRequestService.findPendingByUserId(
+                user.id,
                 OwnerRequestLoadProfile.WITH_USER,
             );
 
-        if (!ownerRequest || !ownerRequest.user) {
+        if (!ownerRequest) {
             throw new ServiceError(Errors.USER_NOT_FOUND);
         }
 
@@ -154,8 +163,8 @@ export class AuthWebService implements AuthWebServiceI {
         }
 
         const existingRequest =
-            await this.ownerRequestService.findPendingByUserEmail(
-                user.email,
+            await this.ownerRequestService.findPendingByUserId(
+                user.id,
             );
 
         if (existingRequest) {
@@ -184,9 +193,7 @@ export class AuthWebService implements AuthWebServiceI {
         }
 
         const ownerRequest =
-            await this.ownerRequestService.findByUserEmail(
-                user.email,
-            );
+            await this.ownerRequestService.findByUserId(user.id);
 
         if (
             !ownerRequest ||

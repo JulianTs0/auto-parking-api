@@ -1,4 +1,4 @@
-import { OwnerRequest } from 'src/commons';
+import { OwnerRequest, User } from 'src/commons';
 import { OwnerRequestModel } from '../models/owner-request.model';
 import { UserEntityMapper } from './user-entity.mapper';
 
@@ -15,7 +15,7 @@ export class OwnerRequestEntityMapper {
         entity.updatedAt = model.updatedAt;
         entity.user = model.user
             ? UserEntityMapper.toDomain(model.user)!
-            : undefined;
+            : new User({ id: model.userId });
 
         return entity;
     }
@@ -31,7 +31,9 @@ export class OwnerRequestEntityMapper {
         model.createdAt = entity.createdAt;
         model.updatedAt = entity.updatedAt;
 
-        if (entity.user) {
+        model.userId = entity.user.id;
+
+        if (entity.user.email != null) {
             model.user = UserEntityMapper.toModel(entity.user)!;
         }
 

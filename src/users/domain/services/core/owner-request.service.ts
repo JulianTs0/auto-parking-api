@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { OwnerRequestServiceI } from './owner-request-service.interface';
+import { OwnerRequestInternalServiceI } from './owner-request-service.interface';
 import { OwnerRequestRepositoryI } from '../../repository/owner-request-repository.interface';
 import { OwnerRequest, PageContent } from 'src/commons';
 import { OwnerRequestLoadProfile } from '../../../persistance/datasource/data/postgres/profiles/owner-request-load.profile';
 
 @Injectable()
-export class OwnerRequestService implements OwnerRequestServiceI {
+export class OwnerRequestService implements OwnerRequestInternalServiceI {
     constructor(
         private readonly ownerRequestRepository: OwnerRequestRepositoryI,
     ) {}
@@ -20,22 +20,22 @@ export class OwnerRequestService implements OwnerRequestServiceI {
         return await this.ownerRequestRepository.update(request);
     }
 
-    public async findByUserEmail(
-        email: string,
+    public async findByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null> {
-        return await this.ownerRequestRepository.findByUserEmail(
-            email,
+        return await this.ownerRequestRepository.findByUserId(
+            userId,
             profile,
         );
     }
 
-    public async findPendingByUserEmail(
-        email: string,
+    public async findPendingByUserId(
+        userId: string,
         profile?: OwnerRequestLoadProfile,
     ): Promise<OwnerRequest | null> {
-        return await this.ownerRequestRepository.findPendingByUserEmail(
-            email,
+        return await this.ownerRequestRepository.findPendingByUserId(
+            userId,
             profile,
         );
     }

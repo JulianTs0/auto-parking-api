@@ -53,26 +53,26 @@ export class PostgresOwnerRequestDao {
         });
     }
 
-    public async findPendingByUserEmail(
-        email: string,
+    public async findPendingByUserId(
+        userId: string,
         profile: OwnerRequestLoadProfile = OwnerRequestLoadProfile.BASIC,
     ): Promise<OwnerRequestModel | null> {
         return this.typeRepository.findOne({
             where: {
-                user: { email: email },
+                userId: userId,
                 status: OwnerRequestStatus.PENDING,
             },
             relations: this.getRelations(profile),
         });
     }
 
-    public async findByUserEmail(
-        email: string,
+    public async findByUserId(
+        userId: string,
         profile: OwnerRequestLoadProfile = OwnerRequestLoadProfile.BASIC,
     ): Promise<OwnerRequestModel | null> {
         return this.typeRepository.findOne({
             where: {
-                user: { email: email },
+                userId: userId,
             },
             relations: this.getRelations(profile),
         });
