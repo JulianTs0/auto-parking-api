@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailSuscriber } from './email.suscriber';
-import { EmailServiceI } from 'src/notifications/domain/services/core/email-service.interface';
-import { Subjects, Token, User } from 'src/commons';
+import { EmailServiceI } from '../../domain/services/core/email-service.interface';
+import { Subjects } from '../../../commons/const/email-template.const';
+import { Token } from '../../../commons/dto/token.dto';
+import { User } from '../../../commons/entity/user.entity';
 
 describe('EmailSuscriber', () => {
     let suscriber: EmailSuscriber;

@@ -25,25 +25,26 @@ export class GetOwnerRequestMapper {
     public toResponse(
         requests: PageContent<OwnerRequest>,
     ): GetOwnerRequestRes {
-        const usersResponse = requests.content.map((request) => {
+        const requestsResponse = requests.content.map((request) => {
             const user = request.user;
 
             if (!user) throw new ServiceError(Errors.INTERNAL_ERROR);
 
             return {
-                id: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                status: user.status,
-                roles: [...user.roles],
+                id: request.id,
+                status: request.status,
                 createdAt: request.createdAt,
                 updatedAt: request.updatedAt,
+                user: {
+                    fullName: user.fullName,
+                    email: user.email,
+                    phoneNumber: user.phoneNumber,
+                },
             };
         });
 
         return new GetOwnerRequestRes({
-            users: usersResponse,
+            requests: requestsResponse,
             nextPage: requests.nextPage,
         });
     }

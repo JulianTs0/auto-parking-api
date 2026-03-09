@@ -10,7 +10,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth';
+import { AuthGuard } from 'src/auth/config/guards/auth.guard';
 import { User, AuthUser, ApiEndpoint } from '../../../../commons';
 import { EditBody } from '../../../domain/dto/users/request/edit.body.dto';
 import { EditRes } from '../../../domain/dto/users/response/edit.response.dto';

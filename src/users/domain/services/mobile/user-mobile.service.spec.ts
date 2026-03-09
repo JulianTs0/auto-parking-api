@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserMobileService } from './user-mobile.service';
 
 describe('UserMobileService', () => {
-    let service: any;
+    let service: UserMobileService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [],
+            providers: [UserMobileService],
         }).compile();
 
-        service = module.get<any>('UserMobileService');
+        service = module.get<UserMobileService>(UserMobileService);
+
+        jest.clearAllMocks();
     });
 
-    it('should be defined', () => {
+    it('santity check', () => {
         expect(service).toBeDefined();
     });
 });

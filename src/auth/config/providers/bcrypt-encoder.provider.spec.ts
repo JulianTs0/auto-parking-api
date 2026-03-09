@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt'; // Importamos la librería real
 import { BcryptEncoder } from './bcrypt-encoder.provider';
 
-jest.mock('bcrypt');
+jest.mock('bcrypt', () => ({
+    genSalt: jest.fn(),
+    hash: jest.fn(),
+    compare: jest.fn(),
+}));
 
 describe('BcryptEncoder', () => {
     let encoder: BcryptEncoder;

@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserWebService } from './user-web.service';
 
 describe('UserWebService', () => {
-    let service: any;
+    let service: UserWebService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [],
+            providers: [UserWebService],
         }).compile();
 
-        service = module.get<any>('UserWebService');
+        service = module.get<UserWebService>(UserWebService);
+
+        jest.clearAllMocks();
     });
 
-    it('should be defined', () => {
+    it('sanity check', () => {
         expect(service).toBeDefined();
     });
 });

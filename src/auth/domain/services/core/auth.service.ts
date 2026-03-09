@@ -9,9 +9,9 @@ import { AuthMapper } from '../../dto/auth/mapper/auth.mapper';
 import { LoginReq } from '../../dto/auth/request/login.request.dto';
 import { LoginRes } from '../../dto/auth/response/login.response.dto';
 import { RegisterReq } from '../../dto/auth/request/register.request.dto';
-import { UserInternalServiceI } from 'src/users';
-import { AuthEvents } from 'src/auth';
-import { EventPublisherI } from 'src/app-events';
+import { UserInternalServiceI } from 'src/users/domain/services/core/user-service.interface';
+import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
+import { EventPublisherI } from 'src/app-events/services/event-publisher.interface';
 import {
     Errors,
     IdGenerator,

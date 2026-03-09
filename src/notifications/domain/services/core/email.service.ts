@@ -5,7 +5,7 @@ import { EmailHelper } from '../../../config/helpers/email.helper';
 import { SendVerifyMailReq } from '../../dto/email/request/send-mail.request.dto';
 import { SendEmployeeRegistrationMailReq } from '../../dto/email/request/send-employee-registration-mail.request.dto';
 import { ValidateDto, MAIL_TRANSPORTER } from 'src/commons';
-import { EnvConfigService } from 'src/config';
+import { EnvConfigService } from 'src/config/env.service';
 import { SendRecoverMailReq } from '../../dto/email/request/send-recover-mail.request.dto';
 
 @Injectable()

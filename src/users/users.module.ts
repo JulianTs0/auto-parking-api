@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppConfigModule } from 'src/config';
-import { AuthModule } from 'src/auth/';
+import { AppConfigModule } from 'src/config/config.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 import { UserModel } from './persistance/datasource/data/postgres/models/user.model';
 import { OwnerRequestModel } from './persistance/datasource/data/postgres/models/owner-request.model';
@@ -97,4 +97,4 @@ import { UserCoreController } from './presentation/controllers/core/user-core.co
         OwnerRequestInternalServiceI,
     ],
 })
-export class UsersModule { }
+export class UsersModule {}

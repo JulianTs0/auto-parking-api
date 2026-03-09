@@ -8,13 +8,13 @@ import { ClsModule } from 'nestjs-cls';
 import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { DataSource } from 'typeorm';
-import { DatabaseModule } from './database';
-import { AppConfigModule } from './config';
-import { AuthModule } from './auth';
-import { UsersModule } from './users';
-import { AppLoggerModule } from './logger';
-import { NotificationsModule } from './notifications';
-import { AppEventsModule } from './app-events';
+import { DatabaseModule } from './database/database.module';
+import { AppConfigModule } from './config/config.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { AppLoggerModule } from './logger/logger.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AppEventsModule } from './app-events/app-events.module';
 
 @Module({
     imports: [

@@ -4,7 +4,7 @@ import { RegisterReq } from '../../dto/auth/request/register.request.dto';
 import { AuthWebServiceI } from './auth-web-service.interface';
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
-import { AuthEvents } from 'src/auth';
+import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
 import {
     Errors,
     IdGenerator,
@@ -18,12 +18,10 @@ import {
     OwnerRequestStatus,
 } from 'src/commons';
 import { AuthHelper } from '../../../config/helpers/auth.helper';
-import {
-    OwnerRequestInternalServiceI,
-    OwnerRequestLoadProfile,
-    UserInternalServiceI,
-} from 'src/users';
-import { EventPublisherI } from 'src/app-events';
+import { UserInternalServiceI } from 'src/users/domain/services/core/user-service.interface';
+import { OwnerRequestInternalServiceI } from 'src/users/domain/services/core/owner-request-service.interface';
+import { OwnerRequestLoadProfile } from 'src/users/persistance/datasource/data/postgres/profiles/owner-request-load.profile';
+import { EventPublisherI } from 'src/app-events/services/event-publisher.interface';
 import { RegisterEmployeeReq } from '../../dto/auth/request/register-employee.request.dto';
 import { RequestOwnerUpgradeReq } from '../../dto/auth/request/request-owner-upgrade-request.dto';
 import { UpgradeToOwnerReq } from '../../dto/auth/request/upgrade-to-owner.request.dto';

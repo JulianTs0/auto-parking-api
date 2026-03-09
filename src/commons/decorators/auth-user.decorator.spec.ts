@@ -16,7 +16,7 @@ describe('@AuthUser Decorator', () => {
 
     const getDecoratorFactory = () => {
         class TestController {
-            public testMethod(@AuthUser() user: User) { }
+            public testMethod(@AuthUser() user: User) {}
         }
 
         const metadata = Reflect.getMetadata(

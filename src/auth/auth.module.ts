@@ -1,10 +1,10 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
-import { UsersModule } from 'src/users';
-import { NotificationsModule } from 'src/notifications';
-import { AppConfigModule } from 'src/config';
-import { AppEventsModule } from 'src/app-events';
+import { UsersModule } from 'src/users/users.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { AppConfigModule } from 'src/config/config.module';
+import { AppEventsModule } from 'src/app-events/app-events.module';
 
 import { BcryptEncoder } from './config/providers/bcrypt-encoder.provider';
 import { JWTHandler } from './config/providers/jwt-handler.provider';

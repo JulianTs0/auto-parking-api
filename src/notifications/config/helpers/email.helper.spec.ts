@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailHelper } from './email.helper';
-import { EnvConfigService } from 'src/config';
+import { EnvConfigService } from 'src/config/env.service';
 import * as fs from 'fs';
 import { EmailTemplates } from 'src/commons';
 
@@ -26,7 +26,7 @@ describe('EmailHelper', () => {
         }).compile();
 
         helper = module.get<EmailHelper>(EmailHelper);
-        configServiceMock = module.get(EnvConfigService) as any;
+        configServiceMock = module.get(EnvConfigService);
 
         jest.clearAllMocks();
     });

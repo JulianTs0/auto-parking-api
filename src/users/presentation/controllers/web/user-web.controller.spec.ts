@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserWebController } from './user-web.controller';
 
 describe('UserWebController', () => {
-    let controller: any;
+    let controller: UserWebController;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [],
+            controllers: [UserWebController],
         }).compile();
 
-        controller = module.get<any>('UserWebController');
+        controller = module.get<UserWebController>(UserWebController);
     });
 
-    it('should be defined', () => {
+    it('sanity check', () => {
         expect(controller).toBeDefined();
     });
 });

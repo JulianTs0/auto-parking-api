@@ -5,7 +5,8 @@ import { EmailHelper } from './config/helpers/email.helper';
 import { EmailServiceI } from './domain/services/core/email-service.interface';
 import { MAIL_TRANSPORTER } from 'src/commons';
 import { EmailSuscriber } from './application/suscribers/email.suscriber';
-import { AppConfigModule, EnvConfigService } from 'src/config';
+import { AppConfigModule } from 'src/config/config.module';
+import { EnvConfigService } from 'src/config/env.service';
 
 @Module({
     imports: [AppConfigModule],

@@ -12,7 +12,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { Errors, ServiceError, User, UserStatus } from 'src/commons';
 import { Transactional } from '@nestjs-cls/transactional';
-import { AuthHelper } from 'src/auth';
+import { AuthHelper } from 'src/auth/config/helpers/auth.helper';
 
 @Injectable()
 export class UserService

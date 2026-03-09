@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EmailServiceI } from '../../domain/services/core/email-service.interface';
 import { Subjects, User, Token } from 'src/commons';
-import { AuthEvents } from 'src/auth';
+import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
 
 @Injectable()
 export class EmailSuscriber {

@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, OwnerRequestStatus, UserStatus } from 'src/commons';
+import { OwnerRequestStatus } from 'src/commons';
 
 export class OwnerRequestUserData {
-    @ApiProperty({
-        example: '123e4567-e89b-12d3-a456-426614174000',
-        description: 'Identificador único del usuario',
-    })
-    public readonly id: string;
-
     @ApiProperty({
         example: 'Juan Perez',
         description: 'Nombre completo del usuario',
@@ -27,21 +21,6 @@ export class OwnerRequestUserData {
         description: 'Número de teléfono del usuario',
     })
     public readonly phoneNumber: string | null;
-
-    @ApiProperty({
-        enum: UserStatus,
-        example: UserStatus.ACTIVE,
-        description: 'Estado actual de la cuenta del usuario',
-    })
-    public readonly status: UserStatus;
-
-    @ApiProperty({
-        enum: Role,
-        isArray: true,
-        example: [Role.CLIENT],
-        description: 'Roles asignados al usuario',
-    })
-    public readonly roles: Role[];
 
     constructor(init?: Partial<OwnerRequestUserData>) {
         Object.assign(this, init);

@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GetByIdRes } from './get-by-id.response.dto';
+import { OwnerRequestItemRes } from './owner-request-item.dto';
 
 export class GetOwnerRequestRes {
     @ApiProperty({
-        type: [GetByIdRes],
-        description: 'Lista de usuarios',
+        type: [OwnerRequestItemRes],
+        description: 'Lista de solicitudes de owner',
     })
-    public readonly users: GetByIdRes[];
+    public readonly requests: OwnerRequestItemRes[];
 
     @ApiProperty({
         example: 2,

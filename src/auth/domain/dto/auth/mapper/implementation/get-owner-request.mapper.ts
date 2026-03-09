@@ -1,4 +1,10 @@
-import { User, OwnerRequest, PageContent } from 'src/commons';
+import {
+    User,
+    OwnerRequest,
+    PageContent,
+    ServiceError,
+    Errors,
+} from 'src/commons';
 import { GetOwnerRequestQuery } from '../../request/get-owner-request.query';
 import { GetOwnerRequestReq } from '../../request/get-owner-request.request.dto';
 import {
@@ -25,16 +31,12 @@ export class GetOwnerRequestMapper {
     ): GetOwnerRequestRes {
         const requestsResponse = requests.content.map((request) => {
             const user = request.user;
-            if (!user)
-                throw new Error('User not loaded in OwnerRequest');
+            if (!user) throw new ServiceError(Errors.INTERNAL_ERROR);
 
             const userData: OwnerRequestUserData = {
-                id: user.id,
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
-                status: user.status,
-                roles: [...user.roles],
             };
 
             const item: OwnerRequestItemRes = {
