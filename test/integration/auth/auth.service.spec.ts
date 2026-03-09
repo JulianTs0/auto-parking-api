@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../../src/auth/domain/services/core/auth.service';
-import { AuthServiceI } from '../../../src/auth/domain/services/core/auth-service.interface';
 import { PasswordEncoderI } from '../../../src/auth/config/providers/password-encoder.interface';
 import { TokenHandlerI } from '../../../src/auth/config/providers/token-handler.interface';
 import { EmailServiceI } from '../../../src/notifications/domain/services/core/email-service.interface';

@@ -1,0 +1,11 @@
+services:
+    postgres_test:
+        image: postgres:15-alpine
+        container_name: postgres_test_db
+        restart: always
+        ports:
+            - 5433:5432
+        environment:
+            POSTGRES_USER: tester
+            POSTGRES_PASSWORD: tester
+            POSTGRES_DB: auto_parking_test
