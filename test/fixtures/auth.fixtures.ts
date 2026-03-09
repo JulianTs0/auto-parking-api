@@ -1,5 +1,8 @@
+import { AuthRes } from '../../src/auth/domain/dto/auth/response/auth.response.dto';
+import { LoginRes } from '../../src/auth/domain/dto/auth/response/login.response.dto';
 import { Role } from '../../src/commons/const/role.enum';
 import { UserStatus } from '../../src/commons/const/user-status.enum';
+import { Token } from 'src/commons';
 
 export const createUserFixture = (overrides = {}) => ({
     id: '550e8400-e29b-41d4-a716-446655440000',
@@ -67,3 +70,26 @@ export const createAuthResponseFixture = (overrides = {}) => ({
     user: createUserFixture(),
     ...overrides,
 });
+
+export const createAuthResFixture = (overrides = {}) => {
+    const userBase = createUserFixture();
+    return new AuthRes({
+        id: userBase.id,
+        fullName: userBase.fullName,
+        email: userBase.email,
+        phoneNumber: userBase.phoneNumber,
+        status: userBase.status,
+        roles: Array.from(userBase.roles),
+        createdAt: userBase.createdAt,
+        updatedAt: userBase.updatedAt,
+        ...overrides,
+    });
+};
+
+// Fixture para LoginRes
+export const createLoginResFixture = (overrides = {}) => {
+    return new LoginRes({
+        token: { accessToken: 'mock-jwt-token' } as Token,
+        ...overrides,
+    });
+};

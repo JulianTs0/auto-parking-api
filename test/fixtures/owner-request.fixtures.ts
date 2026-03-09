@@ -1,46 +1,106 @@
 import { OwnerRequestStatus } from '../../src/commons/const/owner-request-status.enum';
 import { Role } from '../../src/commons/const/role.enum';
 import { UserStatus } from '../../src/commons/const/user-status.enum';
+import { User } from '../../src/commons/entity/user.entity';
+import { OwnerRequest } from '../../src/commons/entity/owner-request.entity';
+import { GetOwnerRequestReq } from '../../src/users/domain/dto/users/request/get-owner-request.request.dto';
+import { GetOwnerRequestRes } from '../../src/users/domain/dto/users/response/get-owner-request.response.dto';
+import { OwnerRequestItemRes } from '../../src/users/domain/dto/users/response/owner-request-item.dto';
+import { OwnerRequestUserData } from '../../src/users/domain/dto/users/response/owner-request-user-data.dto';
 
-export const mockOwnerRequest = {
+const baseUser = {
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    email: 'owner@example.com',
+    fullName: 'Test Owner',
+    passwordHash: 'hashedPassword123',
+    phoneNumber: '+1234567890',
+    roles: new Set([Role.CLIENT]),
+    status: UserStatus.ACTIVE,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    subscriptions: [],
+    vehicles: [],
+    paymentMethods: [],
+    parkingLots: [],
+};
+
+export const createOwnerRequestFixture = (overrides = {}) => ({
     id: '550e8400-e29b-41d4-a716-446655440000',
-    user: {
-        id: '550e8400-e29b-41d4-a716-446655440001',
-        email: 'owner@example.com',
-        password: 'hashedPassword123',
-        name: 'Test',
-        lastName: 'Owner',
-        phone: '+1234567890',
-        role: Role.CLIENT,
-        status: UserStatus.ACTIVE,
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-    },
+    user: { ...baseUser } as unknown as User,
     status: OwnerRequestStatus.PENDING,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
-};
+    ...overrides,
+});
 
-export const mockApprovedOwnerRequest = {
-    ...mockOwnerRequest,
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    status: OwnerRequestStatus.APPROVED,
-};
+export const createApprovedOwnerRequestFixture = (overrides = {}) =>
+    createOwnerRequestFixture({
+        id: '550e8400-e29b-41d4-a716-446655440002',
+        status: OwnerRequestStatus.APPROVED,
+        ...overrides,
+    });
 
-export const mockRejectedOwnerRequest = {
-    ...mockOwnerRequest,
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    status: OwnerRequestStatus.REJECTED,
-};
+export const createRejectedOwnerRequestFixture = (overrides = {}) =>
+    createOwnerRequestFixture({
+        id: '550e8400-e29b-41d4-a716-446655440003',
+        status: OwnerRequestStatus.REJECTED,
+        ...overrides,
+    });
 
-export const mockOwnerRequestsList = [
-    mockOwnerRequest,
-    mockApprovedOwnerRequest,
-    mockRejectedOwnerRequest,
+export const createOwnerRequestsListFixture = () => [
+    createOwnerRequestFixture(),
+    createApprovedOwnerRequestFixture(),
+    createRejectedOwnerRequestFixture(),
 ];
 
-export const mockPaginatedOwnerRequests = {
-    content: mockOwnerRequestsList,
+export const createPaginatedOwnerRequestsFixture = (
+    overrides = {},
+) => ({
+    content: createOwnerRequestsListFixture(),
     page: 1,
     nextPage: null,
-};
+    ...overrides,
+});
+
+export const createOwnerRequestEntityFixture = (overrides = {}) =>
+    new OwnerRequest(createOwnerRequestFixture(overrides));
+
+export const createOwnerRequestUserDataFixture = (overrides = {}) =>
+    new OwnerRequestUserData({
+        fullName: 'Test Owner',
+        email: 'owner@example.com',
+        phoneNumber: '+1234567890',
+        ...overrides,
+    });
+
+export const createOwnerRequestItemResFixture = (overrides = {}) =>
+    new OwnerRequestItemRes({
+        id: '550e8400-e29b-41d4-a716-446655440000',
+        status: OwnerRequestStatus.PENDING,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        user: createOwnerRequestUserDataFixture(),
+        ...overrides,
+    });
+
+export const createGetOwnerRequestResFixture = (overrides = {}) =>
+    new GetOwnerRequestRes({
+        requests: [createOwnerRequestItemResFixture()],
+        nextPage: null,
+        ...overrides,
+    });
+
+export const createGetOwnerRequestReqFixture = (overrides = {}) =>
+    new GetOwnerRequestReq({
+        authUser: new User({
+            id: '550e8400-e29b-41d4-a716-446655440001',
+            email: 'admin@example.com',
+            fullName: 'Admin User',
+            passwordHash: 'hashedPassword123',
+            roles: new Set([Role.ADMIN]),
+            status: UserStatus.ACTIVE,
+        }),
+        page: 1,
+        size: 10,
+        ...overrides,
+    });
