@@ -3,7 +3,26 @@ module.exports = {
     rootDir: 'src',
     testRegex: '.*\\.spec\\.ts$',
     transform: {
-        '^.+\\.(t|j)s$': 'ts-jest',
+        '^.+\\.(t|j)s$': [
+            '@swc/jest',
+            {
+                jsc: {
+                    parser: {
+                        syntax: 'typescript',
+                        decorators: true,
+                        dynamicImport: true,
+                    },
+                    transform: {
+                        legacyDecorator: true,
+                        decoratorMetadata: true,
+                    },
+                },
+                module: {
+                    type: 'commonjs',
+                    strictMode: false,
+                },
+            },
+        ],
     },
     collectCoverageFrom: [
         '**/*.(t|j)s',
@@ -23,5 +42,6 @@ module.exports = {
     testEnvironment: 'node',
     moduleNameMapper: {
         '^src/(.*)$': '<rootDir>/$1',
+        '^test/(.*)$': '<rootDir>/../test/$1',
     },
 };
