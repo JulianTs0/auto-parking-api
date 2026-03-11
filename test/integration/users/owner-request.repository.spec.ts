@@ -73,7 +73,7 @@ describe('OwnerRequestRepository (Integration)', () => {
     };
 
     describe('save()', () => {
-        it('debería guardar exitosamente una solicitud vinculada a un usuario real', async () => {
+        it('should successfully save a request linked to a real user', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -83,12 +83,13 @@ describe('OwnerRequestRepository (Integration)', () => {
             // Act
             const saved = await repository.save(request);
 
-            // Assert
+            // Assert - saved should be defined
             expect(saved).toBeDefined();
+            // Assert - should have correct id
             expect(saved.id).toBe(request.id);
         });
 
-        it('debería fallar si el usuario referenciado no existe (FK Constraint)', async () => {
+        it('should fail if referenced user does not exist (FK Constraint)', async () => {
             // Arrange
             const request =
                 createOwnerRequestFixture() as unknown as OwnerRequest;
@@ -96,11 +97,11 @@ describe('OwnerRequestRepository (Integration)', () => {
                 id: '00000000-0000-0000-0000-000000000000',
             });
 
-            // Act & Assert
+            // Act & Assert - should throw error
             await expect(repository.save(request)).rejects.toThrow();
         });
 
-        it('debería fallar si el estado de la solicitud es inválido (Check Constraint)', async () => {
+        it('should fail if request status is invalid (Check Constraint)', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -108,13 +109,13 @@ describe('OwnerRequestRepository (Integration)', () => {
             }) as unknown as OwnerRequest;
             (request as any).status = 'INVALID_STATUS';
 
-            // Act & Assert
+            // Act & Assert - should throw error
             await expect(repository.save(request)).rejects.toThrow();
         });
     });
 
     describe('update()', () => {
-        it('debería actualizar el estado de una solicitud existente', async () => {
+        it('should update status of existing request', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -122,12 +123,13 @@ describe('OwnerRequestRepository (Integration)', () => {
                 status: OwnerRequestStatus.PENDING,
             }) as unknown as OwnerRequest;
 
-            // Act & Assert
+            // Act & Assert - save first
             await repository.save(request);
 
             request.status = OwnerRequestStatus.APPROVED;
             const updated = await repository.update(request);
 
+            // Assert - status should be APPROVED
             expect(updated.status).toBe(OwnerRequestStatus.APPROVED);
             const found = await repository.findById(request.id);
             expect(found?.status).toBe(OwnerRequestStatus.APPROVED);
@@ -135,7 +137,7 @@ describe('OwnerRequestRepository (Integration)', () => {
     });
 
     describe('findById()', () => {
-        it('debería encontrar la solicitud con perfil BASIC (usuario hidratado solo con ID)', async () => {
+        it('should find request with BASIC profile (user hydrated only with ID)', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -149,13 +151,15 @@ describe('OwnerRequestRepository (Integration)', () => {
                 OwnerRequestLoadProfile.BASIC,
             );
 
-            // Assert
+            // Assert - should be defined
             expect(found).toBeDefined();
+            // Assert - should have correct user id
             expect(found?.user.id).toBe(user.id);
+            // Assert - email should be undefined (not hydrated)
             expect(found?.user.email).toBeUndefined();
         });
 
-        it('debería encontrar la solicitud con perfil WITH_USER (usuario completamente hidratado)', async () => {
+        it('should find request with WITH_USER profile (user fully hydrated)', async () => {
             // Arrange
             const user = await setupRealUser({
                 email: 'full@test.com',
@@ -171,23 +175,23 @@ describe('OwnerRequestRepository (Integration)', () => {
                 OwnerRequestLoadProfile.WITH_USER,
             );
 
-            // Assert
+            // Assert - should have fully hydrated user with email
             expect(found?.user.email).toBe('full@test.com');
         });
 
-        it('debería retornar null si la solicitud no existe', async () => {
+        it('should return null if request does not exist', async () => {
             // Arrange
             const found = await repository.findById(
                 '00000000-0000-0000-0000-000000000000',
             );
 
-            // Act & Assert
+            // Act & Assert - should return null
             expect(found).toBeNull();
         });
     });
 
     describe('findPendingByUserId()', () => {
-        it('debería retornar la solicitud si el usuario tiene una en estado PENDING', async () => {
+        it('should return request if user has one in PENDING status', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -201,12 +205,13 @@ describe('OwnerRequestRepository (Integration)', () => {
                 user.id,
             );
 
-            // Assert
+            // Assert - should be defined
             expect(found).toBeDefined();
+            // Assert - should have correct id
             expect(found?.id).toBe(request.id);
         });
 
-        it('debería retornar null si la solicitud del usuario no está en estado PENDING', async () => {
+        it('should return null if user request is not in PENDING status', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -220,13 +225,13 @@ describe('OwnerRequestRepository (Integration)', () => {
                 user.id,
             );
 
-            // Assert
+            // Assert - should return null
             expect(found).toBeNull();
         });
     });
 
     describe('findRequestsPaginated()', () => {
-        it('debería retornar una página de solicitudes ordenada por fecha descendente', async () => {
+        it('should return a page of requests ordered by date descending', async () => {
             // Arrange
             const user = await setupRealUser();
             await repository.save(
@@ -248,14 +253,15 @@ describe('OwnerRequestRepository (Integration)', () => {
                 10,
             );
 
-            // Assert
+            // Assert - should have 2 items
             expect(result.content).toHaveLength(2);
+            // Assert - should be on page 1
             expect(result.page).toBe(1);
         });
     });
 
     describe('delete()', () => {
-        it('debería eliminar físicamente el registro y retornar true', async () => {
+        it('should physically delete record and return true', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -267,22 +273,23 @@ describe('OwnerRequestRepository (Integration)', () => {
             const isDeleted = await repository.delete(request.id);
             const found = await repository.findById(request.id);
 
-            // Assert
+            // Assert - should return true
             expect(isDeleted).toBe(true);
+            // Assert - found should be null
             expect(found).toBeNull();
         });
 
-        it('debería retornar false si se intenta eliminar un registro inexistente', async () => {
+        it('should return false if attempting to delete non-existent record', async () => {
             // Arrange
             const isDeleted = await repository.delete(
                 '00000000-0000-0000-0000-000000000000',
             );
 
-            // Act & Assert
+            // Act & Assert - should return false
             expect(isDeleted).toBe(false);
         });
 
-        it('debería borrarse automáticamente si el usuario dueño es eliminado (CASCADE)', async () => {
+        it('should automatically delete if owning user is deleted (CASCADE)', async () => {
             // Arrange
             const user = await setupRealUser();
             const request = createOwnerRequestFixture({
@@ -293,7 +300,7 @@ describe('OwnerRequestRepository (Integration)', () => {
             // Act
             await userTypeOrmRepo.delete(user.id);
 
-            // Assert
+            // Assert - request should be null (cascade deleted)
             const found = await repository.findById(request.id);
             expect(found).toBeNull();
         });

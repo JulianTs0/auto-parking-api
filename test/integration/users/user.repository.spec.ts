@@ -53,8 +53,8 @@ describe('UserRepository (Integration)', () => {
         await dbHelper.cleanDatabase();
     });
 
-    describe('save() y findById()', () => {
-        it('debería guardar un usuario en la BD y recuperarlo mapeado al dominio', async () => {
+    describe('save() and findById()', () => {
+        it('should save user in DB and recover it mapped to domain', async () => {
             // Arrange
             const domainUser = createUserFixture() as unknown as User;
 
@@ -62,9 +62,11 @@ describe('UserRepository (Integration)', () => {
             const savedUser = await repository.save(domainUser);
             const foundUser = await repository.findById(savedUser.id);
 
-            // Assert
+            // Assert - foundUser should be defined
             expect(foundUser).toBeDefined();
+            // Assert - should have correct id
             expect(foundUser?.id).toBe(domainUser.id);
+            // Assert - should have correct email
             expect(foundUser?.email).toBe(domainUser.email);
 
             const dbRecord = await typeOrmRepository.findOneBy({
@@ -74,7 +76,7 @@ describe('UserRepository (Integration)', () => {
             expect(dbRecord?.email).toBe(domainUser.email);
         });
 
-        it('NO debería recuperar el usuario si su estado es DELETED (Lógica del DAO)', async () => {
+        it('should NOT recover user if status is DELETED (DAO Logic)', async () => {
             // Arrange
             const domainUser = createUserFixture({
                 status: UserStatus.DELETED,
@@ -86,10 +88,11 @@ describe('UserRepository (Integration)', () => {
                 domainUser.id,
             );
 
+            // Assert - should return null
             expect(foundUser).toBeNull();
         });
 
-        it('NO debería encontrar un usuario si su estado es BANNED', async () => {
+        it('should NOT find user if status is BANNED', async () => {
             // Arrange
             const bannedUser = createUserFixture({
                 status: UserStatus.BANNED,
@@ -104,14 +107,14 @@ describe('UserRepository (Integration)', () => {
                 bannedUser.email,
             );
 
-            // Assert
+            // Assert - both should be null
             expect(foundById).toBeNull();
             expect(foundByEmail).toBeNull();
         });
     });
 
-    describe('save() - Errores de Restricción', () => {
-        it('debería lanzar un error si se intenta guardar un email ya existente (Unique Constraint)', async () => {
+    describe('save() - Constraint Errors', () => {
+        it('should throw error if trying to save existing email (Unique Constraint)', async () => {
             // Arrange
             const user1 = createUserFixture({
                 id: '11111111-1111-1111-1111-111111111111',
@@ -125,11 +128,11 @@ describe('UserRepository (Integration)', () => {
 
             await repository.save(user1);
 
-            // Act & Assert
+            // Act & Assert - should throw error
             await expect(repository.save(user2)).rejects.toThrow();
         });
 
-        it('debería fallar si el nombre excede los 100 caracteres', async () => {
+        it('should fail if name exceeds 100 characters', async () => {
             // Arrange
             const userConNombreLargo = createUserFixture({
                 fullName: 'A'.repeat(101),
@@ -138,11 +141,11 @@ describe('UserRepository (Integration)', () => {
             // Act
             const result = repository.save(userConNombreLargo);
 
-            // Assert
+            // Assert - should throw error
             await expect(result).rejects.toThrow();
         });
 
-        it('debería fallar si se intenta guardar un status inválido (Violación de CHECK)', async () => {
+        it('should fail if trying to save invalid status (CHECK Violation)', async () => {
             // Arrange
             const userBadStatus =
                 createUserFixture() as unknown as User;
@@ -151,13 +154,13 @@ describe('UserRepository (Integration)', () => {
             // Act
             const result = repository.save(userBadStatus);
 
-            // Assert
+            // Assert - should throw error
             await expect(result).rejects.toThrow();
         });
     });
 
-    describe('findByEmail() y existsByEmail()', () => {
-        it('debería retornar true y el usuario si el email existe', async () => {
+    describe('findByEmail() and existsByEmail()', () => {
+        it('should return true and user if email exists', async () => {
             // Arrange
             const domainUser = createUserFixture({
                 email: 'unico@test.com',
@@ -170,13 +173,15 @@ describe('UserRepository (Integration)', () => {
             const foundUser =
                 await repository.findByEmail('unico@test.com');
 
-            // Assert
+            // Assert - exists should be true
             expect(exists).toBe(true);
+            // Assert - foundUser should be defined
             expect(foundUser).toBeDefined();
+            // Assert - should have correct id
             expect(foundUser?.id).toBe(domainUser.id);
         });
 
-        it('debería retornar false y null si el email no existe', async () => {
+        it('should return false and null if email does not exist', async () => {
             // Act
             const exists = await repository.existsByEmail(
                 'no-existe@test.com',
@@ -185,14 +190,15 @@ describe('UserRepository (Integration)', () => {
                 'no-existe@test.com',
             );
 
-            // Assert
+            // Assert - exists should be false
             expect(exists).toBe(false);
+            // Assert - foundUser should be null
             expect(foundUser).toBeNull();
         });
     });
 
     describe('update()', () => {
-        it('debería actualizar los roles transformando el Set de dominio a un Array de persistencia', async () => {
+        it('should update roles transforming domain Set to persistence Array', async () => {
             // Arrange
             const domainUser = createUserFixture() as unknown as User;
             domainUser.roles = new Set([Role.CLIENT]);
@@ -205,13 +211,16 @@ describe('UserRepository (Integration)', () => {
             // Act
             const updatedUser = await repository.update(domainUser);
 
-            // Assert
+            // Assert - fullName should be updated
             expect(updatedUser.fullName).toBe('Nombre Actualizado');
+            // Assert - roles should be Set
             expect(updatedUser.roles).toBeInstanceOf(Set);
+            // Assert - roles should equal nuevosRoles
             expect(updatedUser.roles).toEqual(nuevosRoles);
+            // Assert - roles size should be 2
             expect(updatedUser.roles.size).toBe(2);
 
-            // Assert
+            // Assert - check database record
             const dbRecord = await typeOrmRepository.findOneBy({
                 id: domainUser.id,
             });
@@ -223,7 +232,7 @@ describe('UserRepository (Integration)', () => {
             expect(dbRecord?.roles).toHaveLength(2);
         });
 
-        it('debería persistir correctamente un Set con elementos duplicados como un Array único', async () => {
+        it('should correctly persist Set with duplicate elements as unique Array', async () => {
             // Arrange
             const domainUser = createUserFixture() as unknown as User;
             await repository.save(domainUser);
@@ -235,14 +244,13 @@ describe('UserRepository (Integration)', () => {
             ]);
 
             // Act
-
             await repository.update(domainUser);
 
             const dbRecord = await typeOrmRepository.findOneBy({
                 id: domainUser.id,
             });
 
-            // Assert
+            // Assert - should have 2 unique roles
             expect(dbRecord?.roles).toHaveLength(2);
             expect(dbRecord?.roles).toEqual([
                 Role.CLIENT,
@@ -252,7 +260,7 @@ describe('UserRepository (Integration)', () => {
     });
 
     describe('delete()', () => {
-        it('debería eliminar el registro físicamente de la base de datos', async () => {
+        it('should physically delete record from database', async () => {
             // Arrange
             const domainUser = createUserFixture() as unknown as User;
             await repository.save(domainUser);
@@ -260,7 +268,7 @@ describe('UserRepository (Integration)', () => {
             // Act
             const isDeleted = await repository.delete(domainUser.id);
 
-            // Assert
+            // Assert - should return true
             expect(isDeleted).toBe(true);
 
             const dbRecord = await typeOrmRepository.findOneBy({
@@ -269,13 +277,13 @@ describe('UserRepository (Integration)', () => {
             expect(dbRecord).toBeNull();
         });
 
-        it('debería retornar false si se intenta eliminar un ID que no existe', async () => {
+        it('should return false if attempting to delete non-existent ID', async () => {
             // Act
             const result = await repository.delete(
                 '00000000-0000-0000-0000-000000000000',
             );
 
-            // Assert
+            // Assert - should return false
             expect(result).toBe(false);
         });
     });
