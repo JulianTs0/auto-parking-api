@@ -51,7 +51,7 @@ describe('JWTHandler', () => {
     });
 
     describe('createToken()', () => {
-        it('debería calcular la expiración correctamente y firmar el token', async () => {
+        it('should calculate expiration correctly and sign token', async () => {
             // Arrange
             //
             const mockUser = {
@@ -67,10 +67,11 @@ describe('JWTHandler', () => {
             // Act
             const result = await handler.createToken(mockUser);
 
-            // Assert
+            // Assert - calculate expected expiration
             const expectedNow = 1000;
             const expectedExpiration = expectedNow + mockExpiration;
 
+            // Assert - signAsync should be called with correct payload
             expect(jwtServiceMock.signAsync).toHaveBeenCalledWith(
                 {
                     sub: mockUser.id,
@@ -83,12 +84,13 @@ describe('JWTHandler', () => {
                     algorithm: 'HS256',
                 },
             );
+            // Assert - should return token
             expect(result).toBe(mockToken);
         });
     });
 
     describe('verifyToken()', () => {
-        it('debería retornar true si el token es válido', async () => {
+        it('should return true if token is valid', async () => {
             // Arrange
             jwtServiceMock.verifyAsync.mockResolvedValue(
                 {} as JwtPayload,
@@ -97,12 +99,13 @@ describe('JWTHandler', () => {
             // Act
             const result = await handler.verifyToken('token-valido');
 
-            // Assert
+            // Assert - should return true
             expect(result).toBe(true);
+            // Assert - verifyAsync should be called
             expect(jwtServiceMock.verifyAsync).toHaveBeenCalled();
         });
 
-        it('debería retornar false si el token es inválido o expiró', async () => {
+        it('should return false if token is invalid or expired', async () => {
             // Arrange
             jwtServiceMock.verifyAsync.mockRejectedValue(
                 new Error('Token Expired'),
@@ -112,13 +115,13 @@ describe('JWTHandler', () => {
             const result =
                 await handler.verifyToken('token-invalido');
 
-            // Assert
+            // Assert - should return false
             expect(result).toBe(false);
         });
     });
 
     describe('getSubject()', () => {
-        it('debería retornar el "sub" del token decodificado', async () => {
+        it('should return "sub" from decoded token', async () => {
             // Arrange
             const mockPayload: JwtPayload = {
                 sub: 'user-123',
@@ -137,7 +140,7 @@ describe('JWTHandler', () => {
     });
 
     describe('getExpirationDate()', () => {
-        it('debería transformar el "exp" en un objeto Date válido', async () => {
+        it('should transform "exp" into valid Date object', async () => {
             // Arrange
             const timestamp = 1700000000;
             const mockPayload: JwtPayload = {
@@ -152,7 +155,7 @@ describe('JWTHandler', () => {
             const result =
                 await handler.getExpirationDate('any-token');
 
-            // Assert
+            // Assert - should return Date with timestamp multiplied by 1000
             expect(result).toEqual(new Date(timestamp * 1000));
         });
     });

@@ -1,4 +1,4 @@
-import { ServiceError } from './service.error'; // Ajustá la ruta
+import { ServiceError } from './service.error';
 import { ErrorResponse } from './error-response.dto';
 import { ErrorType } from './error-type.constants';
 
@@ -8,24 +8,26 @@ describe('ServiceError', () => {
         status: 404,
     };
 
-    it('debería inicializar la excepción mapeando el mensaje y el status correctamente', () => {
+    it('should initialize exception mapping message and status correctly', () => {
         // Act
         const error = new ServiceError(mockErrorType as ErrorType);
 
-        // Assert
+        // Assert - message should be mapped
         expect(error.message).toBe(mockErrorType.message);
+        // Assert - status should be mapped
         expect(error.getStatus()).toBe(mockErrorType.status);
     });
 
-    it('debería retornar una instancia de ErrorResponse con los datos correctos en toResponse()', () => {
+    it('should return ErrorResponse instance with correct data in toResponse()', () => {
         // Arrange
         const error = new ServiceError(mockErrorType as ErrorType);
 
         // Act
         const response = error.toResponse();
 
-        // Assert
+        // Assert - should be instance of ErrorResponse
         expect(response).toBeInstanceOf(ErrorResponse);
+        // Assert - should have correct status and message
         expect(response).toEqual({
             status: mockErrorType.status,
             message: mockErrorType.message,

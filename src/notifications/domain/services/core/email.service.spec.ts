@@ -55,7 +55,7 @@ describe('EmailService', () => {
     });
 
     describe('sendVerifyMail()', () => {
-        it('debería obtener la plantilla y enviar el correo correctamente', async () => {
+        it('should get template and send email correctly', async () => {
             // Arrange
             const mockHtmlTemplate = '<html>Verificar Cuenta</html>';
             emailHelperMock.getEmailVerification.mockReturnValue(
@@ -67,13 +67,13 @@ describe('EmailService', () => {
                 createSendVerifyMailReqFixture(),
             );
 
-            // Assert
+            // Assert - getEmailVerification should be called
             expect(
                 emailHelperMock.getEmailVerification,
             ).toHaveBeenCalledWith(
                 createSendVerifyMailReqFixture().token.accessToken,
             );
-
+            // Assert - sendMail should be called with correct params
             expect(transporterMock.sendMail).toHaveBeenCalledWith({
                 from: mockSender,
                 to: createSendVerifyMailReqFixture().to,
@@ -84,7 +84,7 @@ describe('EmailService', () => {
     });
 
     describe('sendRecoverMail()', () => {
-        it('debería obtener la plantilla de recuperación y enviarla', async () => {
+        it('should get recovery template and send it', async () => {
             // Arrange
             const mockHtmlTemplate =
                 '<html>Recuperar Password</html>';
@@ -97,13 +97,13 @@ describe('EmailService', () => {
                 createSendRecoverMailReqFixture(),
             );
 
-            // Assert
+            // Assert - getRecoverPasswordRequest should be called
             expect(
                 emailHelperMock.getRecoverPasswordRequest,
             ).toHaveBeenCalledWith(
                 createSendRecoverMailReqFixture().token.accessToken,
             );
-
+            // Assert - sendMail should be called with correct params
             expect(transporterMock.sendMail).toHaveBeenCalledWith({
                 from: mockSender,
                 to: createSendRecoverMailReqFixture().to,
@@ -114,7 +114,7 @@ describe('EmailService', () => {
     });
 
     describe('sendEmployeeRegistrationMail()', () => {
-        it('debería obtener la plantilla de empleado y enviarla', async () => {
+        it('should get employee template and send it', async () => {
             // Arrange
             const mockHtmlTemplate = '<html>Registro Empleado</html>';
             emailHelperMock.getEmployeeRegister.mockReturnValue(
@@ -126,7 +126,7 @@ describe('EmailService', () => {
                 createSendEmployeeRegistrationMailReqFixture(),
             );
 
-            // Assert
+            // Assert - getEmployeeRegister should be called
             expect(
                 emailHelperMock.getEmployeeRegister,
             ).toHaveBeenCalledWith(

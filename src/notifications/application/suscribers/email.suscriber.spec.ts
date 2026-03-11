@@ -38,9 +38,8 @@ describe('EmailSuscriber', () => {
     });
 
     describe('handleUserRegistered()', () => {
-        it('debería pasarle el payload al sendVerifyMail del emailService', async () => {
+        it('should pass payload to sendVerifyMail of emailService', async () => {
             // Arrange
-
             const mockPayload = {
                 user: { email: 'usuario@correo.com' } as User,
                 token: { accessToken: 'abc-123' } as Token,
@@ -49,10 +48,11 @@ describe('EmailSuscriber', () => {
             // Act
             await suscriber.handleUserRegistered(mockPayload);
 
-            // Assert
+            // Assert - sendVerifyMail should be called once
             expect(
                 emailServiceMock.sendVerifyMail,
             ).toHaveBeenCalledTimes(1);
+            // Assert - should be called with correct payload
             expect(
                 emailServiceMock.sendVerifyMail,
             ).toHaveBeenCalledWith({
@@ -64,23 +64,21 @@ describe('EmailSuscriber', () => {
     });
 
     describe('handlePassowrdRecover()', () => {
-        it('debería pasarle el payload al sendRecoverMail del emailService', async () => {
+        it('should pass payload to sendRecoverMail of emailService', async () => {
             // Arrange
-
             const mockPayload = {
                 user: { email: 'empleado@correo.com' } as User,
                 token: { accessToken: 'xyz-987' } as Token,
             };
 
             // Act
-
             await suscriber.handlePassowrdRecover(mockPayload);
 
-            // Assert
-
+            // Assert - sendRecoverMail should be called once
             expect(
                 emailServiceMock.sendRecoverMail,
             ).toHaveBeenCalledTimes(1);
+            // Assert - should be called with correct payload
             expect(
                 emailServiceMock.sendRecoverMail,
             ).toHaveBeenCalledWith({
@@ -92,9 +90,8 @@ describe('EmailSuscriber', () => {
     });
 
     describe('handleEmployeeRegistere()', () => {
-        it('debería pasarle el payload al sendRecoverMail del emailService', async () => {
+        it('should pass payload to sendRecoverMail of emailService', async () => {
             // Arrange
-
             const mockPayload = {
                 user: { email: 'empleado@correo.com' } as User,
                 token: { accessToken: 'xyz-987' } as Token,
@@ -103,13 +100,13 @@ describe('EmailSuscriber', () => {
             };
 
             // Act
-
             await suscriber.handleEmployeeRegistere(mockPayload);
 
-            // Assert
+            // Assert - sendEmployeeRegistrationMail should be called once
             expect(
                 emailServiceMock.sendEmployeeRegistrationMail,
             ).toHaveBeenCalledTimes(1);
+            // Assert - should be called with correct payload
             expect(
                 emailServiceMock.sendEmployeeRegistrationMail,
             ).toHaveBeenCalledWith({

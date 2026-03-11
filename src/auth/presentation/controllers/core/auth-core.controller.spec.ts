@@ -17,22 +17,11 @@ import {
     createLoginResFixture,
     createUserFixture,
 } from 'test/fixtures';
+import { toMockEntity } from 'test/utils/entity-mocks.utils';
 
 describe('AuthCoreController', () => {
     let controller: AuthCoreController;
     let authServiceMock: jest.Mocked<AuthServiceI>;
-
-    const toMockEntity = (
-        fixtureData: any,
-        methodOverrides = {},
-    ): User =>
-        ({
-            ...fixtureData,
-            isDeleted: jest.fn().mockReturnValue(false),
-            isInactive: jest.fn().mockReturnValue(false),
-            isActive: jest.fn().mockReturnValue(true),
-            ...methodOverrides,
-        }) as unknown as User;
 
     beforeEach(async () => {
         const mockAuthService = {
@@ -66,7 +55,7 @@ describe('AuthCoreController', () => {
     });
 
     describe('auth()', () => {
-        it('debería delegar al servicio y retornar AuthRes', async () => {
+        it('should delegate to service and return AuthRes', async () => {
             // Arrange
             const request = {
                 authorization: 'Bearer token-123',
@@ -79,36 +68,37 @@ describe('AuthCoreController', () => {
             // Act
             const result = await controller.auth(request);
 
-            // Assert
+            // Assert - auth should be called with request
             expect(authServiceMock.auth).toHaveBeenCalledWith(
                 request,
             );
+            // Assert - should return expected response
             expect(result).toEqual(expectedResponse);
         });
     });
 
     describe('login()', () => {
-        it('debería delegar al servicio y retornar LoginRes', async () => {
+        it('should delegate to service and return LoginRes', async () => {
             // Arrange
             const request = createLoginDtoFixture() as LoginReq;
             const expectedResponse = createLoginResFixture();
 
             authServiceMock.login.mockResolvedValue(expectedResponse);
-            authServiceMock.login.mockResolvedValue(expectedResponse);
 
             // Act
             const result = await controller.login(request);
 
-            // Assert
+            // Assert - login should be called with request
             expect(authServiceMock.login).toHaveBeenCalledWith(
                 request,
             );
+            // Assert - should return expected response
             expect(result).toEqual(expectedResponse);
         });
     });
 
     describe('verifyEmail()', () => {
-        it('debería delegar al servicio sin retornar nada', async () => {
+        it('should delegate to service and return undefined', async () => {
             // Arrange
             const request = {
                 token: 'verify-token-123',
@@ -118,16 +108,17 @@ describe('AuthCoreController', () => {
             // Act
             const result = await controller.verifyEmail(request);
 
-            // Assert
+            // Assert - verifyEmail should be called with request
             expect(authServiceMock.verifyEmail).toHaveBeenCalledWith(
                 request,
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('changePassword()', () => {
-        it('debería mapear los datos, delegar al servicio y no retornar nada', async () => {
+        it('should map data, delegate to service and return undefined', async () => {
             // Arrange
             const body = {
                 newPassword: 'new-password-123',
@@ -143,7 +134,7 @@ describe('AuthCoreController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - changePassword should be called with mapped data
             expect(
                 authServiceMock.changePassword,
             ).toHaveBeenCalledWith(
@@ -152,12 +143,13 @@ describe('AuthCoreController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('recoverPassword()', () => {
-        it('debería delegar al servicio sin retornar nada', async () => {
+        it('should delegate to service and return undefined', async () => {
             // Arrange
             const request = {
                 email: 'test@test.com',
@@ -169,16 +161,17 @@ describe('AuthCoreController', () => {
             // Act
             const result = await controller.recoverPassword(request);
 
-            // Assert
+            // Assert - recoverPassword should be called with request
             expect(
                 authServiceMock.recoverPassword,
             ).toHaveBeenCalledWith(request);
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('resendEmail()', () => {
-        it('debería delegar al servicio sin retornar nada', async () => {
+        it('should delegate to service and return undefined', async () => {
             // Arrange
             const request = {
                 email: 'test@test.com',
@@ -190,10 +183,11 @@ describe('AuthCoreController', () => {
             // Act
             const result = await controller.resendEmail(request);
 
-            // Assert
+            // Assert - resendVerifyEmail should be called with request
             expect(
                 authServiceMock.resendVerifyEmail,
             ).toHaveBeenCalledWith(request);
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });

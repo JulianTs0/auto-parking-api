@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service'; // Ajustá la ruta
+import { UserService } from './user.service';
 import { UserRepositoryI } from '../../repository/user-repository.interface';
 import { AuthHelper } from '../../../../auth/config/helpers/auth.helper';
 import { Errors, ServiceError, User, UserStatus } from 'src/commons';
@@ -10,6 +10,7 @@ import {
     createUpdateUserDtoFixture,
     createUserListFixture,
 } from 'test/fixtures';
+import { toMockEntity } from 'test/utils/entity-mocks.utils';
 
 jest.mock('@nestjs-cls/transactional', () => ({
     Transactional: () => {
@@ -63,7 +64,7 @@ describe('UserService', () => {
 
     describe('UserServiceI (Public API)', () => {
         describe('getById()', () => {
-            it('debería lanzar USER_NOT_FOUND si el usuario no existe', async () => {
+            it('should throw USER_NOT_FOUND when user does not exist', async () => {
                 // Arrange
                 repositoryMock.findById.mockResolvedValue(null);
                 const req = { id: 'uuid-invalido' } as GetByIdReq;
@@ -71,13 +72,13 @@ describe('UserService', () => {
                 // Act
                 const result = service.getById(req);
 
-                // Assert
+                // Assert - should throw USER_NOT_FOUND error
                 await expect(result).rejects.toThrow(
                     new ServiceError(Errors.USER_NOT_FOUND),
                 );
             });
 
-            it('debería retornar el usuario mapeado si existe', async () => {
+            it('should return mapped user when user exists', async () => {
                 // Arrange
                 const mockUser =
                     createUserListFixture()[0] as unknown as User;
@@ -87,16 +88,17 @@ describe('UserService', () => {
                 // Act
                 const result = await service.getById(req);
 
-                // Assert
+                // Assert - findById should be called with user id
                 expect(repositoryMock.findById).toHaveBeenCalledWith(
                     mockUser.id,
                 );
+                // Assert - should return defined result
                 expect(result).toBeDefined();
             });
         });
 
         describe('delete()', () => {
-            it('debería banear al usuario si el authUser es ADMIN', async () => {
+            it('should ban user when authUser is ADMIN', async () => {
                 // Arrange
                 const targetUser =
                     createUserListFixture()[0] as unknown as User;
@@ -110,14 +112,15 @@ describe('UserService', () => {
                 // Act
                 await service.delete(req);
 
-                // Assert
+                // Assert - user status should be BANNED
                 expect(targetUser.status).toBe(UserStatus.BANNED);
+                // Assert - update should be called
                 expect(repositoryMock.update).toHaveBeenCalledWith(
                     targetUser,
                 );
             });
 
-            it('debería lanzar FORBIDDEN si soy yo mismo pero la password es inválida', async () => {
+            it('should throw FORBIDDEN when deleting self with invalid password', async () => {
                 // Arrange
                 const myUser =
                     createUserListFixture()[0] as unknown as User;
@@ -133,17 +136,15 @@ describe('UserService', () => {
                 } as unknown as DeleteReq;
 
                 // Act
-
                 const result = service.delete(req);
 
-                // Assert
-
+                // Assert - should throw FORBIDDEN error
                 await expect(result).rejects.toThrow(
                     new ServiceError(Errors.FORBIDDEN),
                 );
             });
 
-            it('debería marcar como DELETED si soy yo mismo y la password es válida', async () => {
+            it('should mark as DELETED when deleting self with valid password', async () => {
                 // Arrange
                 const myUser =
                     createUserListFixture()[0] as unknown as User;
@@ -159,18 +160,17 @@ describe('UserService', () => {
                 } as unknown as DeleteReq;
 
                 // Act
-
                 await service.delete(req);
 
-                // Assert
-
+                // Assert - user status should be DELETED
                 expect(myUser.status).toBe(UserStatus.DELETED);
+                // Assert - update should be called
                 expect(repositoryMock.update).toHaveBeenCalledWith(
                     myUser,
                 );
             });
 
-            it('debería lanzar FORBIDDEN si no soy Admin y quiero borrar a otro', async () => {
+            it('should throw FORBIDDEN when not admin trying to delete another user', async () => {
                 // Arrange
                 const users =
                     createUserListFixture() as unknown as User[];
@@ -188,9 +188,9 @@ describe('UserService', () => {
                 } as unknown as DeleteReq;
 
                 // Act
-
                 const result = service.delete(req);
 
+                // Assert - should throw FORBIDDEN error
                 await expect(result).rejects.toThrow(
                     new ServiceError(Errors.FORBIDDEN),
                 );
@@ -198,7 +198,7 @@ describe('UserService', () => {
         });
 
         describe('edit()', () => {
-            it('debería actualizar los datos si soy el dueño y el usuario existe', async () => {
+            it('should update data when user is owner and user exists', async () => {
                 // Arrange
                 const myUser =
                     createUserListFixture()[0] as unknown as User;
@@ -220,11 +220,13 @@ describe('UserService', () => {
                 // Act
                 await service.edit(req);
 
-                // Assert
+                // Assert - user fullName should be updated
                 expect(myUser.fullName).toBe(updateData.fullName);
+                // Assert - user phoneNumber should be updated
                 expect(myUser.phoneNumber).toBe(
                     updateData.phoneNumber,
                 );
+                // Assert - update should be called
                 expect(repositoryMock.update).toHaveBeenCalledWith(
                     myUser,
                 );

@@ -44,7 +44,7 @@ describe('AuthGuard', () => {
     });
 
     describe('canActivate()', () => {
-        it('debería retornar true y adjuntar el usuario a la request si el token es válido', async () => {
+        it('should return true and attach user to request if token is valid', async () => {
             // Arrange
             const mockToken = 'Bearer valid-token';
             const mockUser = {
@@ -65,25 +65,27 @@ describe('AuthGuard', () => {
             // Act
             const result = await guard.canActivate(context);
 
-            // Assert
+            // Assert - should return true
             expect(result).toBe(true);
+            // Assert - validateToken should be called with token
             expect(
                 mockAuthService.validateToken,
             ).toHaveBeenCalledWith(mockToken);
+            // Assert - user should be attached to request
             expect(mockRequest['user']).toEqual(mockUser);
         });
 
-        it('debería lanzar ServiceError(UNAUTHORIZED) si no hay header', async () => {
+        it('should throw ServiceError(UNAUTHORIZED) if no header', async () => {
             // Arrange
             const context = createMockExecutionContext({
                 headers: {},
             });
 
-            // Act & Assert
+            // Act & Assert - should throw UNAUTHORIZED error
             await expect(guard.canActivate(context)).rejects.toThrow(
                 new ServiceError(Errors.UNAUTHORIZED),
             );
-
+            // Assert - validateToken should not be called
             expect(
                 mockAuthService.validateToken,
             ).not.toHaveBeenCalled();

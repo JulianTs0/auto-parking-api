@@ -21,6 +21,8 @@ import { createUserFixture } from 'test/fixtures/auth.fixtures';
 import { LoginReq } from '../../dto/auth/request/login.request.dto';
 import { AuthEvents } from '../../../config/utils/auth-events.enum';
 import { RecoverPasswordReq } from '../../dto/auth/request/recover-password.request.dto';
+import { toMockEntity } from 'test/utils/entity-mocks.utils';
+import { createMockAuthHelper } from 'test/utils/test-mocks.utils';
 
 jest.mock('@nestjs-cls/transactional', () => ({
     Transactional: () => {
@@ -40,26 +42,8 @@ describe('AuthService', () => {
     let userServiceMock: jest.Mocked<UserInternalServiceI>;
     let eventPublisherMock: jest.Mocked<EventPublisherI>;
 
-    const toMockEntity = (
-        fixtureData: any,
-        methodOverrides = {},
-    ): User =>
-        ({
-            ...fixtureData,
-            isDeleted: jest.fn().mockReturnValue(false),
-            isInactive: jest.fn().mockReturnValue(false),
-            isActive: jest.fn().mockReturnValue(true),
-            ...methodOverrides,
-        }) as unknown as User;
-
     beforeAll(async () => {
-        const mockAuthHelper = {
-            parseToken: jest.fn(),
-            getSubject: jest.fn(),
-            validatePassword: jest.fn(),
-            createToken: jest.fn(),
-            hashPassword: jest.fn(),
-        };
+        const mockAuthHelper = createMockAuthHelper();
 
         const mockUserService = {
             findUserById: jest.fn(),
@@ -100,20 +84,20 @@ describe('AuthService', () => {
     });
 
     describe('validateToken()', () => {
-        it('debería lanzar UNAUTHORIZED si el token es inválido', async () => {
+        it('should throw UNAUTHORIZED when token is invalid', async () => {
             // Arrange
             authHelperMock.parseToken.mockResolvedValue(null);
 
             // Act
             const result = service.validateToken('invalid-token');
 
-            // Assert
+            // Assert - should throw UNAUTHORIZED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.UNAUTHORIZED),
             );
         });
 
-        it('debería lanzar USER_DELETED si el usuario está borrado', async () => {
+        it('should throw USER_DELETED when user is deleted', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture(), {
                 isDeleted: jest.fn().mockReturnValue(true),
@@ -127,13 +111,13 @@ describe('AuthService', () => {
             // Act
             const result = service.validateToken('raw-token');
 
-            // Assert
+            // Assert - should throw USER_DELETED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_DELETED),
             );
         });
 
-        it('debería retornar el usuario si todo es válido', async () => {
+        it('should return user when token is valid', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture());
             authHelperMock.parseToken.mockResolvedValue(
@@ -145,7 +129,7 @@ describe('AuthService', () => {
             // Act
             const result = await service.validateToken('raw-token');
 
-            // Assert
+            // Assert - should return the user
             expect(result).toEqual(mockUser);
         });
     });
@@ -161,7 +145,7 @@ describe('AuthService', () => {
             jest.useRealTimers();
         });
 
-        it('debería lanzar INVALID_PASSWORD si la clave es incorrecta', async () => {
+        it('should throw INVALID_PASSWORD when password is incorrect', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture());
             const loginDto = createLoginDtoFixture();
@@ -174,13 +158,13 @@ describe('AuthService', () => {
             // Act
             const result = service.login(loginDto as any);
 
-            // Assert
+            // Assert - should throw INVALID_PASSWORD error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.INVALID_PASSWORD),
             );
         });
 
-        it('debería actualizar la fecha, generar un token y retornar el response en login exitoso', async () => {
+        it('should update timestamp, generate token and return response on successful login', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture());
             const loginDto = createLoginDtoFixture();
@@ -196,22 +180,25 @@ describe('AuthService', () => {
             // Act
             const result = await service.login(loginDto as any);
 
-            // Assert
+            // Assert - user updatedAt should be updated
             expect(mockUser.updatedAt).toEqual(
                 new Date('2025-01-01'),
             );
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - createToken should be called
             expect(authHelperMock.createToken).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - should return defined result
             expect(result).toBeDefined();
 
             jest.useRealTimers();
         });
 
-        it('debería lanzar USER_DELETED si el usuario está borrado', async () => {
+        it('should throw USER_DELETED when user is deleted', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture(), {
                 isDeleted: jest.fn().mockReturnValue(true),
@@ -227,13 +214,13 @@ describe('AuthService', () => {
             // Act
             const result = service.login(request);
 
-            // Assert
+            // Assert - should throw USER_DELETED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_DELETED),
             );
         });
 
-        it('debería lanzar USER_NOT_ACTIVATED si el usuario está inactivo', async () => {
+        it('should throw USER_NOT_ACTIVATED when user is inactive', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture(), {
                 isInactive: jest.fn().mockReturnValue(true),
@@ -249,7 +236,7 @@ describe('AuthService', () => {
             // Act
             const result = service.login(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_ACTIVATED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_ACTIVATED),
             );
@@ -257,7 +244,7 @@ describe('AuthService', () => {
     });
 
     describe('buildUser()', () => {
-        it('debería construir una entidad User con los datos iniciales y password hasheado', async () => {
+        it('should build User entity with initial data and hashed password', async () => {
             // Arrange
             const generatedUuid = 'fake-uuid-123';
             jest.spyOn(IdGenerator, 'generateUUID').mockReturnValue(
@@ -274,17 +261,21 @@ describe('AuthService', () => {
                 registerDto as RegisterReq,
             );
 
-            // Assert
+            // Assert - should generate UUID
             expect(result.id).toBe(generatedUuid);
+            // Assert - should hash password
             expect(result.passwordHash).toBe('hashed-pass');
+            // Assert - should set fullName
             expect(result.fullName).toBe(registerDto.fullName);
+            // Assert - should set email
             expect(result.email).toBe(registerDto.email);
+            // Assert - should set status to INACTIVE
             expect(result.status).toBe(UserStatus.INACTIVE);
         });
     });
 
     describe('resendVerifyEmail()', () => {
-        it('debería lanzar USER_ALREADY_ACTIVATED si el usuario ya está activo', async () => {
+        it('should throw USER_ALREADY_ACTIVATED when user is already active', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.ACTIVE }),
@@ -302,13 +293,13 @@ describe('AuthService', () => {
             // Act
             const result = service.resendVerifyEmail(request);
 
-            // Assert
+            // Assert - should throw USER_ALREADY_ACTIVATED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_ALREADY_ACTIVATED),
             );
         });
 
-        it('debería generar el token y emitir el evento REGISTER (Camino feliz)', async () => {
+        it('should generate token and emit REGISTER event (happy path)', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.INACTIVE }),
@@ -328,10 +319,11 @@ describe('AuthService', () => {
             // Act
             await service.resendVerifyEmail(request);
 
-            // Assert
+            // Assert - createToken should be called with user
             expect(authHelperMock.createToken).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - should emit REGISTER event
             expect(eventPublisherMock.emit).toHaveBeenCalledWith(
                 AuthEvents.REGISTER,
                 {
@@ -343,9 +335,9 @@ describe('AuthService', () => {
     });
 
     describe('verifyEmail()', () => {
-        it('debería cambiar el status a ACTIVE y actualizar el usuario si el token es válido', async () => {
+        it('should change status to ACTIVE and update user when token is valid', async () => {
             // Arrange
-            // Fixture inactivo
+            // Inactive user fixture
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.INACTIVE }),
             );
@@ -360,14 +352,15 @@ describe('AuthService', () => {
             // Act
             await service.verifyEmail(request);
 
-            // Assert
+            // Assert - user status should be ACTIVE
             expect(mockUser.status).toBe(UserStatus.ACTIVE);
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 mockUser,
             );
         });
 
-        it('debería lanzar UNAUTHORIZED si el token no es válido o es nulo', async () => {
+        it('should throw UNAUTHORIZED when token is invalid or null', async () => {
             // Arrange
             authHelperMock.parseToken.mockResolvedValue(null);
             const request = {
@@ -377,13 +370,13 @@ describe('AuthService', () => {
             // Act
             const result = service.verifyEmail(request);
 
-            // Assert
+            // Assert - should throw UNAUTHORIZED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.UNAUTHORIZED),
             );
         });
 
-        it('debería lanzar USER_NOT_FOUND si el usuario no existe', async () => {
+        it('should throw USER_NOT_FOUND when user does not exist', async () => {
             // Arrange
             authHelperMock.parseToken.mockResolvedValue(
                 'valid-token',
@@ -397,13 +390,13 @@ describe('AuthService', () => {
             // Act
             const result = service.verifyEmail(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_FOUND),
             );
         });
 
-        it('debería lanzar USER_ALREADY_ACTIVATED si el usuario ya está activo', async () => {
+        it('should throw USER_ALREADY_ACTIVATED when user is already active', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.ACTIVE }),
@@ -420,13 +413,13 @@ describe('AuthService', () => {
             // Act
             const result = service.verifyEmail(request);
 
-            // Assert
+            // Assert - should throw USER_ALREADY_ACTIVATED error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_ALREADY_ACTIVATED),
             );
         });
 
-        it('debería cambiar el status a ACTIVE y actualizar el usuario (Camino feliz)', async () => {
+        it('should change status to ACTIVE and update user (happy path)', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.INACTIVE }),
@@ -443,8 +436,9 @@ describe('AuthService', () => {
             // Act
             await service.verifyEmail(request);
 
-            // Assert
+            // Assert - user status should be ACTIVE
             expect(mockUser.status).toBe(UserStatus.ACTIVE);
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 mockUser,
             );
@@ -452,7 +446,7 @@ describe('AuthService', () => {
     });
 
     describe('recoverPassword()', () => {
-        it('debería lanzar USER_NOT_FOUND si el usuario no existe o no está activo', async () => {
+        it('should throw USER_NOT_FOUND when user does not exist or is not active', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.INACTIVE }),
@@ -467,13 +461,13 @@ describe('AuthService', () => {
             // Act
             const result = service.recoverPassword(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_FOUND),
             );
         });
 
-        it('debería crear el token y emitir el evento RECOVER_PASSWORD (Camino feliz)', async () => {
+        it('should create token and emit RECOVER_PASSWORD event (happy path)', async () => {
             // Arrange
             const mockUser = toMockEntity(
                 createUserFixture({ status: UserStatus.ACTIVE }),
@@ -492,10 +486,11 @@ describe('AuthService', () => {
             // Act
             await service.recoverPassword(request);
 
-            // Assert
+            // Assert - createToken should be called with user
             expect(authHelperMock.createToken).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - should emit RECOVER_PASSWORD event
             expect(eventPublisherMock.emit).toHaveBeenCalledWith(
                 AuthEvents.RECOVER_PASSWORD,
                 {
@@ -507,7 +502,7 @@ describe('AuthService', () => {
     });
 
     describe('changePassword()', () => {
-        it('debería hashear la nueva clave y actualizar el usuario', async () => {
+        it('should hash new password and update user', async () => {
             // Arrange
             const mockUser = toMockEntity(createUserFixture());
             authHelperMock.hashPassword.mockResolvedValue(
@@ -522,11 +517,13 @@ describe('AuthService', () => {
             // Act
             await service.changePassword(request);
 
-            // Assert
+            // Assert - hashPassword should be called with new password
             expect(authHelperMock.hashPassword).toHaveBeenCalledWith(
                 'MiNuevaPassword123',
             );
+            // Assert - user passwordHash should be updated
             expect(mockUser.passwordHash).toBe('new-hashed-pass');
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 mockUser,
             );

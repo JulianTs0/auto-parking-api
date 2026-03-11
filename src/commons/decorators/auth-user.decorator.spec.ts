@@ -29,7 +29,7 @@ describe('@AuthUser Decorator', () => {
         return metadata[key].factory;
     };
 
-    it('debería extraer y retornar el objeto user de la request', () => {
+    it('should extract and return user object from request', () => {
         // Arrange
         const factory = getDecoratorFactory();
         const mockUser = {
@@ -41,11 +41,11 @@ describe('@AuthUser Decorator', () => {
         // Act
         const result = factory(null, context);
 
-        // Assert
+        // Assert - should return user object
         expect(result).toEqual(mockUser);
     });
 
-    it('debería retornar undefined si no hay un usuario en la request', () => {
+    it('should return undefined if there is no user in request', () => {
         // Arrange
         const factory = getDecoratorFactory();
         const context = createMockContext(undefined);
@@ -53,7 +53,7 @@ describe('@AuthUser Decorator', () => {
         // Act
         const result = factory(null, context);
 
-        // Assert
+        // Assert - should return undefined
         expect(result).toBeUndefined();
     });
 });

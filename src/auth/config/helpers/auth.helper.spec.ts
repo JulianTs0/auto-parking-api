@@ -47,7 +47,7 @@ describe('AuthHelper', () => {
     });
 
     describe('hashPassword()', () => {
-        it('debería delegar el hasheo al passwordEncoder', async () => {
+        it('should delegate hashing to passwordEncoder', async () => {
             // Arrange
             const password = 'mi-password';
             passwordEncoderMock.hash.mockResolvedValue(
@@ -57,10 +57,11 @@ describe('AuthHelper', () => {
             // Act
             const result = await helper.hashPassword(password);
 
-            // Assert
+            // Assert - hash should be called with password
             expect(passwordEncoderMock.hash).toHaveBeenCalledWith(
                 password,
             );
+            // Assert - should return hashed password
             expect(result).toBe('hashed-password');
         });
     });
@@ -70,7 +71,7 @@ describe('AuthHelper', () => {
             { mockReturn: true, expected: true },
             { mockReturn: false, expected: false },
         ])(
-            'debería devolver $expected si el encoder retorna $mockReturn',
+            'should return $expected if encoder returns $mockReturn',
             async ({ mockReturn, expected }) => {
                 // Arrange
                 const mockUser = {
@@ -88,45 +89,48 @@ describe('AuthHelper', () => {
                     plainPassword,
                 );
 
-                // Assert
+                // Assert - compare should be called with correct params
                 expect(
                     passwordEncoderMock.compare,
                 ).toHaveBeenCalledWith(
                     plainPassword,
                     mockUser.passwordHash,
                 );
+                // Assert - should return expected result
                 expect(result).toBe(expected);
             },
         );
     });
 
     describe('parseToken()', () => {
-        it('debería retornar null si el tokenContainer está vacío', async () => {
+        it('should return null if tokenContainer is empty', async () => {
             // Arrange & Act
             const result = await helper.parseToken('');
 
-            // Assert
+            // Assert - should return null
             expect(result).toBeNull();
+            // Assert - verifyToken should not be called
             expect(
                 tokenHandlerMock.verifyToken,
             ).not.toHaveBeenCalled();
         });
 
-        it('debería retornar null si no viene por URL y no empieza con "Bearer "', async () => {
+        it('should return null if not from URL and does not start with "Bearer "', async () => {
             // Arrange & Act
             const result = await helper.parseToken(
                 'TokenInvalidoSinPrefijo',
                 false,
             );
 
-            // Assert
+            // Assert - should return null
             expect(result).toBeNull();
+            // Assert - verifyToken should not be called
             expect(
                 tokenHandlerMock.verifyToken,
             ).not.toHaveBeenCalled();
         });
 
-        it('debería retornar null si es un Bearer token pero la verificación falla', async () => {
+        it('should return null if Bearer token but verification fails', async () => {
             // Arrange
             tokenHandlerMock.verifyToken.mockResolvedValue(false);
 
@@ -136,14 +140,15 @@ describe('AuthHelper', () => {
                 false,
             );
 
-            // Assert
+            // Assert - verifyToken should be called with clean token
             expect(tokenHandlerMock.verifyToken).toHaveBeenCalledWith(
                 'token-falso',
             );
+            // Assert - should return null
             expect(result).toBeNull();
         });
 
-        it('debería retornar el token limpio si es un Bearer válido', async () => {
+        it('should return clean token if Bearer is valid', async () => {
             // Arrange
             tokenHandlerMock.verifyToken.mockResolvedValue(true);
 
@@ -153,14 +158,15 @@ describe('AuthHelper', () => {
                 false,
             );
 
-            // Assert
+            // Assert - verifyToken should be called with clean token
             expect(tokenHandlerMock.verifyToken).toHaveBeenCalledWith(
                 'token-real-123',
             );
+            // Assert - should return clean token
             expect(result).toBe('token-real-123');
         });
 
-        it('debería retornar el token tal cual si viene por URL y es válido', async () => {
+        it('should return token as-is if from URL and is valid', async () => {
             // Arrange
             tokenHandlerMock.verifyToken.mockResolvedValue(true);
 
@@ -170,16 +176,17 @@ describe('AuthHelper', () => {
                 true,
             );
 
-            // Assert
+            // Assert - verifyToken should be called with token
             expect(tokenHandlerMock.verifyToken).toHaveBeenCalledWith(
                 'token-de-url-xyz',
             );
+            // Assert - should return token as-is
             expect(result).toBe('token-de-url-xyz');
         });
     });
 
     describe('createToken()', () => {
-        it('debería instanciar un Token y asignarle el accessToken generado', async () => {
+        it('should instantiate Token and assign generated accessToken', async () => {
             // Arrange
             const mockUser = { id: '1' } as User;
             const mockJwtStr = 'header.payload.signature';
@@ -191,17 +198,19 @@ describe('AuthHelper', () => {
             // Act
             const result = await helper.createToken(mockUser);
 
-            // Assert
+            // Assert - createToken should be called with user
             expect(tokenHandlerMock.createToken).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - should be instance of Token
             expect(result).toBeInstanceOf(Token);
+            // Assert - should have correct accessToken
             expect(result.accessToken).toBe(mockJwtStr);
         });
     });
 
     describe('getSubject()', () => {
-        it('debería delegar al tokenHandler y retornar el subject', async () => {
+        it('should delegate to tokenHandler and return subject', async () => {
             // Arrange
             tokenHandlerMock.getSubject.mockResolvedValue(
                 'user-uuid-123',
@@ -210,10 +219,11 @@ describe('AuthHelper', () => {
             // Act
             const result = await helper.getSubject('un-token');
 
-            // Arrange
+            // Assert - getSubject should be called with token
             expect(tokenHandlerMock.getSubject).toHaveBeenCalledWith(
                 'un-token',
             );
+            // Assert - should return subject
             expect(result).toBe('user-uuid-123');
         });
     });

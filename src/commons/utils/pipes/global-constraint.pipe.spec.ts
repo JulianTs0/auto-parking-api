@@ -32,7 +32,7 @@ describe('GlobalConstraintHandler', () => {
     });
 
     describe('exceptionFactory()', () => {
-        it('debería loguear el warning y lanzar MISSING_REQUIRED_FIELDS si falla el isNotEmpty', () => {
+        it('should log warning and throw MISSING_REQUIRED_FIELDS if isNotEmpty fails', () => {
             // Arrange
             const mockErrors: ValidationError[] = [
                 {
@@ -44,18 +44,18 @@ describe('GlobalConstraintHandler', () => {
                 },
             ];
 
-            // Act & Assert
+            // Act & Assert - should throw MISSING_REQUIRED_FIELDS error
             expect(() => exceptionFactory(mockErrors)).toThrow(
                 new ServiceError(Errors.MISSING_REQUIRED_FIELDS),
             );
 
-            // Verificamos que el formateo del log se armó correctamente
+            // Assert - log should be called with correct format
             expect(loggerWarnSpy).toHaveBeenCalledWith(
                 'Invalid fields: email: [isNotEmpty, isEmail]',
             );
         });
 
-        it('debería loguear el warning y lanzar INVALID_FIELDS si no hay errores de isNotEmpty', () => {
+        it('should log warning and throw INVALID_FIELDS if there are no isNotEmpty errors', () => {
             // Arrange
             const mockErrors: ValidationError[] = [
                 {
@@ -74,18 +74,18 @@ describe('GlobalConstraintHandler', () => {
                 },
             ];
 
-            // Act & Assert
+            // Act & Assert - should throw INVALID_FIELDS error
             expect(() => exceptionFactory(mockErrors)).toThrow(
                 new ServiceError(Errors.INVALID_FIELDS),
             );
 
-            // Verificamos que junta múltiples propiedades con " | " como programaste
+            // Assert - log should join multiple properties with " | "
             expect(loggerWarnSpy).toHaveBeenCalledWith(
                 'Invalid fields: password: [minLength] | age: [isNumber]',
             );
         });
 
-        it('no debería romper si constraints viene undefined', () => {
+        it('should not break if constraints is undefined', () => {
             // Arrange
             const mockErrors: ValidationError[] = [
                 {
@@ -93,11 +93,12 @@ describe('GlobalConstraintHandler', () => {
                 },
             ];
 
-            // Act & Assert
+            // Act & Assert - should throw INVALID_FIELDS error
             expect(() => exceptionFactory(mockErrors)).toThrow(
                 new ServiceError(Errors.INVALID_FIELDS),
             );
 
+            // Assert - log should show empty constraints
             expect(loggerWarnSpy).toHaveBeenCalledWith(
                 'Invalid fields: nestedObject: []',
             );

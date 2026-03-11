@@ -4,22 +4,16 @@ import { UserServiceI } from '../../../domain/services/core/user-service.interfa
 import { User } from '../../../../commons';
 import { createUserFixture } from 'test/fixtures';
 import { AuthGuard } from '../../../../auth/config/guards/auth.guard';
+import { GetByIdReq } from '../../../domain/dto/users/request/get-by-id.request.dto';
+import { GetByIdRes } from '../../../domain/dto/users/response/get-by-id.response.dto';
+import { EditBody } from '../../../domain/dto/users/request/edit.body.dto';
+import { EditRes } from '../../../domain/dto/users/response/edit.response.dto';
+import { DeleteBody } from '../../../domain/dto/users/request/delete.body.dto';
+import { toMockEntity } from 'test/utils/entity-mocks.utils';
 
 describe('UserCoreController', () => {
     let controller: UserCoreController;
     let userServiceMock: jest.Mocked<UserServiceI>;
-
-    const toMockEntity = (
-        fixtureData: any,
-        methodOverrides = {},
-    ): User =>
-        ({
-            ...fixtureData,
-            isDeleted: jest.fn().mockReturnValue(false),
-            isInactive: jest.fn().mockReturnValue(false),
-            isActive: jest.fn().mockReturnValue(true),
-            ...methodOverrides,
-        }) as unknown as User;
 
     beforeEach(async () => {
         const mockUserService = {
@@ -50,7 +44,7 @@ describe('UserCoreController', () => {
     });
 
     describe('getById()', () => {
-        it('debería delegar la búsqueda al servicio y retornar el resultado', async () => {
+        it('should delegate search to service and return result', async () => {
             // Arrange
             const request = {
                 id: 'uuid-123',
@@ -67,26 +61,27 @@ describe('UserCoreController', () => {
             // Act
             const result = await controller.getById(request);
 
-            // Assert
+            // Assert - getById should be called with request
             expect(userServiceMock.getById).toHaveBeenCalledWith(
                 request,
             );
+            // Assert - should return expected response
             expect(result).toEqual(expectedResponse);
         });
     });
 
     describe('edit()', () => {
-        it('debería mapear los datos a un EditReq, delegar al servicio y retornar', async () => {
+        it('should map data to EditReq, delegate to service and return', async () => {
             // Arrange
             const targetId = 'uuid-target';
             const body = {
-                fullName: 'Nuevo Nombre',
+                fullName: 'New Name',
             } as EditBody;
 
             const authUser = toMockEntity(createUserFixture());
 
             const expectedResponse = {
-                fullName: 'Nuevo Nombre',
+                fullName: 'New Name',
             } as EditRes;
             userServiceMock.edit.mockResolvedValue(expectedResponse);
 
@@ -97,7 +92,7 @@ describe('UserCoreController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - edit should be called with mapped data
             expect(userServiceMock.edit).toHaveBeenCalledWith(
                 expect.objectContaining({
                     id: targetId,
@@ -105,16 +100,17 @@ describe('UserCoreController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return expected response
             expect(result).toEqual(expectedResponse);
         });
     });
 
     describe('delete()', () => {
-        it('debería mapear los datos a un DeleteReq y delegar al servicio', async () => {
+        it('should map data to DeleteReq and delegate to service', async () => {
             // Arrange
             const targetId = 'uuid-target';
             const body = {
-                password: 'mi-password-123',
+                password: 'my-password-123',
             } as DeleteBody;
 
             const authUser = toMockEntity(createUserFixture());
@@ -128,7 +124,7 @@ describe('UserCoreController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - delete should be called with mapped data
             expect(userServiceMock.delete).toHaveBeenCalledWith(
                 expect.objectContaining({
                     id: targetId,
@@ -136,6 +132,7 @@ describe('UserCoreController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });

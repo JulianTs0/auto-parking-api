@@ -46,7 +46,7 @@ describe('RolesGuard', () => {
     });
 
     describe('canActivate()', () => {
-        it('debería retornar true si la ruta no requiere roles', () => {
+        it('should return true if route does not require roles', () => {
             // Arrange
             const context = createMockContext();
 
@@ -57,14 +57,15 @@ describe('RolesGuard', () => {
             // Act
             const result = guard.canActivate(context);
 
-            // Assert
+            // Assert - should return true
             expect(result).toBe(true);
+            // Assert - getAllAndOverride should be called
             expect(
                 reflectorMock.getAllAndOverride,
             ).toHaveBeenCalled();
         });
 
-        it('debería lanzar ServiceError(FORBIDDEN) si el usuario no tiene el rol', () => {
+        it('should throw ServiceError(FORBIDDEN) if user does not have the role', () => {
             // Arrange
             const mockUser = { roles: new Set([Role.EMPLOYEE]) };
             const context = createMockContext(mockUser);
@@ -73,13 +74,13 @@ describe('RolesGuard', () => {
                 Role.ADMIN,
             ]);
 
-            // Act & Assert
+            // Act & Assert - should throw FORBIDDEN error
             expect(() => guard.canActivate(context)).toThrow(
                 new ServiceError(Errors.FORBIDDEN),
             );
         });
 
-        it('debería retornar true si el usuario tiene al menos un rol requerido', () => {
+        it('should return true if user has at least one required role', () => {
             // Arrange
             const mockUser = { roles: new Set([Role.ADMIN]) };
             const context = createMockContext(mockUser);
@@ -91,7 +92,7 @@ describe('RolesGuard', () => {
             // Act
             const result = guard.canActivate(context);
 
-            // Assert
+            // Assert - should return true
             expect(result).toBe(true);
         });
     });

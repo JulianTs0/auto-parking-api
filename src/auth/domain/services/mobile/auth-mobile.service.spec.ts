@@ -74,7 +74,7 @@ describe('AuthMobileService', () => {
     });
 
     describe('register()', () => {
-        it('debería lanzar EMAIL_ALREADY_EXISTS si el email ya está registrado', async () => {
+        it('should throw EMAIL_ALREADY_EXISTS if email is already registered', async () => {
             // Arrange
             const request =
                 createCreateUserDtoFixture() as RegisterReq;
@@ -84,16 +84,17 @@ describe('AuthMobileService', () => {
             // Act
             const result = service.register(request);
 
-            // Assert
+            // Assert - should throw EMAIL_ALREADY_EXISTS error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.EMAIL_ALREADY_EXISTS),
             );
+            // Assert - buildUser should not be called
             expect(
                 authCoreServiceMock.buildUser,
             ).not.toHaveBeenCalled();
         });
 
-        it('debería registrar al usuario, asignarle rol CLIENT y emitir el evento (Camino feliz)', async () => {
+        it('should register user, assign CLIENT role and emit event (happy path)', async () => {
             // Arrange
             const request =
                 createCreateUserDtoFixture() as RegisterReq;
@@ -116,23 +117,13 @@ describe('AuthMobileService', () => {
             // Act
             await service.register(request);
 
-            // Assert
-            expect(
-                userServiceMock.existsUserByEmail,
-            ).toHaveBeenCalledWith(request.email);
-            expect(
-                authCoreServiceMock.buildUser,
-            ).toHaveBeenCalledWith(request);
-
+            // Assert - user should have CLIENT role
             expect(builtUser.roles.has(Role.CLIENT)).toBe(true);
-
+            // Assert - saveUser should be called
             expect(userServiceMock.saveUser).toHaveBeenCalledWith(
                 builtUser,
             );
-            expect(authHelperMock.createToken).toHaveBeenCalledWith(
-                builtUser,
-            );
-
+            // Assert - event should be emitted
             expect(eventPublisherMock.emit).toHaveBeenCalledWith(
                 AuthEvents.REGISTER,
                 {

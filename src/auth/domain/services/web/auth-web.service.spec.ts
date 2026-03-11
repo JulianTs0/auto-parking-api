@@ -104,7 +104,7 @@ describe('AuthWebService', () => {
     });
 
     describe('register()', () => {
-        it('debería lanzar CLIENT_ALREADY_EXISTS si ya tiene rol CLIENT pero no OWNER', async () => {
+        it('should throw CLIENT_ALREADY_EXISTS if user has CLIENT role but not OWNER', async () => {
             // Arrange
             const existingUser =
                 createUserFixture() as unknown as User;
@@ -118,13 +118,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.register(request);
 
-            // Assert
+            // Assert - should throw CLIENT_ALREADY_EXISTS error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.CLIENT_ALREADY_EXISTS),
             );
         });
 
-        it('debería lanzar EMAIL_ALREADY_EXISTS si ya existe y tiene rol OWNER', async () => {
+        it('should throw EMAIL_ALREADY_EXISTS if user exists and has OWNER role', async () => {
             // Arrange
             const existingOwner =
                 createOwnerUserFixture() as unknown as User;
@@ -138,13 +138,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.register(request);
 
-            // Assert
+            // Assert - should throw EMAIL_ALREADY_EXISTS error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.EMAIL_ALREADY_EXISTS),
             );
         });
 
-        it('debería registrar al usuario, asignarle rol CLIENT, INACTIVE y crear el OwnerRequest (Camino Feliz)', async () => {
+        it('should register user, assign CLIENT role, INACTIVE status and create OwnerRequest (happy path)', async () => {
             // Arrange
             const requestDto = createCreateUserDtoFixture();
             const request = requestDto as RegisterReq;
@@ -171,13 +171,15 @@ describe('AuthWebService', () => {
             // Act
             await service.register(request);
 
-            // Assert
+            // Assert - user should have CLIENT role
             expect(builtUser.roles.has(Role.CLIENT)).toBe(true);
+            // Assert - user status should be INACTIVE
             expect(builtUser.status).toBe(UserStatus.INACTIVE);
+            // Assert - saveUser should be called
             expect(userServiceMock.saveUser).toHaveBeenCalledWith(
                 builtUser,
             );
-
+            // Assert - owner request should be saved
             expect(ownerRequestServiceMock.save).toHaveBeenCalledWith(
                 expect.objectContaining({
                     id: 'uuid-request-123',
@@ -189,7 +191,7 @@ describe('AuthWebService', () => {
     });
 
     describe('acceptOwnerRequest()', () => {
-        it('debería lanzar USER_NOT_FOUND si el dueño no existe por email', async () => {
+        it('should throw USER_NOT_FOUND if owner does not exist by email', async () => {
             // Arrange
             const reqEmail = createOwnerUserFixture().email;
             userServiceMock.findUserByEmail.mockResolvedValue(null);
@@ -200,13 +202,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.acceptOwnerRequest(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_FOUND),
             );
         });
 
-        it('debería aprobar la request, generar token y emitir evento (Camino Feliz)', async () => {
+        it('should approve request, generate token and emit event (happy path)', async () => {
             // Arrange
             const mockUser =
                 createOwnerUserFixture() as unknown as User;
@@ -233,16 +235,19 @@ describe('AuthWebService', () => {
             // Act
             await service.acceptOwnerRequest(request);
 
-            // Assert
+            // Assert - request status should be APPROVED
             expect(mockOwnerReq.status).toBe(
                 OwnerRequestStatus.APPROVED,
             );
+            // Assert - update should be called
             expect(
                 ownerRequestServiceMock.update,
             ).toHaveBeenCalledWith(mockOwnerReq);
+            // Assert - token should be created
             expect(authHelperMock.createToken).toHaveBeenCalledWith(
                 mockUser,
             );
+            // Assert - event should be emitted
             expect(eventPublisherMock.emit).toHaveBeenCalledWith(
                 AuthEvents.REGISTER,
                 {
@@ -254,9 +259,9 @@ describe('AuthWebService', () => {
     });
 
     describe('registerEmployee()', () => {
-        it('debería actualizar roles y salir sin emitir evento si el usuario ya existe', async () => {
+        it('should update roles and not emit event if user already exists', async () => {
             // Arrange
-            // Fixture de cliente común
+            // Common client fixture
             const existingUser =
                 createUserFixture() as unknown as User;
             userServiceMock.findUserByEmail.mockResolvedValue(
@@ -272,16 +277,19 @@ describe('AuthWebService', () => {
             // Act
             await service.registerEmployee(request);
 
-            // Assert
-            expect(existingUser.roles.has(Role.EMPLOYEE)).toBe(true); // Se le agregó el rol
+            // Assert - user should have EMPLOYEE role added
+            expect(existingUser.roles.has(Role.EMPLOYEE)).toBe(true);
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 existingUser,
             );
+            // Assert - saveUser should not be called
             expect(userServiceMock.saveUser).not.toHaveBeenCalled();
+            // Assert - event should not be emitted
             expect(eventPublisherMock.emit).not.toHaveBeenCalled();
         });
 
-        it('debería construir usuario, asignar CLIENT+EMPLOYEE, guardar y emitir evento si es nuevo (Camino Feliz)', async () => {
+        it('should build user, assign CLIENT+EMPLOYEE roles, save and emit event if new (happy path)', async () => {
             // Arrange
             const requestDto = createCreateUserDtoFixture();
             const mockOwner = createOwnerUserFixture();
@@ -312,13 +320,15 @@ describe('AuthWebService', () => {
             // Act
             await service.registerEmployee(request);
 
-            // Assert
+            // Assert - user should have CLIENT role
             expect(builtUser.roles.has(Role.CLIENT)).toBe(true);
+            // Assert - user should have EMPLOYEE role
             expect(builtUser.roles.has(Role.EMPLOYEE)).toBe(true);
+            // Assert - saveUser should be called
             expect(userServiceMock.saveUser).toHaveBeenCalledWith(
                 builtUser,
             );
-
+            // Assert - event should be emitted
             expect(eventPublisherMock.emit).toHaveBeenCalledWith(
                 AuthEvents.EMPLOYEE_REGISTER,
                 {
@@ -332,7 +342,7 @@ describe('AuthWebService', () => {
     });
 
     describe('requestOwnerUpgrade()', () => {
-        it('debería lanzar USER_NOT_FOUND si el usuario no existe', async () => {
+        it('should throw USER_NOT_FOUND if user does not exist', async () => {
             // Arrange
             userServiceMock.findUserByEmail.mockResolvedValue(null);
             const request = {
@@ -342,13 +352,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.requestOwnerUpgrade(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_FOUND),
             );
         });
 
-        it('debería lanzar EMAIL_ALREADY_EXISTS si ya tiene rol OWNER', async () => {
+        it('should throw EMAIL_ALREADY_EXISTS if user already has OWNER role', async () => {
             // Arrange
             const existingOwner =
                 createOwnerUserFixture() as unknown as User;
@@ -364,13 +374,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.requestOwnerUpgrade(request);
 
-            // Assert
+            // Assert - should throw EMAIL_ALREADY_EXISTS error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.EMAIL_ALREADY_EXISTS),
             );
         });
 
-        it('debería lanzar OWNER_REQUEST_ALREADY_EXISTS si ya tiene un request pendiente', async () => {
+        it('should throw OWNER_REQUEST_ALREADY_EXISTS if user already has pending request', async () => {
             // Arrange
             const existingUser =
                 createUserFixture() as unknown as User;
@@ -392,13 +402,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.requestOwnerUpgrade(request);
 
-            // Assert
+            // Assert - should throw OWNER_REQUEST_ALREADY_EXISTS error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.OWNER_REQUEST_ALREADY_EXISTS),
             );
         });
 
-        it('debería generar y guardar un nuevo OwnerRequest en PENDING (Camino feliz)', async () => {
+        it('should generate and save new OwnerRequest with PENDING status (happy path)', async () => {
             // Arrange
             const existingUser =
                 createUserFixture() as unknown as User;
@@ -422,7 +432,7 @@ describe('AuthWebService', () => {
             // Act
             await service.requestOwnerUpgrade(request);
 
-            // Assert
+            // Assert - save should be called with correct data
             expect(ownerRequestServiceMock.save).toHaveBeenCalledWith(
                 expect.objectContaining({
                     id: 'req-uuid-999',
@@ -434,7 +444,7 @@ describe('AuthWebService', () => {
     });
 
     describe('upgrade()', () => {
-        it('debería lanzar USER_NOT_FOUND si el usuario no existe', async () => {
+        it('should throw USER_NOT_FOUND if user does not exist', async () => {
             // Arrange
             userServiceMock.findUserByEmail.mockResolvedValue(null);
             const request = {
@@ -446,12 +456,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.upgrade(request);
 
-            // Assert
+            // Assert - should throw USER_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.USER_NOT_FOUND),
             );
         });
-        it('debería lanzar OWNER_REQUEST_NOT_FOUND si no hay request o no está APPROVED', async () => {
+
+        it('should throw OWNER_REQUEST_NOT_FOUND if there is no request or it is not APPROVED', async () => {
             // Arrange
             const existingUser =
                 createUserFixture() as unknown as User;
@@ -475,13 +486,13 @@ describe('AuthWebService', () => {
             // Act
             const result = service.upgrade(request);
 
-            // Assert
+            // Assert - should throw OWNER_REQUEST_NOT_FOUND error
             await expect(result).rejects.toThrow(
                 new ServiceError(Errors.OWNER_REQUEST_NOT_FOUND),
             );
         });
 
-        it('debería agregar rol OWNER, activar usuario y marcar request como COMPLETED (Camino feliz)', async () => {
+        it('should add OWNER role, activate user and mark request as COMPLETED (happy path)', async () => {
             // Arrange
             const existingUser =
                 createUserFixture() as unknown as User;
@@ -503,16 +514,19 @@ describe('AuthWebService', () => {
             // Act
             await service.upgrade(request);
 
-            // Assert
+            // Assert - user should have OWNER role
             expect(existingUser.roles.has(Role.OWNER)).toBe(true);
+            // Assert - user status should be ACTIVE
             expect(existingUser.status).toBe(UserStatus.ACTIVE);
+            // Assert - updateUser should be called
             expect(userServiceMock.updateUser).toHaveBeenCalledWith(
                 existingUser,
             );
-
+            // Assert - request status should be COMPLETED
             expect(validReq.status).toBe(
                 OwnerRequestStatus.COMPLETED,
             );
+            // Assert - update should be called
             expect(
                 ownerRequestServiceMock.update,
             ).toHaveBeenCalledWith(validReq);
@@ -520,7 +534,7 @@ describe('AuthWebService', () => {
     });
 
     describe('getOwnerRequests()', () => {
-        it('debería retornar los OwnerRequests mapeados y paginados', async () => {
+        it('should return mapped and paginated OwnerRequests', async () => {
             // Arrange
             const mockPageContent = {
                 content: [],
@@ -538,7 +552,7 @@ describe('AuthWebService', () => {
             // Act
             const result = await service.getOwnerRequests(request);
 
-            // Assert
+            // Assert - findRequestsPaginated should be called with correct params
             expect(
                 ownerRequestServiceMock.findRequestsPaginated,
             ).toHaveBeenCalledWith(
@@ -546,6 +560,7 @@ describe('AuthWebService', () => {
                 request.size,
                 OwnerRequestLoadProfile.WITH_USER,
             );
+            // Assert - result should be defined
             expect(result).toBeDefined();
         });
     });

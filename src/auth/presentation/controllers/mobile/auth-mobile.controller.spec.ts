@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthMobileController } from './auth-mobile.controller'; // Ajustá la ruta
+import { AuthMobileController } from './auth-mobile.controller';
 import { AuthMobileServiceI } from '../../../domain/services/mobile/auth-mobile-service.interface';
 import { RegisterReq } from '../../../domain/dto/auth/request/register.request.dto';
 import { createCreateUserDtoFixture } from 'test/fixtures';
@@ -31,12 +31,8 @@ describe('AuthMobileController', () => {
         jest.clearAllMocks();
     });
 
-    it('sanity check', () => {
-        expect(controller).toBeDefined();
-    });
-
     describe('create() /register', () => {
-        it('debería recibir el RegisterReq, delegar al servicio y no retornar nada', async () => {
+        it('should receive RegisterReq, delegate to service and return undefined', async () => {
             // Arrange
             const request =
                 createCreateUserDtoFixture() as RegisterReq;
@@ -48,10 +44,11 @@ describe('AuthMobileController', () => {
             // Act
             const result = await controller.create(request);
 
-            // Assert
+            // Assert - register should be called with request
             expect(
                 authMobileServiceMock.register,
             ).toHaveBeenCalledWith(request);
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });

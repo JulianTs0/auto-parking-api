@@ -35,7 +35,7 @@ describe('EmailHelper', () => {
         jest.restoreAllMocks();
     });
 
-    describe('Generación de Templates HTML', () => {
+    describe('HTML Template Generation', () => {
         const mockHtmlTemplate = `
             <html>
                 <h1>{{ tittle }}</h1>
@@ -50,7 +50,7 @@ describe('EmailHelper', () => {
             );
         });
 
-        it('debería generar el email de verificación correctamente', () => {
+        it('should generate verification email correctly', () => {
             // Arrange
             const mockToken = 'token';
             const expectedLink =
@@ -60,26 +60,28 @@ describe('EmailHelper', () => {
             // Act
             const result = helper.getEmailVerification(mockToken);
 
-            // Assert
+            // Assert - readFileSync should be called
             expect(fs.readFileSync).toHaveBeenCalledTimes(1);
-
+            // Assert - should contain template title
             expect(result).toContain(
                 `<h1>${expectedTemplate.title}</h1>`,
             );
+            // Assert - should contain template message
             expect(result).toContain(
                 `<p>${expectedTemplate.message}</p>`,
             );
+            // Assert - should contain expected link with button text
             expect(result).toContain(
                 `<a href="${expectedLink}">${expectedTemplate.buttonText}</a>`,
             );
-
+            // Assert - should not contain template placeholders
             expect(result).not.toContain('{{ tittle }}');
             expect(result).not.toContain('{{ message }}');
             expect(result).not.toContain('{{ link }}');
             expect(result).not.toContain('{{ buttonText }}');
         });
 
-        it('debería generar el email de recuperación de contraseña', () => {
+        it('should generate password recovery email', () => {
             // Arrange
             const mockToken = 'token';
             const expectedLink =
@@ -90,16 +92,17 @@ describe('EmailHelper', () => {
             const result =
                 helper.getRecoverPasswordRequest(mockToken);
 
-            // Assert
+            // Assert - should contain template title
             expect(result).toContain(
                 `<h1>${expectedTemplate.title}</h1>`,
             );
+            // Assert - should contain expected link with button text
             expect(result).toContain(
                 `<a href="${expectedLink}">${expectedTemplate.buttonText}</a>`,
             );
         });
 
-        it('debería generar el email de registro de empleado añadiendo los datos del owner', () => {
+        it('should generate employee registration email adding owner data', () => {
             // Arrange
             const mockToken = 'emp-456';
             const ownerName = 'Carlos Gerente';
@@ -112,8 +115,9 @@ describe('EmailHelper', () => {
                 ownerEmail,
             );
 
-            // Assert
+            // Assert - should contain owner name
             expect(result).toContain(ownerName);
+            // Assert - should contain owner email
             expect(result).toContain(ownerEmail);
         });
     });

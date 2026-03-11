@@ -35,9 +35,8 @@ describe('NativeEventPublisher', () => {
     });
 
     describe('emit()', () => {
-        it('debería delegar la llamada a EventEmitter2.emit con los parámetros correctos', () => {
+        it('should delegate call to EventEmitter2.emit with correct parameters', () => {
             // Arrange
-
             const eventName = 'module.specification.action';
             const payload = {
                 actor: {},
@@ -48,8 +47,9 @@ describe('NativeEventPublisher', () => {
             // Act
             publisher.emit(eventName, payload);
 
-            // Assert
+            // Assert - emit should be called once
             expect(eventEmitterMock.emit).toHaveBeenCalledTimes(1);
+            // Assert - emit should be called with correct params
             expect(eventEmitterMock.emit).toHaveBeenCalledWith(
                 eventName,
                 payload,

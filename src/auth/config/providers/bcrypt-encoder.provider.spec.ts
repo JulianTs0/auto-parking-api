@@ -25,7 +25,7 @@ describe('BcryptEncoder', () => {
     });
 
     describe('hash()', () => {
-        it('debería generar un salt con 12 rondas y hashear la contraseña', async () => {
+        it('should generate salt with 12 rounds and hash password', async () => {
             // Arrange
             const plainPassword = 'mi_password_secreto';
 
@@ -42,18 +42,20 @@ describe('BcryptEncoder', () => {
             // Act
             const result = await encoder.hash(plainPassword);
 
-            // Assert
+            // Assert - genSalt should be called with 12 rounds
             expect(bcrypt.genSalt).toHaveBeenCalledWith(12);
+            // Assert - hash should be called with password and salt
             expect(bcrypt.hash).toHaveBeenCalledWith(
                 plainPassword,
                 mockGeneratedSalt,
             );
+            // Assert - should return the final hash
             expect(result).toBe(mockFinalHash);
         });
     });
 
     describe('compare()', () => {
-        it('debería delegar la comparación a bcrypt', async () => {
+        it('should delegate comparison to bcrypt', async () => {
             // Arrange
             const plainPassword = 'mi_password_secreto';
             const encryptedHash = 'hash_final_abc';
@@ -65,11 +67,12 @@ describe('BcryptEncoder', () => {
                 encryptedHash,
             );
 
-            // Assert
+            // Assert - compare should be called with correct params
             expect(bcrypt.compare).toHaveBeenCalledWith(
                 plainPassword,
                 encryptedHash,
             );
+            // Assert - should return true
             expect(result).toBe(true);
         });
     });

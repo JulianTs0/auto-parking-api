@@ -17,22 +17,11 @@ import {
     createOwnerUserFixture,
     createUserFixture,
 } from 'test/fixtures';
+import { toMockEntity } from 'test/utils/entity-mocks.utils';
 
 describe('AuthWebController', () => {
     let controller: AuthWebController;
     let authWebServiceMock: jest.Mocked<AuthWebServiceI>;
-
-    const toMockEntity = (
-        fixtureData: any,
-        methodOverrides = {},
-    ): User =>
-        ({
-            ...fixtureData,
-            isDeleted: jest.fn().mockReturnValue(false),
-            isInactive: jest.fn().mockReturnValue(false),
-            isActive: jest.fn().mockReturnValue(true),
-            ...methodOverrides,
-        }) as unknown as User;
 
     beforeEach(async () => {
         const mockAuthWebService = {
@@ -66,7 +55,7 @@ describe('AuthWebController', () => {
     });
 
     describe('register()', () => {
-        it('debería delegar al servicio y no retornar nada', async () => {
+        it('should delegate to service and return undefined', async () => {
             // Arrange
             const request =
                 createCreateUserDtoFixture() as RegisterReq;
@@ -75,16 +64,17 @@ describe('AuthWebController', () => {
             // Act
             const result = await controller.register(request);
 
-            // Assert
+            // Assert - register should be called with request
             expect(authWebServiceMock.register).toHaveBeenCalledWith(
                 request,
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('registerEmployee()', () => {
-        it('debería mapear los datos, delegar al servicio y no retornar nada', async () => {
+        it('should map data, delegate to service and return undefined', async () => {
             // Arrange
             const body = {
                 email: 'empleado@test.com',
@@ -101,7 +91,7 @@ describe('AuthWebController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - registerEmployee should be called with mapped data
             expect(
                 authWebServiceMock.registerEmployee,
             ).toHaveBeenCalledWith(
@@ -110,12 +100,13 @@ describe('AuthWebController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('getOwnerRequests()', () => {
-        it('debería mapear la query, delegar al servicio y retornar GetOwnerRequestRes', async () => {
+        it('should map query, delegate to service and return GetOwnerRequestRes', async () => {
             // Arrange
             const query = {
                 page: 1,
@@ -138,7 +129,7 @@ describe('AuthWebController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - getOwnerRequests should be called with mapped data
             expect(
                 authWebServiceMock.getOwnerRequests,
             ).toHaveBeenCalledWith(
@@ -148,12 +139,13 @@ describe('AuthWebController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return expected response
             expect(result).toEqual(expectedResponse);
         });
     });
 
     describe('acceptOwnerRequest()', () => {
-        it('debería mapear los datos, delegar al servicio y no retornar nada', async () => {
+        it('should map data, delegate to service and return undefined', async () => {
             // Arrange
             const body = {
                 ownerEmail: 'owner@test.com',
@@ -170,7 +162,7 @@ describe('AuthWebController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - acceptOwnerRequest should be called with mapped data
             expect(
                 authWebServiceMock.acceptOwnerRequest,
             ).toHaveBeenCalledWith(
@@ -179,12 +171,13 @@ describe('AuthWebController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('requestOwnerUpgrade()', () => {
-        it('debería mapear los datos, delegar al servicio y no retornar nada', async () => {
+        it('should map data, delegate to service and return undefined', async () => {
             // Arrange
             const body = {
                 email: 'test@test.com',
@@ -201,7 +194,7 @@ describe('AuthWebController', () => {
                 authUser,
             );
 
-            // Assert
+            // Assert - requestOwnerUpgrade should be called with mapped data
             expect(
                 authWebServiceMock.requestOwnerUpgrade,
             ).toHaveBeenCalledWith(
@@ -210,12 +203,13 @@ describe('AuthWebController', () => {
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });
 
     describe('upgrade()', () => {
-        it('debería mapear los datos, delegar al servicio y no retornar nada', async () => {
+        it('should map data, delegate to service and return undefined', async () => {
             // Arrange
             const body = {
                 email: 'test@test.com',
@@ -227,13 +221,14 @@ describe('AuthWebController', () => {
             // Act
             const result = await controller.upgrade(body, authUser);
 
-            // Assert
+            // Assert - upgrade should be called with mapped data
             expect(authWebServiceMock.upgrade).toHaveBeenCalledWith(
                 expect.objectContaining({
                     body: body,
                     authUser: authUser,
                 }),
             );
+            // Assert - should return undefined
             expect(result).toBeUndefined();
         });
     });

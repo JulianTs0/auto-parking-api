@@ -44,7 +44,7 @@ describe('OwnerRequestService', () => {
     });
 
     describe('save()', () => {
-        it('debería delegar al repositorio y retornar la request guardada', async () => {
+        it('should delegate to repository and return saved request', async () => {
             // Arrange
             const mockOwnerRequest = createOwnerRequestFixture();
             repositoryMock.save.mockResolvedValue(mockOwnerRequest);
@@ -52,16 +52,17 @@ describe('OwnerRequestService', () => {
             // Act
             const result = await service.save(mockOwnerRequest);
 
-            // Assert
+            // Assert - save should be called with request
             expect(repositoryMock.save).toHaveBeenCalledWith(
                 mockOwnerRequest,
             );
+            // Assert - should return saved request
             expect(result).toEqual(mockOwnerRequest);
         });
     });
 
     describe('update()', () => {
-        it('debería delegar al repositorio y retornar la request actualizada', async () => {
+        it('should delegate to repository and return updated request', async () => {
             // Arrange
             const mockApprovedOwnerRequest =
                 createApprovedOwnerRequestFixture();
@@ -74,16 +75,17 @@ describe('OwnerRequestService', () => {
                 mockApprovedOwnerRequest,
             );
 
-            // Assert
+            // Assert - update should be called with request
             expect(repositoryMock.update).toHaveBeenCalledWith(
                 mockApprovedOwnerRequest,
             );
+            // Assert - should return updated request
             expect(result).toEqual(mockApprovedOwnerRequest);
         });
     });
 
     describe('findByUserId()', () => {
-        it('debería delegar al repositorio enviando el userId y el profile', async () => {
+        it('should delegate to repository sending userId and profile', async () => {
             // Arrange
             const userId = '550e8400-e29b-41d4-a716-446655440001';
             const profileMock = OwnerRequestLoadProfile.WITH_USER;
@@ -99,17 +101,18 @@ describe('OwnerRequestService', () => {
                 profileMock,
             );
 
-            // Assert
+            // Assert - findByUserId should be called with userId and profile
             expect(repositoryMock.findByUserId).toHaveBeenCalledWith(
                 userId,
                 profileMock,
             );
+            // Assert - should return request
             expect(result).toEqual(mockOwnerRequest);
         });
     });
 
     describe('findPendingByUserId()', () => {
-        it('debería buscar requests pendientes delegando al repositorio', async () => {
+        it('should search pending requests delegating to repository', async () => {
             // Arrange
             const userId = '550e8400-e29b-41d4-a716-446655440001';
             const profileMock = OwnerRequestLoadProfile.WITH_USER;
@@ -125,16 +128,17 @@ describe('OwnerRequestService', () => {
                 profileMock,
             );
 
-            // Assert
+            // Assert - findPendingByUserId should be called
             expect(
                 repositoryMock.findPendingByUserId,
             ).toHaveBeenCalledWith(userId, profileMock);
+            // Assert - should return request
             expect(result).toEqual(mockOwnerRequest);
         });
     });
 
     describe('findRequestsPaginated()', () => {
-        it('debería retornar la lista paginada desde el repositorio', async () => {
+        it('should return paginated list from repository', async () => {
             // Arrange
             const page = 1;
             const size = 10;
@@ -153,10 +157,11 @@ describe('OwnerRequestService', () => {
                 profileMock,
             );
 
-            // Assert
+            // Assert - findRequestsPaginated should be called with params
             expect(
                 repositoryMock.findRequestsPaginated,
             ).toHaveBeenCalledWith(page, size, profileMock);
+            // Assert - should return paginated result
             expect(result).toEqual(mockPaginatedOwnerRequests);
         });
     });

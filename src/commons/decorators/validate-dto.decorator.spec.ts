@@ -22,22 +22,22 @@ describe('@ValidateDto Decorator', () => {
         service = new DummyService();
     });
 
-    it('debería ejecutar el método original si el payload cumple con el DTO', () => {
+    it('should execute original method if payload complies with DTO', () => {
         // Arrange
         const payloadValido = { name: 'Backend Dev' };
 
         // Act
         const result = service.exec(payloadValido);
 
-        // Assert
+        // Assert - should return true
         expect(result).toBe(true);
     });
 
-    it('debería lanzar ServiceError(INTERNAL_ERROR) si la validación falla', () => {
+    it('should throw ServiceError(INTERNAL_ERROR) if validation fails', () => {
         // Arrange
         const invalidPayload = {};
 
-        // Act & Assert
+        // Act & Assert - should throw INTERNAL_ERROR
         expect(() => service.exec(invalidPayload)).toThrow(
             new ServiceError(Errors.INTERNAL_ERROR),
         );

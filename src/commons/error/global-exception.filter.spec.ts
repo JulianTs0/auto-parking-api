@@ -51,7 +51,7 @@ describe('GlobalExceptionHandler', () => {
                 .mockImplementation();
         });
 
-        it('debería retornar INTERNAL_ERROR y llamar a logger.error si no es HttpException', () => {
+        it('should return INTERNAL_ERROR and call logger.error if not HttpException', () => {
             // Arrange
             const unknownError = new Error('ERROR');
             const expectedResponse = ErrorResponse.errorType(
@@ -61,19 +61,21 @@ describe('GlobalExceptionHandler', () => {
             // Act
             filter.catch(unknownError, mockHost);
 
-            // Assert
+            // Assert - status should be set to INTERNAL_ERROR status
             expect(mockResponse.status).toHaveBeenCalledWith(
                 expectedResponse.status,
             );
+            // Assert - json should be called with error response
             expect(mockResponse.json).toHaveBeenCalledWith(
                 expectedResponse,
             );
-
+            // Assert - logger.error should be called
             expect(loggerErrorSpy).toHaveBeenCalled();
+            // Assert - logger.warn should not be called
             expect(loggerWarnSpy).not.toHaveBeenCalled();
         });
 
-        it('debería retornar el error mapeado por ServiceError y llamar a logger.warn si el status es < 500', () => {
+        it('should return mapped error by ServiceError and call logger.warn if status is < 500', () => {
             // Arrange
             const serviceError = new ServiceError(
                 Errors.UNAUTHORIZED,
@@ -83,24 +85,26 @@ describe('GlobalExceptionHandler', () => {
             // Act
             filter.catch(serviceError, mockHost);
 
-            // Assert
+            // Assert - status should be set to mapped status
             expect(mockResponse.status).toHaveBeenCalledWith(
                 expectedResponse.status,
             );
+            // Assert - json should be called with mapped response
             expect(mockResponse.json).toHaveBeenCalledWith(
                 expectedResponse,
             );
-
+            // Assert - logger.warn should be called
             expect(loggerWarnSpy).toHaveBeenCalled();
+            // Assert - logger.error should not be called
             expect(loggerErrorSpy).not.toHaveBeenCalled();
         });
 
-        it('debería extraer el status y message de un HttpException común', () => {
+        it('should extract status and message from common HttpException', () => {
             // Arrange
             const httpStatus = 400;
             const exceptionMessage = 'BAD_REQUEST';
 
-            // Simulamos un BadRequestException de NestJS
+            // Simulate BadRequestException from NestJS
             const httpException = new HttpException(
                 { message: exceptionMessage },
                 httpStatus,
@@ -109,22 +113,24 @@ describe('GlobalExceptionHandler', () => {
             // Act
             filter.catch(httpException, mockHost);
 
-            // Assert
+            // Assert - status should be set to httpStatus
             expect(mockResponse.status).toHaveBeenCalledWith(
                 httpStatus,
             );
+            // Assert - json should contain status and message
             expect(mockResponse.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     status: httpStatus,
                     message: exceptionMessage,
                 }),
             );
-
+            // Assert - logger.warn should be called
             expect(loggerWarnSpy).toHaveBeenCalled();
+            // Assert - logger.error should not be called
             expect(loggerErrorSpy).not.toHaveBeenCalled();
         });
 
-        it('debería manejar HttpExceptions donde el payload es un simple string', () => {
+        it('should handle HttpExceptions where payload is a simple string', () => {
             // Arrange
             const httpStatus = 403;
             const stringPayload = 'FORBIDDEN';
@@ -136,10 +142,11 @@ describe('GlobalExceptionHandler', () => {
             // Act
             filter.catch(httpException, mockHost);
 
-            // Assert
+            // Assert - status should be set to httpStatus
             expect(mockResponse.status).toHaveBeenCalledWith(
                 httpStatus,
             );
+            // Assert - json should contain status and string message
             expect(mockResponse.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     status: httpStatus,
