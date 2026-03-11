@@ -1,5 +1,8 @@
 import { Role } from '../../src/commons/const/role.enum';
 import { UserStatus } from '../../src/commons/const/user-status.enum';
+import { EditBody } from '../../src/users/domain/dto/users/request/edit.body.dto';
+import { DeleteBody } from '../../src/users/domain/dto/users/request/delete.body.dto';
+import { GetByIdReq } from '../../src/users/domain/dto/users/request/get-by-id.request.dto';
 
 export const createUserListFixture = (overrides = {}) => [
     {
@@ -48,3 +51,24 @@ export const createPaginatedUsersFixture = (overrides = {}) => ({
     totalPages: 1,
     ...overrides,
 });
+
+export const createEditBodyFixture = (overrides = {}) => {
+    return new EditBody({
+        fullName: 'Updated Name',
+        phoneNumber: '+9999999999',
+        ...overrides,
+    });
+};
+
+export const createDeleteBodyFixture = (overrides = {}) => {
+    return new DeleteBody({
+        password: 'Password123!',
+        ...overrides,
+    });
+};
+
+export const createGetByIdReqFixture = (overrides = {}) =>
+    new GetByIdReq({
+        id: '550e8400-e29b-41d4-a716-446655440000',
+        ...overrides,
+    });
