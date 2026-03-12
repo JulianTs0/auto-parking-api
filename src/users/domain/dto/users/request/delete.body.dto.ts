@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class DeleteBody {
     @ApiProperty({
@@ -7,7 +7,6 @@ export class DeleteBody {
         description:
             'Contraseña del usuario para confirmar la eliminación',
     })
-    @IsNotEmpty()
     @IsString()
     readonly password: string;
 

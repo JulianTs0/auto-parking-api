@@ -6,7 +6,7 @@ import {
     HttpCode,
     HttpStatus,
     Param,
-    Put,
+    Patch,
     UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -23,7 +23,7 @@ import { DeleteBody } from '../../../domain/dto/users/request/delete.body.dto';
 @ApiTags('users/core')
 @Controller('users')
 export class UserCoreController {
-    constructor(private readonly userCoreService: UserServiceI) {}
+    constructor(private readonly userCoreService: UserServiceI) { }
 
     @ApiEndpoint({
         summary: 'Obtener usuario por ID',
@@ -62,7 +62,7 @@ export class UserCoreController {
         ],
     })
     @UseGuards(AuthGuard)
-    @Put(':id')
+    @Patch(':id')
     public async edit(
         @Param('id') id: string,
         @Body() body: EditBody,
