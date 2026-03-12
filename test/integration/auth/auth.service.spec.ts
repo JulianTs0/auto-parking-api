@@ -23,7 +23,7 @@ import { EditPasswordReq } from 'src/auth/domain/dto/auth/request/edit-password.
 import { EditPasswordBody } from 'src/auth/domain/dto/auth/request/edit-password.body.dto';
 import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
 import { RecoverPasswordReq } from 'src/auth/domain/dto/auth/request/recover-password.request.dto';
-import { toMockEntity } from '../../utils//entity-mocks.utils';
+import { toMockEntity } from '../../utils/entity-mocks.utils';
 import { createMockAuthHelper } from '../../utils/test-mocks.utils';
 
 describe('AuthService (Integration - Database Effects & Rollback)', () => {
@@ -55,11 +55,13 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
                 }),
                 TypeOrmModule.forRoot({
                     type: 'postgres',
-                    host: 'localhost',
-                    port: 5433,
-                    username: 'tester',
-                    password: 'tester',
-                    database: 'auto_parking_test',
+                    host: process.env.DB_HOST || 'localhost',
+                    port: parseInt(process.env.DB_PORT || '5433', 10),
+                    username: process.env.DB_USERNAME || 'tester',
+                    password: process.env.DB_PASSWORD || 'tester',
+                    database:
+                        process.env.DB_DATABASE ||
+                        'auto_parking_test',
                     entities: [UserModel],
                     synchronize: true,
                     dropSchema: true,

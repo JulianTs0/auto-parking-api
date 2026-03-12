@@ -70,11 +70,13 @@ describe('AuthWebService (Pure Integration)', () => {
                 }),
                 TypeOrmModule.forRoot({
                     type: 'postgres',
-                    host: 'localhost',
-                    port: 5433,
-                    username: 'tester',
-                    password: 'tester',
-                    database: 'auto_parking_test',
+                    host: process.env.DB_HOST || 'localhost',
+                    port: parseInt(process.env.DB_PORT || '5433', 10),
+                    username: process.env.DB_USERNAME || 'tester',
+                    password: process.env.DB_PASSWORD || 'tester',
+                    database:
+                        process.env.DB_DATABASE ||
+                        'auto_parking_test',
                     entities: [UserModel, OwnerRequestModel],
                     synchronize: true,
                     dropSchema: true,
