@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthWebController } from './auth-web.controller';
 import { AuthWebServiceI } from '../../../domain/services/web/auth-web-service.interface';
 import { AuthGuard } from '../../../config/guards/auth.guard';
+import { SoftAuthGuard } from '../../../config/guards/soft-auth.guard';
+import { AuthHelper } from '../../../config/helpers/auth.helper';
 import { User } from 'src/commons';
 import { RegisterReq } from '../../../domain/dto/auth/request/register.request.dto';
 import { RegisterEmployeeBody } from '../../../domain/dto/auth/request/register-employee-body.dto';
@@ -40,9 +42,18 @@ describe('AuthWebController', () => {
                     provide: AuthWebServiceI,
                     useValue: mockAuthWebService,
                 },
+                {
+                    provide: AuthHelper,
+                    useValue: {
+                        parseToken: jest.fn(),
+                        getSubject: jest.fn(),
+                    },
+                },
             ],
         })
             .overrideGuard(AuthGuard)
+            .useValue({ canActivate: () => true })
+            .overrideGuard(SoftAuthGuard)
             .useValue({ canActivate: () => true })
             .overrideGuard(RolesGuard)
             .useValue({ canActivate: () => true })
@@ -219,13 +230,13 @@ describe('AuthWebController', () => {
             authWebServiceMock.upgrade.mockResolvedValue(undefined);
 
             // Act
-            const result = await controller.upgrade(body, authUser);
+            const result = await controller.upgrade(body);
 
             // Assert - upgrade should be called with mapped data
             expect(authWebServiceMock.upgrade).toHaveBeenCalledWith(
                 expect.objectContaining({
                     body: body,
-                    authUser: authUser,
+                    authUser: null,
                 }),
             );
             // Assert - should return undefined
