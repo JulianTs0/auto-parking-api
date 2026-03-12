@@ -28,7 +28,7 @@ export class AuthHelper {
         tokenContainer: string,
         url: boolean = false,
     ): Promise<string | null> {
-        if (tokenContainer === '') {
+        if (!tokenContainer) {
             return null;
         }
 

@@ -23,6 +23,7 @@ import { UpgradeToOwnerBody } from '../../../domain/dto/auth/request/upgrade-to-
 import { GetOwnerRequestQuery } from '../../../domain/dto/auth/request/get-owner-request.query';
 import { GetOwnerRequestRes } from '../../../domain/dto/auth/response/get-owner-request.response.dto';
 import { RolesGuard } from 'src/auth/config/guards/roles.guard';
+import { SoftAuthGuard } from 'src/auth/config/guards/soft-auth.guard';
 import { Roles } from 'src/commons/decorators/roles.decorator';
 
 @ApiTags('auth/web')
@@ -151,13 +152,10 @@ export class AuthWebController {
     })
     @Patch('/upgrade')
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
-    async upgrade(
-        @Body() body: UpgradeToOwnerBody,
-        @AuthUser() authUser: User,
-    ): Promise<void> {
+    @UseGuards(SoftAuthGuard)
+    async upgrade(@Body() body: UpgradeToOwnerBody): Promise<void> {
         return await this.authWebService.upgrade(
-            AuthMapper.upgradeToOwner().toRequest(authUser, body),
+            AuthMapper.upgradeToOwner().toRequest(null as any, body),
         );
     }
 }
