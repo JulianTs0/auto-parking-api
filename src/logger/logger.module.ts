@@ -54,8 +54,10 @@ const productionFormat = winston.format.combine(
             inject: [EnvConfigService],
             useFactory: (configService: EnvConfigService) => {
                 const isDev: boolean = configService.isDevelop;
+                const isTest: boolean = configService.isTest;
 
                 return {
+                    silent: isTest,
                     transports: [
                         new winston.transports.Console({
                             format: !isDev
@@ -71,4 +73,4 @@ const productionFormat = winston.format.combine(
     ],
     exports: [WinstonModule],
 })
-export class AppLoggerModule {}
+export class AppLoggerModule { }

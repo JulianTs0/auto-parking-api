@@ -6,7 +6,10 @@ import { EnvConfigService } from './env.service';
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: '.env',
+            envFilePath:
+                process.env.NODE_ENV === 'test'
+                    ? '.env.test'
+                    : '.env',
         }),
     ],
     providers: [AppConfigModule, EnvConfigService],

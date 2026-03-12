@@ -16,7 +16,8 @@ import { EnvConfigService } from 'src/config/env.service';
                 password: configService.dbPassword,
                 database: configService.dbName,
                 autoLoadEntities: true,
-                synchronize: configService.isDevelop,
+                synchronize:
+                    configService.isDevelop || configService.isTest,
             }),
         }),
     ],

@@ -71,6 +71,12 @@ export class EnvConfigService {
     }
 
     get isDevelop(): boolean {
-        return this.configService.getOrThrow<string>('ENV') === 'dev';
+        const env = this.configService.getOrThrow<string>('ENV');
+        return env === 'dev';
+    }
+
+    get isTest(): boolean {
+        const env = this.configService.getOrThrow<string>('ENV');
+        return env === 'test';
     }
 }
