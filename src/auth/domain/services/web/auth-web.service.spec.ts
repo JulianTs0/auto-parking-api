@@ -51,7 +51,7 @@ describe('AuthWebService', () => {
     let ownerRequestServiceMock: jest.Mocked<OwnerRequestInternalServiceI>;
     let eventPublisherMock: jest.Mocked<EventPublisherI>;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const mockAuthCoreService = { buildUser: jest.fn() };
         const mockAuthHelper = { createToken: jest.fn() };
         const mockUserService = {
@@ -99,7 +99,9 @@ describe('AuthWebService', () => {
             OwnerRequestInternalServiceI,
         );
         eventPublisherMock = module.get(EventPublisherI);
+    });
 
+    beforeEach(() => {
         jest.clearAllMocks();
     });
 

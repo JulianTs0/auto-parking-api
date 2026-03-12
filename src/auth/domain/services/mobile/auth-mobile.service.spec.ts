@@ -33,7 +33,7 @@ describe('AuthMobileService', () => {
     let authHelperMock: jest.Mocked<AuthHelper>;
     let eventPublisherMock: jest.Mocked<EventPublisherI>;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const mockAuthCoreService = { buildUser: jest.fn() };
         const mockUserService = {
             existsUserByEmail: jest.fn(),
@@ -69,7 +69,9 @@ describe('AuthMobileService', () => {
         userServiceMock = module.get(UserInternalServiceI);
         authHelperMock = module.get(AuthHelper);
         eventPublisherMock = module.get(EventPublisherI);
+    });
 
+    beforeEach(() => {
         jest.clearAllMocks();
     });
 
