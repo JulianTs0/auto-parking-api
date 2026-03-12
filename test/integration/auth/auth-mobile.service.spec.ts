@@ -24,6 +24,10 @@ import {
 } from '../../fixtures/auth.fixtures';
 import { UserEntityMapper } from 'src/users/persistance/datasource/data/postgres/mapper/user-entity.mapper';
 import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
+import {
+    createIntegrationModuleConfig,
+    seedUser,
+} from '../../utils/integration-module.utils';
 
 describe('AuthMobileService (Pure Integration)', () => {
     let service: AuthMobileService;
@@ -56,20 +60,7 @@ describe('AuthMobileService (Pure Integration)', () => {
                         }),
                     ],
                 }),
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [UserModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([UserModel]),
+                ...createIntegrationModuleConfig([UserModel]).imports,
             ],
             providers: [
                 AuthMobileService,
@@ -114,16 +105,6 @@ describe('AuthMobileService (Pure Integration)', () => {
         await dbHelper.cleanDatabase();
         jest.clearAllMocks();
     });
-
-    const seedUser = async (overrides = {}): Promise<User> => {
-        const data = createUserFixture({
-            id: IdGenerator.generateUUID(),
-            ...overrides,
-        });
-        const model = UserEntityMapper.toModel(data as any);
-        await userTypeOrmRepo.save(model!);
-        return Object.assign(new User(), data);
-    };
 
     describe('register() - Integration with Postgres', () => {
         it('should register user with CLIENT role atomically in database', async () => {

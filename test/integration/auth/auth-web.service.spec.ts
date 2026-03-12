@@ -35,9 +35,15 @@ import {
     createOwnerRequestFixture,
     createUserFixture,
 } from '../../fixtures';
+import {
+    createIntegrationModuleConfig,
+    seedUser,
+} from '../../utils/integration-module.utils';
 import { RegisterReq } from 'src/auth/domain/dto/auth/request/register.request.dto';
 import { UpgradeToOwnerReq } from 'src/auth/domain/dto/auth/request/upgrade-to-owner.request.dto';
 import { UpgradeToOwnerBody } from 'src/auth/domain/dto/auth/request/upgrade-to-owner.body.dto';
+import { AcceptOwnerRequestReq } from 'src/auth/domain/dto/auth/request/accept-owner-request.request.dto';
+import { AcceptOwnerRequestBody } from 'src/auth/domain/dto/auth/request/accept-owner-request.body.dto';
 
 describe('AuthWebService (Pure Integration)', () => {
     let service: AuthWebService;
@@ -68,23 +74,10 @@ describe('AuthWebService (Pure Integration)', () => {
                         }),
                     ],
                 }),
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [UserModel, OwnerRequestModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([
+                ...createIntegrationModuleConfig([
                     UserModel,
                     OwnerRequestModel,
-                ]),
+                ]).imports,
             ],
             providers: [
                 AuthWebService,
@@ -137,16 +130,6 @@ describe('AuthWebService (Pure Integration)', () => {
         jest.clearAllMocks();
     });
 
-    const seedUser = async (overrides = {}): Promise<User> => {
-        const data = createUserFixture({
-            id: IdGenerator.generateUUID(),
-            ...overrides,
-        });
-        const model = UserEntityMapper.toModel(data as any);
-        await userTypeOrmRepo.save(model!);
-        return Object.assign(new User(), data);
-    };
-
     describe('register() - Orquestación User + OwnerRequest', () => {
         it('should register user as INACTIVE and create OwnerRequest atomically', async () => {
             // Arrange
@@ -198,7 +181,7 @@ describe('AuthWebService (Pure Integration)', () => {
     describe('upgrade() - Integración con Postgres', () => {
         it('should convert user to OWNER and mark request as COMPLETED', async () => {
             // Arrange
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 email: 'upgrade@test.com',
             });
 
@@ -236,6 +219,66 @@ describe('AuthWebService (Pure Integration)', () => {
                 id: ownerReqData.id,
             });
             expect(updatedReq?.status).toBe(
+                OwnerRequestStatus.COMPLETED,
+            );
+        });
+    });
+
+    describe('Full Flow: Register -> AcceptOwnerRequest -> Upgrade', () => {
+        it('should correctly orchestrate all steps from client registration to active owner', async () => {
+            const email = 'fullflow@test.com';
+
+            // 1. Register
+            const registerDto = createCreateUserDtoFixture({
+                fullName: 'Full Flow Owner',
+                email,
+            } as RegisterReq);
+
+            await service.register(registerDto);
+
+            let userInDb = await userTypeOrmRepo.findOneBy({ email });
+            expect(userInDb).toBeDefined();
+            expect(userInDb?.status).toBe(UserStatus.INACTIVE);
+            expect(userInDb?.roles).toContain(Role.CLIENT);
+            expect(userInDb?.roles).not.toContain(Role.OWNER);
+
+            let requestInDb = await ownerReqTypeOrmRepo.findOne({
+                where: { user: { id: userInDb?.id } },
+            });
+            expect(requestInDb).toBeDefined();
+            expect(requestInDb?.status).toBe(
+                OwnerRequestStatus.PENDING,
+            );
+
+            // 2. Accept Owner Request
+            const acceptReq = new AcceptOwnerRequestReq({
+                body: new AcceptOwnerRequestBody({
+                    ownerEmail: email,
+                }),
+            });
+            await service.acceptOwnerRequest(acceptReq);
+
+            requestInDb = await ownerReqTypeOrmRepo.findOne({
+                where: { user: { id: userInDb?.id } },
+            });
+            expect(requestInDb?.status).toBe(
+                OwnerRequestStatus.APPROVED,
+            );
+
+            // 3. Upgrade to Owner
+            const upgradeReq = new UpgradeToOwnerReq({
+                body: new UpgradeToOwnerBody({ email }),
+            });
+            await service.upgrade(upgradeReq);
+
+            userInDb = await userTypeOrmRepo.findOneBy({ email });
+            expect(userInDb?.roles).toContain(Role.OWNER);
+            expect(userInDb?.status).toBe(UserStatus.ACTIVE);
+
+            requestInDb = await ownerReqTypeOrmRepo.findOne({
+                where: { user: { id: userInDb?.id } },
+            });
+            expect(requestInDb?.status).toBe(
                 OwnerRequestStatus.COMPLETED,
             );
         });

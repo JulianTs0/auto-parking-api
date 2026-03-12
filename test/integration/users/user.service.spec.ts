@@ -20,6 +20,10 @@ import { EditBody } from 'src/users/domain/dto/users/request/edit.body.dto';
 import { EditReq } from 'src/users/domain/dto/users/request/edit.request.dto';
 import { GetByIdReq } from 'src/users/domain/dto/users/request/get-by-id.request.dto';
 import { TestDatabaseHelper } from '../../utils/test-database.helper';
+import {
+    createIntegrationModuleConfig,
+    seedUser,
+} from '../../utils/integration-module.utils';
 import { toMockEntity } from '../../utils/entity-mocks.utils';
 import { createMockAuthHelper } from '../../utils/test-mocks.utils';
 
@@ -45,20 +49,7 @@ describe('UserService (Integration - Database Effects)', () => {
                         }),
                     ],
                 }),
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [UserModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([UserModel]),
+                ...createIntegrationModuleConfig([UserModel]).imports,
             ],
             providers: [
                 UserService,
@@ -96,20 +87,10 @@ describe('UserService (Integration - Database Effects)', () => {
         jest.clearAllMocks();
     });
 
-    const seedUser = async (overrides = {}): Promise<User> => {
-        const user = createUserFixture({
-            id: IdGenerator.generateUUID(),
-            ...overrides,
-        }) as unknown as User;
-        const model = UserEntityMapper.toModel(user);
-        await userTypeOrmRepo.save(model!);
-        return user;
-    };
-
     describe('Transactions and Rollback (Pure Integration)', () => {
         it('should ROLLBACK in edit() if DB constraint violation occurs', async () => {
             // Arrange
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 fullName: 'Original Name',
                 phoneNumber: '111222333',
             });
@@ -135,7 +116,7 @@ describe('UserService (Integration - Database Effects)', () => {
         });
 
         it('should maintain integrity if process fails (rollback demonstration)', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 status: UserStatus.ACTIVE,
             });
 
@@ -159,7 +140,7 @@ describe('UserService (Integration - Database Effects)', () => {
 
     describe('delete() - DB Effects', () => {
         it('should physically persist BANNED status in Postgres when Admin executes action', async () => {
-            const target = await seedUser({
+            const target = await seedUser(userTypeOrmRepo, {
                 status: UserStatus.ACTIVE,
             });
 
@@ -184,7 +165,7 @@ describe('UserService (Integration - Database Effects)', () => {
         });
 
         it('should physically persist DELETED status in Postgres when user deletes themselves', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 status: UserStatus.ACTIVE,
             });
             authHelperMock.validatePassword.mockResolvedValue(true);
@@ -209,7 +190,7 @@ describe('UserService (Integration - Database Effects)', () => {
 
     describe('edit() - DB Effects', () => {
         it('should update and persist fullName and phoneNumber changes in database', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 fullName: 'Old Name',
             });
 
@@ -236,7 +217,7 @@ describe('UserService (Integration - Database Effects)', () => {
 
     describe('getById() - Integration with Mappers', () => {
         it('should return DTO that does not contain password_hash', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 passwordHash: 'secure-hash',
             });
 

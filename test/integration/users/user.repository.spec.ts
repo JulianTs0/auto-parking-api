@@ -6,6 +6,7 @@ import { UserModel } from 'src/users/persistance/datasource/data/postgres/models
 import { TestDatabaseHelper } from '../../utils/test-database.helper';
 import { PostgresUserDao } from 'src/users/persistance/datasource/data/postgres/dao/postgres-user.dao';
 import { createUserFixture } from '../../fixtures/auth.fixtures';
+import { createIntegrationModuleConfig } from '../../utils/integration-module.utils';
 import { Repository } from 'typeorm';
 
 describe('UserRepository (Integration)', () => {
@@ -17,20 +18,7 @@ describe('UserRepository (Integration)', () => {
     beforeAll(async () => {
         module = await Test.createTestingModule({
             imports: [
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [UserModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([UserModel]),
+                ...createIntegrationModuleConfig([UserModel]).imports,
             ],
             providers: [
                 PostgresUserDao,

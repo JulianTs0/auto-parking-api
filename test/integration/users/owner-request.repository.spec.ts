@@ -11,6 +11,7 @@ import { TestDatabaseHelper } from '../../utils/test-database.helper';
 import { UserEntityMapper } from 'src/users/persistance/datasource/data/postgres/mapper/user-entity.mapper';
 import { createUserFixture } from '../../fixtures/auth.fixtures';
 import { createOwnerRequestFixture } from '../../fixtures/owner-request.fixtures';
+import { createIntegrationModuleConfig } from '../../utils/integration-module.utils';
 
 describe('OwnerRequestRepository (Integration)', () => {
     let repository: OwnerRequestRepository;
@@ -21,23 +22,10 @@ describe('OwnerRequestRepository (Integration)', () => {
     beforeAll(async () => {
         module = await Test.createTestingModule({
             imports: [
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [OwnerRequestModel, UserModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([
+                ...createIntegrationModuleConfig([
                     OwnerRequestModel,
                     UserModel,
-                ]),
+                ]).imports,
             ],
             providers: [
                 PostgresOwnerRequestDao,

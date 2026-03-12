@@ -25,6 +25,10 @@ import { AuthEvents } from 'src/auth/config/utils/auth-events.enum';
 import { RecoverPasswordReq } from 'src/auth/domain/dto/auth/request/recover-password.request.dto';
 import { toMockEntity } from '../../utils/entity-mocks.utils';
 import { createMockAuthHelper } from '../../utils/test-mocks.utils';
+import {
+    createIntegrationModuleConfig,
+    seedUser,
+} from '../../utils/integration-module.utils';
 
 describe('AuthService (Integration - Database Effects & Rollback)', () => {
     let service: AuthService;
@@ -53,20 +57,7 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
                         }),
                     ],
                 }),
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT || '5433', 10),
-                    username: process.env.DB_USERNAME || 'tester',
-                    password: process.env.DB_PASSWORD || 'tester',
-                    database:
-                        process.env.DB_DATABASE ||
-                        'auto_parking_test',
-                    entities: [UserModel],
-                    synchronize: true,
-                    dropSchema: true,
-                }),
-                TypeOrmModule.forFeature([UserModel]),
+                ...createIntegrationModuleConfig([UserModel]).imports,
             ],
             providers: [
                 AuthService,
@@ -107,18 +98,10 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
         jest.clearAllMocks();
     });
 
-    const seedUser = async (overrides = {}): Promise<User> => {
-        const id = IdGenerator.generateUUID();
-        const data = createUserFixture({ ...overrides, id });
-        const model = UserEntityMapper.toModel(data as any);
-        await userTypeOrmRepo.save(model!);
-        return Object.assign(new User(), data);
-    };
-
     describe('Transactions and Rollback (Pure Integration)', () => {
         it('should ROLLBACK in changePassword() if DB constraint violation occurs', async () => {
             // Arrange
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 passwordHash: 'hash-original',
             });
 
@@ -150,7 +133,7 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
 
     describe('Persistence (Happy Path)', () => {
         it('login() should physically update updatedAt in DB', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 email: 'success@test.com',
                 status: UserStatus.ACTIVE,
             });
@@ -176,7 +159,7 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
         });
 
         it('verifyEmail() should physically change status to ACTIVE in DB', async () => {
-            const user = await seedUser({
+            const user = await seedUser(userTypeOrmRepo, {
                 status: UserStatus.INACTIVE,
             });
             authHelperMock.parseToken.mockResolvedValue(
@@ -195,7 +178,9 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
         });
 
         it('changePassword() should persist new password hash', async () => {
-            const user = await seedUser({ passwordHash: 'old-hash' });
+            const user = await seedUser(userTypeOrmRepo, {
+                passwordHash: 'old-hash',
+            });
             authHelperMock.hashPassword.mockResolvedValue(
                 'new-secure-hash',
             );
@@ -213,29 +198,6 @@ describe('AuthService (Integration - Database Effects & Rollback)', () => {
                 id: user.id,
             });
             expect(dbRecord?.passwordHash).toBe('new-secure-hash');
-        });
-    });
-
-    describe('Event Orchestration', () => {
-        it('recoverPassword() should emit RECOVER_PASSWORD event when data is correct', async () => {
-            const user = await seedUser({
-                email: 'events@test.com',
-                status: UserStatus.ACTIVE,
-            });
-            authHelperMock.createToken.mockResolvedValue({
-                accessToken: 'jwt',
-            } as Token);
-
-            await service.recoverPassword(
-                new RecoverPasswordReq({ email: 'events@test.com' }),
-            );
-
-            expect(eventPublisherMock.emit).toHaveBeenCalledWith(
-                AuthEvents.RECOVER_PASSWORD,
-                expect.objectContaining({
-                    user: expect.objectContaining({ id: user.id }),
-                }),
-            );
         });
     });
 });

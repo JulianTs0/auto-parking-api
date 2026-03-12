@@ -3,38 +3,29 @@ import { DataSource, Repository } from 'typeorm';
 import { UserModel } from '../../src/users/persistance/datasource/data/postgres/models/user.model';
 import { UserEntityMapper } from '../../src/users/persistance/datasource/data/postgres/mapper/user-entity.mapper';
 import { IdGenerator, User } from '../../src/commons';
+import { createUserFixture } from '../fixtures/auth.fixtures';
 
 export const seedUser = async (
     userTypeOrmRepo: Repository<UserModel>,
     overrides = {},
 ): Promise<User> => {
-    const user = {
-        id: IdGenerator.generateUUID(),
-        email: 'test@example.com',
-        passwordHash: 'hashedPassword123',
-        fullName: 'Test User',
-        phoneNumber: '+1234567890',
-        roles: new Set(),
-        status: 'ACTIVE',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        ...overrides,
-    } as unknown as User;
+    const id = IdGenerator.generateUUID();
+    const data = createUserFixture({ id, ...overrides });
 
-    const model = UserEntityMapper.toModel(user);
+    const model = UserEntityMapper.toModel(data as any);
     await userTypeOrmRepo.save(model!);
-    return Object.assign(new User(), user);
+    return Object.assign(new User(), data);
 };
 
 export const createIntegrationModuleConfig = (entities: any[]) => ({
     imports: [
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: 'localhost',
-            port: 5433,
-            username: 'tester',
-            password: 'tester',
-            database: 'auto_parking_test',
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '5433', 10),
+            username: process.env.DB_USERNAME || 'tester',
+            password: process.env.DB_PASSWORD || 'tester',
+            database: process.env.DB_DATABASE || 'auto_parking_test',
             entities,
             synchronize: true,
             dropSchema: true,
