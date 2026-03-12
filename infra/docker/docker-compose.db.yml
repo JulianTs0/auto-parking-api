@@ -8,7 +8,7 @@ services:
             POSTGRES_PASSWORD: develop
             POSTGRES_DB: autoparking
         ports:
-            - '9001:5432'
+            - 9001:5432
         volumes:
             - postgres_data:/var/lib/postgresql/data
 
