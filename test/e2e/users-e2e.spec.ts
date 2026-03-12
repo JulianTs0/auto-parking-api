@@ -159,10 +159,13 @@ describe('User Module (e2e)', () => {
                 .set('Authorization', `Bearer ${token}`)
                 .send(invalidBody);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
-
-            // Assert - error message should contain INVALID_FIELDS
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
             expect(response.body.message).toContain(
                 Errors.INVALID_FIELDS.message,
             );
@@ -182,10 +185,13 @@ describe('User Module (e2e)', () => {
                 .set('Authorization', `Bearer ${token}`)
                 .send(invalidBody);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
-
-            // Assert - error message should contain INVALID_FIELDS
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
             expect(response.body.message).toContain(
                 Errors.INVALID_FIELDS.message,
             );
@@ -194,10 +200,19 @@ describe('User Module (e2e)', () => {
 
     describe('Guard Validation (Security Cases)', () => {
         it('Should return 401 Unauthorized if JWT token is not sent', async () => {
-            // Act & Assert - should return 401
-            await request(app.getHttpServer())
-                .get(`/users/${IdGenerator.generateUUID()}`)
-                .expect(401);
+            // Act
+            const response = await request(app.getHttpServer()).get(
+                `/users/${IdGenerator.generateUUID()}`,
+            );
+
+            // Assert
+            expect(response.status).toBe(Errors.UNAUTHORIZED.status);
+            expect(response.body.status).toBe(
+                Errors.UNAUTHORIZED.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.UNAUTHORIZED.message,
+            );
         });
 
         it('Should return 403 Forbidden if a CLIENT tries to delete another user', async () => {
@@ -207,12 +222,20 @@ describe('User Module (e2e)', () => {
                 email: 'other@test.com',
             });
 
-            // Act & Assert - should return 403
-            await request(app.getHttpServer())
+            // Act
+            const response = await request(app.getHttpServer())
                 .delete(`/users/${otherUser.id}`)
                 .set('Authorization', `Bearer ${clientToken}`)
-                .send(createDeleteBodyFixture())
-                .expect(403);
+                .send(createDeleteBodyFixture());
+
+            // Assert
+            expect(response.status).toBe(Errors.FORBIDDEN.status);
+            expect(response.body.status).toBe(
+                Errors.FORBIDDEN.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.FORBIDDEN.message,
+            );
         });
 
         it('Should allow an ADMIN to delete (BANNED) any user', async () => {
