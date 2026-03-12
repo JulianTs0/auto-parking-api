@@ -1,16 +1,17 @@
 module.exports = {
     moduleFileExtensions: ['js', 'json', 'ts'],
-    rootDir: 'test/integration',
+    rootDir: '.',
     testRegex: '.*\\.spec\\.ts$',
     transform: {
         '^.+\\.(t|j)s$': 'ts-jest',
     },
+    maxWorkers: 1,
     collectCoverageFrom: [
-        '../../src/**/*.ts',
+        './src/**/*.ts',
         '!**/*.module.ts',
         '!**/*.interface.ts',
     ],
-    coverageDirectory: '../coverage/integration',
+    coverageDirectory: './coverage/integration',
     coverageReporters: ['text', 'lcov', 'html'],
     coverageThreshold: {
         global: {
@@ -20,9 +21,13 @@ module.exports = {
             statements: 70,
         },
     },
-    testEnvironment: 'node',
     moduleNameMapper: {
-        '^src/(.*)$': '<rootDir>/../../src/$1',
+        '^src/(.*)$': '<rootDir>/src/$1',
     },
-    setupFilesAfterEnv: ['<rootDir>/../setup-integration.ts'],
+    setupFiles: ['<rootDir>/test/utils/load-env.ts'],
+    setupFilesAfterEnv: ['<rootDir>/test/setup-integration.ts'],
+    testPathIgnorePatterns: [
+        '<rootDir>/test/e2e/',
+        '<rootDir>/src/.*\\.spec\\.ts$',
+    ],
 };
