@@ -84,10 +84,13 @@ describe('Auth Mobile Module (e2e)', () => {
                 .post('/mobile/auth/register')
                 .send(invalidDto);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
-
-            // Assert - error message should contain INVALID_FIELDS
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
             expect(response.body.message).toContain(
                 Errors.INVALID_FIELDS.message,
             );
@@ -104,8 +107,16 @@ describe('Auth Mobile Module (e2e)', () => {
                 .post('/mobile/auth/register')
                 .send(weakPasswordDto);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.message).toContain(
+                Errors.INVALID_FIELDS.message,
+            );
         });
     });
 });

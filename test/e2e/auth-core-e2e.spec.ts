@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AppModule } from 'src/app.module';
-import { UserStatus, User, IdGenerator } from 'src/commons';
+import { UserStatus, User, IdGenerator, Errors } from 'src/commons';
 import {
     createLoginReqFixture,
     createVerifyEmailReqFixture,
@@ -200,24 +200,37 @@ describe('Auth Core Module (e2e)', () => {
                 .post('/auth/login')
                 .send(loginReq);
 
-            // Assert - should return 404
-            expect(response.status).toBe(404);
-
-            // Assert - error message should be "User not found"
-            expect(response.body.message).toBe('User not found');
+            // Assert
+            expect(response.status).toBe(
+                Errors.USER_NOT_FOUND.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.USER_NOT_FOUND.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.USER_NOT_FOUND.message,
+            );
         });
 
-        it('GET /auth - Should fail if user is DELETED (404/401)', async () => {
+        it('GET /auth - Should fail if user is DELETED (404)', async () => {
             // Arrange
             const { token } = await setupUser({
                 status: UserStatus.DELETED,
             });
 
-            // Act & Assert - should return 404
-            await request(app.getHttpServer())
+            // Act
+            const res = await request(app.getHttpServer())
                 .get('/auth')
-                .set('Authorization', `Bearer ${token}`)
-                .expect(404);
+                .set('Authorization', `Bearer ${token}`);
+
+            // Assert
+            expect(res.status).toBe(Errors.USER_NOT_FOUND.status);
+            expect(res.body.status).toBe(
+                Errors.USER_NOT_FOUND.status,
+            );
+            expect(res.body.message).toBe(
+                Errors.USER_NOT_FOUND.message,
+            );
         });
     });
 
@@ -228,11 +241,19 @@ describe('Auth Core Module (e2e)', () => {
                 email: 'esto-no-es-un-email',
             });
 
-            // Act & Assert - should return 400
-            await request(app.getHttpServer())
+            // Act
+            const res = await request(app.getHttpServer())
                 .post('/auth/login')
-                .send(invalidLogin)
-                .expect(400);
+                .send(invalidLogin);
+
+            // Assert
+            expect(res.status).toBe(Errors.INVALID_FIELDS.status);
+            expect(res.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(res.body.message).toContain(
+                Errors.INVALID_FIELDS.message,
+            );
         });
 
         it('PATCH /auth/password - Should fail with 400 if new password is too short', async () => {
@@ -240,19 +261,34 @@ describe('Auth Core Module (e2e)', () => {
             const { token } = await setupUser();
             const weakPwd = { newPassword: '123' };
 
-            // Act & Assert - should return 400
-            await request(app.getHttpServer())
+            // Act
+            const res = await request(app.getHttpServer())
                 .patch('/auth/password')
                 .set('Authorization', `Bearer ${token}`)
-                .send(weakPwd)
-                .expect(400);
+                .send(weakPwd);
+
+            // Assert
+            expect(res.status).toBe(Errors.INVALID_FIELDS.status);
+            expect(res.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(res.body.message).toContain(
+                Errors.INVALID_FIELDS.message,
+            );
         });
 
         it('GET /auth - Should return 401 if Authorization header is not sent', async () => {
-            // Act & Assert - should return 401
-            await request(app.getHttpServer())
-                .get('/auth')
-                .expect(401);
+            // Act
+            const res = await request(app.getHttpServer()).get(
+                '/auth',
+            );
+
+            // Assert
+            expect(res.status).toBe(Errors.UNAUTHORIZED.status);
+            expect(res.body.status).toBe(Errors.UNAUTHORIZED.status);
+            expect(res.body.message).toBe(
+                Errors.UNAUTHORIZED.message,
+            );
         });
     });
 });
