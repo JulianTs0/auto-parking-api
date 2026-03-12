@@ -13,12 +13,9 @@ export const createMockEventPublisher = () => ({
 export const createMockUserService = () => ({
     findUserById: jest.fn(),
     findUserByEmail: jest.fn(),
+    existsUserByEmail: jest.fn(),
+    saveUser: jest.fn(),
     updateUser: jest.fn(),
-    findById: jest.fn(),
-    findByEmail: jest.fn(),
-    existsByEmail: jest.fn(),
-    save: jest.fn(),
-    update: jest.fn(),
 });
 
 export const createMockUserRepository = () => ({

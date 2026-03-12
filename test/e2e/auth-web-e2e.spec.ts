@@ -9,6 +9,7 @@ import {
     User,
     Role,
     OwnerRequestStatus,
+    Errors,
 } from 'src/commons';
 import {
     createUserFixture,
@@ -277,8 +278,16 @@ describe('Auth Web Module (e2e)', () => {
                 .post('/web/auth/register')
                 .send(invalidDto);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.message).toContain(
+                Errors.INVALID_FIELDS.message,
+            );
         });
 
         it('GET /web/auth/owner/requests - Should fail with 400 if size exceeds maximum (25)', async () => {
@@ -292,8 +301,16 @@ describe('Auth Web Module (e2e)', () => {
                 .get('/web/auth/owner/requests?page=1&size=100')
                 .set('Authorization', `Bearer ${adminToken}`);
 
-            // Assert - should return 400
-            expect(response.status).toBe(400);
+            // Assert
+            expect(response.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.status).toBe(
+                Errors.INVALID_FIELDS.status,
+            );
+            expect(response.body.message).toContain(
+                Errors.INVALID_FIELDS.message,
+            );
         });
     });
 
@@ -310,8 +327,14 @@ describe('Auth Web Module (e2e)', () => {
                 .set('Authorization', `Bearer ${clientToken}`)
                 .send(employeeDto);
 
-            // Assert - should return 403
-            expect(response.status).toBe(403);
+            // Assert
+            expect(response.status).toBe(Errors.FORBIDDEN.status);
+            expect(response.body.status).toBe(
+                Errors.FORBIDDEN.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.FORBIDDEN.message,
+            );
         });
 
         it('PATCH /web/auth/accept/owner - Should fail with 403 if OWNER tries to accept request (requires ADMIN)', async () => {
@@ -326,8 +349,14 @@ describe('Auth Web Module (e2e)', () => {
                 .set('Authorization', `Bearer ${ownerToken}`)
                 .send({ ownerEmail: 'target@test.com' });
 
-            // Assert - should return 403
-            expect(response.status).toBe(403);
+            // Assert
+            expect(response.status).toBe(Errors.FORBIDDEN.status);
+            expect(response.body.status).toBe(
+                Errors.FORBIDDEN.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.FORBIDDEN.message,
+            );
         });
 
         it('PATCH /web/auth/request/upgrade/owner - Should fail with 401 if no token is sent', async () => {
@@ -336,8 +365,76 @@ describe('Auth Web Module (e2e)', () => {
                 .patch('/web/auth/request/upgrade/owner')
                 .send({ email: 'target@test.com' });
 
-            // Assert - should return 401
-            expect(response.status).toBe(401);
+            // Assert
+            expect(response.status).toBe(Errors.UNAUTHORIZED.status);
+            expect(response.body.status).toBe(
+                Errors.UNAUTHORIZED.status,
+            );
+            expect(response.body.message).toBe(
+                Errors.UNAUTHORIZED.message,
+            );
+        });
+    });
+
+    describe('Multi-step Flows', () => {
+        it('should complete full owner upgrade flow', async () => {
+            // Arrange - 1. POST /web/auth/register -> creates user + owner request PENDING
+            const newOwnerEmail = 'full_flow_owner@test.com';
+            const registerDto = createCreateUserDtoFixture({
+                email: newOwnerEmail,
+            });
+
+            // Act
+            let response = await request(app.getHttpServer())
+                .post('/web/auth/register')
+                .send(registerDto);
+
+            // Assert
+            expect(response.status).toBe(201);
+
+            // Arrange - 2. PATCH /web/auth/accept/owner -> admin approves -> status APPROVED
+            const { token: adminToken } = await setupUser(
+                createAdminUserFixture,
+            );
+
+            // Act
+            response = await request(app.getHttpServer())
+                .patch('/web/auth/accept/owner')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({ ownerEmail: newOwnerEmail });
+
+            // Assert
+            expect(response.status).toBe(200);
+
+            // Arrange - 3. Get user and token to simulate user doing the upgrade
+            const dbUser = await dataSource
+                .getRepository(UserModel)
+                .findOneBy({ email: newOwnerEmail });
+
+            const clientToken = (
+                await authHelper.createToken(
+                    Object.assign(new User(), dbUser),
+                )
+            ).accessToken;
+
+            // Act - 4. PATCH /web/auth/upgrade -> user completes upgrade -> role OWNER + status ACTIVE
+            response = await request(app.getHttpServer())
+                .patch('/web/auth/upgrade')
+                .set('Authorization', `Bearer ${clientToken}`)
+                .send({ email: newOwnerEmail });
+
+            // Assert
+            expect(response.status).toBe(200);
+
+            // Act - 5. GET /auth -> verify the correct role is applied
+            response = await request(app.getHttpServer())
+                .get('/auth')
+                .set('Authorization', `Bearer ${clientToken}`);
+
+            // Assert
+            expect(response.status).toBe(200);
+            expect(response.body.roles).toContain(Role.OWNER);
+            expect(response.body.status).toBe(UserStatus.ACTIVE);
         });
     });
 });
