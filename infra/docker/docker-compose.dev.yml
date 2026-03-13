@@ -1,0 +1,88 @@
+services:
+    api:
+        build:
+            context: ../..
+            dockerfile: Dockerfile
+        container_name: autoparking-api
+        restart: always
+        ports:
+            - 9000:3000
+        env_file:
+            - ../../.env
+        environment:
+            - NODE_ENV=dev
+            - DB_HOST=postgres-db
+        depends_on:
+            postgres-db:
+                condition: service_healthy
+        networks:
+            - dev-network
+
+    postgres-db:
+        image: postgres:15-alpine
+        container_name: postgres-db
+        restart: always
+        environment:
+            POSTGRES_USER: develop
+            POSTGRES_PASSWORD: develop
+            POSTGRES_DB: autoparking
+        ports:
+            - 9001:5432
+        volumes:
+            - postgres_data_dev:/var/lib/postgresql/data
+        healthcheck:
+            test:
+                ['CMD-SHELL', 'pg_isready -U develop -d autoparking']
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        networks:
+            - dev-network
+
+    loki:
+        image: grafana/loki:3.0.0
+        container_name: loki
+        ports:
+            - 3100:3100
+        command: -config.file=/etc/loki/local-config.yaml
+        volumes:
+            - ../../infra/observability/loki-config.yaml:/etc/loki/local-config.yaml
+            - loki_data:/loki
+        networks:
+            - dev-network
+
+    promtail:
+        image: grafana/promtail:3.0.0
+        container_name: promtail
+        volumes:
+            - /var/lib/docker/containers:/var/lib/docker/containers:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ../../infra/observability/promtail-config.yaml:/etc/promtail/config.yml
+        command: -config.file=/etc/promtail/config.yml
+        depends_on:
+            - loki
+        networks:
+            - dev-network
+
+    grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        ports:
+            - 3005:3000
+        environment:
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        volumes:
+            - ../../infra/observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/loki.yml
+        depends_on:
+            - loki
+        networks:
+            - dev-network
+
+volumes:
+    postgres_data_dev:
+    loki_data:
+
+networks:
+    dev-network:
+        driver: bridge

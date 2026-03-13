@@ -4,28 +4,86 @@ services:
         container_name: autoparking-api
         restart: always
         ports:
-            - '9000:3000'
+            - 9000:3000
         environment:
-            - DB_HOST=postgres_db
-            - DB_PORT=5432
-            - DB_USERNAME=develop
-            - DB_PASSWORD=develop
-            - DB_DATABASE=autoparking
+            - NODE_ENV=production
+            - DB_HOST=postgres-db
+            - DB_PORT=${DB_PORT}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_DATABASE=${DB_DATABASE}
+            - JWT_SECRET=${JWT_SECRET}
+            - JWT_EXPIRATION=${JWT_EXPIRATION}
+            - ENV=prod
+            - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+            - SERVER_URL=${SERVER_URL}
+            - CLIENT_URL=${CLIENT_URL}
+            - MAIL_SENDER=${MAIL_SENDER}
+            - MAIL_HOST=${MAIL_HOST}
+            - MAIL_PORT=${MAIL_PORT}
+            - MAIL_USER=${MAIL_USER}
+            - MAIL_PASS=${MAIL_PASS}
+            - PORT=3000
         depends_on:
-            - postgres_db
+            postgres-db:
+                condition: service_healthy
 
     postgres-db:
         image: postgres:15-alpine
         container_name: autoparking-db
         restart: always
         environment:
-            POSTGRES_USER: develop
-            POSTGRES_PASSWORD: develop
-            POSTGRES_DB: autoparking
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_DATABASE}
         ports:
-            - '9001:5432'
+            - 9001:5432
         volumes:
             - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}',
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    loki:
+        image: grafana/loki:3.0.0
+        container_name: loki
+        ports:
+            - 3100:3100
+        command: -config.file=/etc/loki/local-config.yaml
+        volumes:
+            - ./infra/observability/loki-config.yaml:/etc/loki/local-config.yaml
+            - loki_data:/loki
+
+    promtail:
+        image: grafana/promtail:3.0.0
+        container_name: promtail
+        volumes:
+            - /var/lib/docker/containers:/var/lib/docker/containers:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./infra/observability/promtail-config.yaml:/etc/promtail/config.yml
+        command: -config.file=/etc/promtail/config.yml
+        depends_on:
+            - loki
+
+    grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        ports:
+            - 3005:3000
+        environment:
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        volumes:
+            - ./infra/observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/loki.yml
+        depends_on:
+            - loki
 
 volumes:
     postgres_data:
+    loki_data:
