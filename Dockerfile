@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN npm run test:unit
+
 RUN npm run build
 
 RUN npm prune --omit=dev
