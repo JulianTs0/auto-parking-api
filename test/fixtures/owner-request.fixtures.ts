@@ -3,10 +3,10 @@ import { Role } from '../../src/commons/const/role.enum';
 import { UserStatus } from '../../src/commons/const/user-status.enum';
 import { User } from '../../src/commons/entity/user.entity';
 import { OwnerRequest } from '../../src/commons/entity/owner-request.entity';
-import { GetOwnerRequestReq } from '../../src/users/domain/dto/users/request/get-owner-request.request.dto';
-import { GetOwnerRequestRes } from '../../src/users/domain/dto/users/response/get-owner-request.response.dto';
-import { OwnerRequestItemRes } from '../../src/users/domain/dto/users/response/owner-request-item.dto';
-import { OwnerRequestUserData } from '../../src/users/domain/dto/users/response/owner-request-user-data.dto';
+import { GetOwnerRequestReq } from '../../src/auth/domain/dto/auth/request/get-owner-request.request.dto';
+import { GetOwnerRequestRes } from '../../src/auth/domain/dto/auth/response/get-owner-request.response.dto';
+import { OwnerRequestItemRes } from '../../src/auth/domain/dto/auth/response/get-owner-request.response.dto';
+import { OwnerRequestUserData } from '../../src/auth/domain/dto/auth/response/get-owner-request.response.dto';
 
 const baseUser = {
     id: '550e8400-e29b-41d4-a716-446655440001',
