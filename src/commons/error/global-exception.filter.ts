@@ -34,7 +34,11 @@ export class GlobalExceptionHandler implements ExceptionFilter {
                         ? (res as any).message
                         : res;
 
-                errorResponse = new ErrorResponse(status, message);
+                errorResponse = new ErrorResponse(
+                    status,
+                    message,
+                    Errors.INTERNAL_ERROR.key,
+                );
             }
         }
 
