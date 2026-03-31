@@ -20,6 +20,7 @@ import { EditPasswordBody } from 'src/auth/domain/dto/auth/request/edit-password
 import { AuthGuard } from 'src/auth/config/guards/auth.guard';
 import { AuthMapper } from 'src/auth/domain/dto/auth/mapper/auth.mapper';
 import { ResendEmailReq } from 'src/auth/domain/dto/auth/request/resend-email.request.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('auth/core')
 @Controller('auth')
@@ -89,6 +90,7 @@ export class AuthCoreController {
         body: RecoverPasswordReq,
     })
     @Post('/recover')
+    @Throttle({ authRecover: { ttl: 60000, limit: 3 } })
     public async recoverPassword(
         @Body() request: RecoverPasswordReq,
     ): Promise<void> {
@@ -101,6 +103,7 @@ export class AuthCoreController {
         body: ResendEmailReq,
     })
     @Post('/email/resend')
+    @Throttle({ authResend: { ttl: 60000, limit: 5 } })
     public async resendEmail(
         @Body() request: ResendEmailReq,
     ): Promise<void> {

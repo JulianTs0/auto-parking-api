@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { AppLoggerModule } from './logger/logger.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AppEventsModule } from './app-events/app-events.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { AppEventsModule } from './app-events/app-events.module';
                 }),
             ],
         }),
+        ThrottlerModule.forRoot([]),
         AppConfigModule,
         AuthModule,
         UsersModule,
@@ -56,4 +58,4 @@ import { AppEventsModule } from './app-events/app-events.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule { }
